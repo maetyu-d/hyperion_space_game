@@ -12,9 +12,13 @@ Cockpit flight runs in real time; every other gameplay mode is turn based.
 
 *Rainbow rings, cloud banks and spectral nebulae, captured in the native renderer.*
 
-![Low-altitude cockpit view of colourful procedural plants and alien creatures on a planetary surface](docs/screenshots/surface-life.jpg)
+![Ship cockpit just above a sunlit planetary surface, with textured terrain and colourful alien life](docs/screenshots/surface-flight.jpg)
 
-*A close encounter with procedural surface life. Both images are actual Hyperion 3.55 gameplay captures.*
+*Surface approach from the ship's cockpit, above sunlit terrain and procedural alien life.*
+
+![Turn-based system map with procedural planets, orbital paths and Orders and Resolve controls](docs/screenshots/turn-based-system.jpg)
+
+*Plan exploration and resolve orders in the turn-based system view. All three images are actual Hyperion 3.55 gameplay captures.*
 
 ## Wreck expeditions in 3.55
 
