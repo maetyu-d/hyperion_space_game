@@ -1,0 +1,68 @@
+{
+  "version": "3.41.0",
+  "name": "Hyperion",
+  "scope": "Cockpit HUD visual redesign: responsive instrument deck, readable flight readings, navigation action keys, contact/landing scope, spectral system gauges, contextual landing/combat/commission/weather cards and contrast-safe reticle. Legacy instrument housing removed.",
+  "changedSource": [
+    "src/flight_renderer.cpp",
+    "src/renderer.cpp",
+    "src/flight/renderer.cpp"
+  ],
+  "cpuSuites": 25,
+  "nativeChecks": [
+    "orbit",
+    "surface-small",
+    "escort",
+    "storm",
+    "offers-small",
+    "combat",
+    "landing",
+    "planning",
+    "helm",
+    "ui"
+  ],
+  "nativeCaptures": 85,
+  "fullAndMinimumWindowsReviewed": true,
+  "brightStormReadabilityReviewed": true,
+  "coreSimulationPhysicsStorageAndAssetsUnchanged": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.37
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.4
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.42
+    }
+  ],
+  "legacyAndMissionSavesFrozenExactly": true,
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "binarySHA256": "46b7e2b25d3588231842908b3d3335868bbac8868abfcedcb53860dc4c57238c",
+  "priorReleasePreserved": true,
+  "preview": "Hyperion-preview.png"
+}

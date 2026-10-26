@@ -1,0 +1,29 @@
+{
+  "scope": "Address and undefined behavior checks; Apple runtime does not support leak detection.",
+  "runs": [
+    {
+      "suite": "hyperion_branding_tests",
+      "exit": 0,
+      "seconds": 1.178,
+      "output": "Branding: 19 checks passed / renamed catalogue, save paths, safe adoption, exact fields, precedence, fresh/custom saves and conflict protection\n"
+    },
+    {
+      "suite": "hyperion_review_tests",
+      "exit": 0,
+      "seconds": 5.87,
+      "output": "PASS: 64 review regressions; pause gate, free charts, physical access, pressure, refuelling, deadlines, fuel exhaustion, nearest landing and concurrent save recovery\n"
+    },
+    {
+      "suite": "hyperion_handling_tests",
+      "exit": 0,
+      "seconds": 2.096,
+      "output": "Handling: 52 checks passed / momentum, RCS, engine spool, bounded thrust, mass, braking, boost, gravity, drag, hover, frame rates and saves\n"
+    },
+    {
+      "suite": "hyperion_strategy_tests",
+      "exit": 0,
+      "seconds": 21.747,
+      "output": "PASS: 765 strategy checks; exact helm handoff, fixed-time hold, read-only move previews, ocean/surface endpoints, blocked orders, interruptible waits, reports and held-input release\n"
+    }
+  ]
+}

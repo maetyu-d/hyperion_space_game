@@ -1,0 +1,200 @@
+[
+  {
+    "suite": "hyperion_architecture_tests",
+    "exit": 0,
+    "seconds": 0.007,
+    "output": "PASS: 26140 architecture geometry checks; closed chamfers, cones, tanks, ellipsoids and clear mooring collars; outward unit normals; recessed frames, seam-free window UVs, LOD hysteresis and nondegenerate meshes\n"
+  },
+  {
+    "suite": "hyperion_branding_tests",
+    "exit": 0,
+    "seconds": 0.655,
+    "output": "Branding: 19 checks passed / renamed catalogue, save paths, safe adoption, exact fields, precedence, fresh/custom saves and conflict protection\n"
+  },
+  {
+    "suite": "hyperion_building_material_tests",
+    "exit": 0,
+    "seconds": 0.016,
+    "output": "PASS: 2476 material checks; periodic values and derivatives, deterministic grain/detail packing, useful mask coverage and exact distant averages\n"
+  },
+  {
+    "suite": "hyperion_combat_tests",
+    "exit": 0,
+    "seconds": 0.403,
+    "output": "Combat: 67 checks passed / damage, systems, power, heat, weapons, missiles, countermeasures, collision, AI, finite services, salvage, turns and saves\n"
+  },
+  {
+    "suite": "hyperion_continuity_tests",
+    "exit": 0,
+    "seconds": 0.479,
+    "output": "PASS: 118 continuity checks / remembered charts, exact physical handoffs, same-site plans, ocean targets, pure previews, survey approach, recharge, deadlines and pause\n"
+  },
+  {
+    "suite": "hyperion_economy_tests",
+    "exit": 0,
+    "seconds": 0.736,
+    "output": "PASS: seeded societies; fixed-clock determinism; conservation of money, goods and freight; real recipes, staffing and power; starvation cascade; runoff; finite markets; diplomacy and sanctions; settlement construction; technology prerequisites; contract escrow; docking; complete save/reopen; invalid-state rollback\n"
+  },
+  {
+    "suite": "hyperion_ecosystem_tests",
+    "exit": 0,
+    "seconds": 0.525,
+    "output": "Ecosystems: 332 checks passed / trophic cascades, budgets, dispersal, habitats, finite harvests, food, medicine, markets, turns and migration\n"
+  },
+  {
+    "suite": "hyperion_fieldwork_tests",
+    "exit": 0,
+    "seconds": 1.067,
+    "output": "PASS: 112 fieldwork checks / generated sites, non-invasive study, finite collection, living biomass, real cargo, predictable movement, repairs, route interrupts, reload and rejected orders\n"
+  },
+  {
+    "suite": "hyperion_frontier_tests",
+    "exit": 0,
+    "seconds": 1.265,
+    "output": "Frontier integration: 17379 checks passed\n"
+  },
+  {
+    "suite": "hyperion_handling_tests",
+    "exit": 0,
+    "seconds": 0.445,
+    "output": "Handling: 52 checks passed / momentum, RCS, engine spool, bounded thrust, mass, braking, boost, gravity, drag, hover, frame rates and saves\n"
+  },
+  {
+    "suite": "hyperion_helm_tests",
+    "exit": 0,
+    "seconds": 0.385,
+    "output": "Helm: 36 checks passed / precision, pointer rates, boost spool, reversal braking, gravity allocation, atmospheric drag, capture, persistence and controller ownership\n"
+  },
+  {
+    "suite": "hyperion_hud_tests",
+    "exit": 0,
+    "seconds": 0.007,
+    "output": "PASS: 7036 HUD checks / safe layout, contextual guidance, clipped roll, pole/retrograde/closure telemetry, real berth positions and independent atomic display preferences\n"
+  },
+  {
+    "suite": "hyperion_landing_tests",
+    "exit": 0,
+    "seconds": 0.376,
+    "output": "PASS: 3326 landing checks; gradual approach and departure, pad contact, safe manual landings, hard contact, deterministic detail, save/reload and strategy freeze\n"
+  },
+  {
+    "suite": "hyperion_life_graphics_tests",
+    "exit": 0,
+    "seconds": 0.026,
+    "output": "Life graphics: 637101 checks / 24 anatomical LODs / 14868 distant and 30634 close triangles / tissue roles, smooth normals, winding, appendages and footprints passed\n"
+  },
+  {
+    "suite": "hyperion_living_tests",
+    "exit": 0,
+    "seconds": 0.482,
+    "output": "Living universe: 26265 checks / 1022 ship registries / 6 body plans / 7 habitat features passed\nAI audit: 40 firing actors / 3 actual primary types\n"
+  },
+  {
+    "suite": "hyperion_minor_material_tests",
+    "exit": 0,
+    "seconds": 0.005,
+    "output": "Minor material layout: 1744 checks / two-field budget, hysteresis, stable priority and replacement passed\n"
+  },
+  {
+    "suite": "hyperion_minor_tests",
+    "exit": 0,
+    "seconds": 0.568,
+    "output": "Minor bodies: 644011 checks / 90 systems / 874 moons / 2604 asteroids / 171 comets\n"
+  },
+  {
+    "suite": "hyperion_ocean_tests",
+    "exit": 0,
+    "seconds": 0.518,
+    "output": "PASS: 146 ocean survey checks / genuine sites, one-hour movement, reveal-only sonar, deliberate research, physical ascent, buoy recovery, cargo conservation, deadlines, manual courses, pressure emergencies and saves\n"
+  },
+  {
+    "suite": "hyperion_operations_tests",
+    "exit": 0,
+    "seconds": 0.562,
+    "output": "Operations: 1401 checks passed / seeded context, real targets, escrow conservation, partial deliveries, escort presence, deadlines, field research, persistence, frozen planning, weather and impact feedback\n"
+  },
+  {
+    "suite": "hyperion_planning_tests",
+    "exit": 0,
+    "seconds": 0.448,
+    "output": "PASS: 31 planning checks; read-only briefings, exact pressure/battery forecasts, live threats, colony and contract interrupts, and workspace restoration\n"
+  },
+  {
+    "suite": "hyperion_procedural_tests",
+    "exit": 0,
+    "seconds": 0.921,
+    "output": "Procedural generation: 24730 checks passed / 233 systems / 9 world types / 15 provinces / 953 supply links / 512x512 terrain cache 57.7803 ms\n"
+  },
+  {
+    "suite": "hyperion_review_tests",
+    "exit": 0,
+    "seconds": 0.785,
+    "output": "PASS: 65 review regressions; pause gate, free charts, physical access, pressure, refuelling, deadlines, fuel exhaustion, nearest landing and concurrent save recovery\n"
+  },
+  {
+    "suite": "hyperion_scene_tests",
+    "exit": 0,
+    "seconds": 0.349,
+    "output": "PASS: 7404 living-world checks; real production activity, stable growth, distinct factions, safe freight, save compatibility and turn-based freeze\n"
+  },
+  {
+    "suite": "hyperion_screen_layout_tests",
+    "exit": 0,
+    "seconds": 0.005,
+    "output": "PASS: 1475 screen layout checks / fitting, pointer mapping, safe area, Retina and decorated monitor bounds\n"
+  },
+  {
+    "suite": "hyperion_security_tests",
+    "exit": 0,
+    "seconds": 0.496,
+    "output": "Security integration: 79 checks passed\n"
+  },
+  {
+    "suite": "hyperion_shipyard_tests",
+    "exit": 0,
+    "seconds": 0.632,
+    "output": "Shipyards: 94 checks passed / finite inventories, ownership, quotes, refits, repairs, flight, combat, capacity, strategy turns and saves\n"
+  },
+  {
+    "suite": "hyperion_strategy_tests",
+    "exit": 0,
+    "seconds": 1.358,
+    "output": "PASS: 765 strategy checks; exact helm handoff, fixed-time hold, read-only move previews, ocean/surface endpoints, blocked orders, interruptible waits, reports and held-input release\n"
+  },
+  {
+    "suite": "hyperion_tactics_tests",
+    "exit": 0,
+    "seconds": 0.659,
+    "output": "Tactics: 61 checks passed / resonance, precision, intercepts, enemy systems, charge, heat, evasion, finite defence, workshop economy, persistence and turns\n"
+  },
+  {
+    "suite": "hyperion_tests",
+    "exit": 0,
+    "seconds": 0.681,
+    "output": "PASS: exact prototype fixtures (4 seeds / Unicode), deterministic universe, terrain, exploration, scans, economy, navigation, pressure safety, save roundtrip, malformed imports, 1,000 idle seconds and 128 expedition turns\n"
+  },
+  {
+    "suite": "hyperion_turn_planner_tests",
+    "exit": 0,
+    "seconds": 0.522,
+    "output": "PASS: 54 turn planner checks / read-only timelines, real arrivals, research, held freight, exact durations, bounded history, rejected orders and preserved waypoints\n"
+  },
+  {
+    "suite": "hyperion_turn_tests",
+    "exit": 0,
+    "seconds": 0.507,
+    "output": "PASS: 55 turn-based checks; idle-world freeze, explicit actions, waypoint steps, economy, hazards, navigator resolution, cockpit real time, deadlines and save/reload\n"
+  },
+  {
+    "suite": "hyperion_ui_tests",
+    "exit": 0,
+    "seconds": 0.006,
+    "output": "PASS: 108 pointer checks; short clicks, one dispatch, held drags, ordered bursts and gesture boundaries\n"
+  },
+  {
+    "suite": "hyperion_wildlife_tests",
+    "exit": 0,
+    "seconds": 0.802,
+    "output": "Visible wildlife: 206527 checks / 12 body plans, 24 cached LODs / 14868 distant and 30634 close triangles / local sampling 0.802838 ms / pursuit, groups, rest, observer response, settlements, shorelines, oceans, freeze and save identities passed\n"
+  }
+]

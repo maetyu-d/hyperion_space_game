@@ -1,0 +1,63 @@
+{
+  "sourceVersion": "3.37.0",
+  "destinationVersion": "3.38.0",
+  "allEstablishedFieldsUnchanged": true,
+  "reopensExactly": true,
+  "sourceUntouched": true,
+  "newSaveFormatRequired": false,
+  "boostAndCaptureRoundtripExactly": true,
+  "boostAndCaptureResumeInCockpit": true,
+  "cockpitFocusedSeconds": 1.999999999999998,
+  "path": "/private/tmp/hyperion-338-compatibility-4ezdgklf",
+  "hull": 62.0,
+  "fuel": 123.0,
+  "shield": 210.0,
+  "rounds": 37,
+  "checks": [
+    {
+      "check": "previous-3.37",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "hyperion",
+      "exit": 0,
+      "seconds": 1.72
+    },
+    {
+      "check": "hyperion-reopen",
+      "exit": 0,
+      "seconds": 1.41
+    },
+    {
+      "check": "established-dynamics",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "established-dynamics-reopen",
+      "exit": 0,
+      "seconds": 1.5
+    },
+    {
+      "check": "boost-capture",
+      "exit": 0,
+      "seconds": 1.87
+    },
+    {
+      "check": "boost-capture-reopen",
+      "exit": 0,
+      "seconds": 1.46
+    },
+    {
+      "check": "boost-capture-resume",
+      "exit": 0,
+      "seconds": 4.22
+    },
+    {
+      "check": "resumed-save-reopen",
+      "exit": 0,
+      "seconds": 1.41
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "version": "3.45.0",
+  "scope": "Mipmapped close minor-body materials with relief normals, excavated crater floors and ejecta, fractured rubble and ice sublimation pits, roughness and cavity lighting; 2048x1024 close fields with a two-field residency limit and blended hysteresis; 1536x768 solid-world geology and a fully covered 1024x1024 ground field.",
+  "cpuSuites": 28,
+  "cachePolicyChecks": 1744,
+  "cachePolicySanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "surface-detail",
+    "minor-bodies",
+    "minor-small",
+    "screen-fit",
+    "materials",
+    "cloud-occlusion",
+    "landing",
+    "combat",
+    "planning"
+  ],
+  "nativeCaptures": 125,
+  "fullAndSmallViewsReviewed": true,
+  "distinctMoonAsteroidAndCometMaterialsReviewed": true,
+  "groundCoverageSamples": 256,
+  "maximumCloseMaterialFields": 2,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.46
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.44
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.44
+    }
+  ],
+  "simulationPhysicsWorldGenerationStorageAndAssetsUnchanged": true,
+  "newFiles": [
+    "src/flight/minor_material_layout.hpp",
+    "tests/minor_material_layout.cpp"
+  ],
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/renderer.hpp",
+    "src/main.cpp",
+    "src/flight/minor_renderer.cpp",
+    "src/flight/renderer.hpp",
+    "src/flight/geology.hpp",
+    "src/flight/minor_shaders.hpp",
+    "src/flight/shaders.hpp",
+    "src/flight/surface_detail.hpp",
+    "src/flight/renderer.cpp"
+  ],
+  "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3",
+  "performance": [
+    {
+      "name": "space-old",
+      "meanMs": 21.93269881111111,
+      "p95Ms": 30.785583,
+      "fps": 45.59402418335312
+    },
+    {
+      "name": "space",
+      "meanMs": 19.85639373888888,
+      "p95Ms": 22.42,
+      "fps": 50.361612141155994
+    },
+    {
+      "name": "moon",
+      "meanMs": 16.229917561111108,
+      "p95Ms": 18.247459,
+      "fps": 61.614607482426386
+    },
+    {
+      "name": "asteroid",
+      "meanMs": 17.066526833333327,
+      "p95Ms": 19.751584,
+      "fps": 58.5942300835844
+    },
+    {
+      "name": "comet",
+      "meanMs": 16.650503711111114,
+      "p95Ms": 19.493083,
+      "fps": 60.05824312286037
+    }
+  ],
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

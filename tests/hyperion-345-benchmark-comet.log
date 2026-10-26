@@ -1,0 +1,12 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.13013 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1728x1080
+Generated minor bodies: [{"count":47,"detailFields":0,"hours":0.0,"hull":100.0,"id":"HOME/comet/0","kind":"Comet","materialWidth":256,"scene":4,"visibleBodies":34}]
+Flight benchmark: {"fps":60.05824312286037,"meanMs":16.650503711111114,"measuredFrames":180,"outputHeight":1200,"outputWidth":1920,"p50Ms":16.3335,"p95Ms":19.493083,"p99Ms":21.69425,"reducedEffects":false,"scene":-1,"vsync":false,"warmupFrames":60,"wildlifeBaseline":false,"wildlifeBodies":0}
+Hyperion native run: 240 frames / shaders OK / 1920x1200
+Measured render rate: 52.7236 frames/s
+Sun shadow cache: 0 updates / 0 active frames

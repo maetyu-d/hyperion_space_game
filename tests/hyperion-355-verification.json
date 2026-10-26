@@ -1,0 +1,138 @@
+{
+  "version": "3.55.0",
+  "scope": "One underwater chart with persistent procedural survey tenders: real settlement ownership and missing shipment history, finite warehouse-funded cargo and faction-funded crew, existing escrow commissions, closer hull approach, deliberate survey, six shared rescue seats, medicine and power costs, selected quiet salvage versus faster cutting, actual hull and food-web consequences, current power and vent wear in real movement previews, free route comparison and plotting, continuous sector discovery on committed sonar, physical buoy recovery, actual berth delivery to settlement population and warehouses, and funded debrief payment.",
+  "cpuSuites": 34,
+  "checks": {
+    "wreck": 692,
+    "ocean": 451,
+    "continuity": 118,
+    "fieldwork": 112
+  },
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "ocean",
+    "ocean-small",
+    "ocean-fullscreen",
+    "continuity",
+    "fieldwork",
+    "planner",
+    "hud",
+    "wreck",
+    "wreck-small",
+    "wreck-fullscreen",
+    "screen-fit"
+  ],
+  "finalBuildVisualChecks": [
+    "screen-fit",
+    "wreck",
+    "wreck-fullscreen",
+    "wreck-small"
+  ],
+  "earlierRegressionBinarySHA256": "3b804255ce06eba0468ee8524532695642c3467a29758952f8d846c96940ec15",
+  "lastChange": "Renderer-only: hide dormant waypoint cost during non-movement work and place active cost above its course node; gameplay library unchanged",
+  "nativeCaptures": 234,
+  "wreckScenariosPerSize": 9,
+  "oceanScenariosPerSize": 15,
+  "requestedScreenSizes": [
+    "1280x800",
+    "720x450 / reduced effects",
+    "fullscreen / reduced effects"
+  ],
+  "persistentFiniteWreckAllowances": true,
+  "rescuePopulationAndSixSharedSeatsConserved": true,
+  "actualWarehouseAndResidentDeliveryRequired": true,
+  "sourceReservesAndMissionEscrowFunded": true,
+  "foodWebCarbonConservedAndFisheryOutputReducedByDisturbance": true,
+  "negativeSectorsAndMalformedSaveRejectionTested": true,
+  "oldStateFieldsAssetsWorldGenerationAndFlightInternalsUnchanged": true,
+  "optionalWreckSaveCollectionAndNewMissionKind": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "wreck-at-sea",
+      "exit": 0,
+      "seconds": 1.62
+    },
+    {
+      "check": "wreck-delivered",
+      "exit": 0,
+      "seconds": 1.67
+    }
+  ],
+  "changedFiles": [
+    "src/missions_renderer.cpp",
+    "src/missions_storage.cpp",
+    "src/planning.cpp",
+    "src/renderer.hpp",
+    "src/game.hpp",
+    "src/missions_game.cpp",
+    "src/missions.hpp",
+    "src/turns.cpp",
+    "src/economy_renderer.cpp",
+    "src/ocean_renderer.cpp",
+    "src/fieldwork.cpp",
+    "src/economy_game.cpp",
+    "src/economy_storage.cpp",
+    "src/missions.cpp",
+    "src/field_renderer.cpp",
+    "src/ocean_ops.cpp",
+    "src/main.cpp",
+    "src/economy.hpp",
+    "src/renderer.cpp",
+    "src/game.cpp",
+    "CMakeLists.txt",
+    "README.md"
+  ],
+  "newSourceFiles": [
+    "src/ocean_expeditions.cpp",
+    "src/ocean_storage.hpp",
+    "src/ocean_storage.cpp",
+    "tests/ocean_expeditions.cpp"
+  ],
+  "binarySHA256": "d297b3d976ef572d9f5cd73e9a610fa283978cc79755be7d12cabc23bcd7dcb2",
+  "preview": "Hyperion-preview.png / single game view",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

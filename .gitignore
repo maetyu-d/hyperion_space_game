@@ -1,0 +1,7 @@
+build*/
+saves/
+*.zip
+.DS_Store
+*.app/
+captures/
+releases/

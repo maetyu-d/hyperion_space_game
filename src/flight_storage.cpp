@@ -1,0 +1,80 @@
+#include "flight_storage.hpp"
+#include "actor_storage.hpp"
+#include <stdexcept>
+namespace hyperion {
+using J=nlohmann::json;
+namespace {
+J vector(hyperion::flight::V3 p){return J::array({p.x,p.y,p.z});}
+double numeric(const J& j,const char* key,double fallback,double low,double high){double v=j.value(key,fallback);if(!std::isfinite(v)||v<low||v>high)throw std::runtime_error(std::string("Invalid flight field: ")+key);return v;}
+std::string string(const J& j,const char* key){std::string value=j.value(key,std::string{});if(value.size()>240)throw std::runtime_error("Oversized flight reference");return value;}
+hyperion::flight::V3 vector(const J& j,double limit){if(!j.is_array()||j.size()!=3)throw std::runtime_error("Invalid flight vector");hyperion::flight::V3 v{j[0].get<double>(),j[1].get<double>(),j[2].get<double>()};if(!hyperion::flight::finite(v)||std::abs(v.x)>limit||std::abs(v.y)>limit||std::abs(v.z)>limit)throw std::runtime_error("Flight vector out of range");return v;}
+int integer(const J& j,const char* key,int fallback,int low,int high){double value=numeric(j,key,fallback,low,high);if(std::floor(value)!=value)throw std::runtime_error(std::string("Fractional combat field: ")+key);return int(value);}
+J combat(const hyperion::flight::CombatState& c){return {{"systems",c.systems},{"armour",c.armour},{"energy",c.energy},{"heat",c.heat},{"shieldDelay",c.shieldDelay},{"missileClock",c.missileClock},{"decoyClock",c.decoyClock},{"weapon",c.weapon},{"rounds",c.rounds},{"missiles",c.missiles},{"decoys",c.decoys},{"overheated",c.overheated},{"hits",c.hits},{"shots",c.shots}};}
+hyperion::flight::CombatState combat(const J& j){
+ if(!j.is_object())throw std::runtime_error("Invalid combat equipment");hyperion::flight::CombatState c;auto systems=j.value("systems",J(c.systems));if(!systems.is_array()||systems.size()!=hyperion::flight::SystemCount)throw std::runtime_error("Invalid ship systems");
+ for(int i=0;i<hyperion::flight::SystemCount;i++){double v=systems[i].get<double>();if(!std::isfinite(v)||v<0||v>100)throw std::runtime_error("Invalid subsystem condition");c.systems[i]=v;}
+ c.armour=numeric(j,"armour",100,0,100);c.energy=numeric(j,"energy",100,0,100);c.heat=numeric(j,"heat",0,0,100);c.shieldDelay=numeric(j,"shieldDelay",0,0,30);c.missileClock=numeric(j,"missileClock",0,0,30);c.decoyClock=numeric(j,"decoyClock",0,0,30);
+ c.weapon=integer(j,"weapon",0,0,4);if(c.weapon==hyperion::flight::Seeker)throw std::runtime_error("Seeker cannot occupy a primary mount");c.rounds=integer(j,"rounds",300,0,600);c.missiles=integer(j,"missiles",6,0,8);c.decoys=integer(j,"decoys",6,0,8);c.overheated=j.value("overheated",false);double hits=numeric(j,"hits",0,0,4294967295.);if(std::floor(hits)!=hits)throw std::runtime_error("Invalid hit sequence");c.hits=uint32_t(hits);double shots=numeric(j,"shots",0,0,4294967295.);if(std::floor(shots)!=shots)throw std::runtime_error("Invalid firing sequence");c.shots=uint32_t(shots);return c;
+}
+
+J tactics(const hyperion::flight::Traffic& t){return {{"systems",t.modules},{"energy",t.energy},{"heat",t.heat},{"charge",t.charge},{"decoyClock",t.decoyClock},{"evadeClock",t.evadeClock},{"serviceClock",t.serviceClock},{"rounds",t.ammunition},{"missiles",t.missiles},{"decoys",t.countermeasures},{"chargeWeapon",t.chargeWeapon},{"salvos",t.salvos},{"venting",t.venting}};}
+void tactics(hyperion::flight::Traffic& t,const J& j){
+ if(!j.is_object())throw std::runtime_error("Invalid enemy equipment");auto modules=j.value("systems",J(t.modules));if(!modules.is_array()||modules.size()!=3)throw std::runtime_error("Invalid enemy systems");
+ for(int i=0;i<3;i++){double value=modules[i].get<double>();if(!std::isfinite(value)||value<0||value>100)throw std::runtime_error("Enemy system condition out of range");t.modules[i]=value;}
+ t.energy=numeric(j,"energy",100,0,100);t.heat=numeric(j,"heat",0,0,100);t.charge=numeric(j,"charge",0,0,1);t.decoyClock=numeric(j,"decoyClock",0,0,30);t.evadeClock=numeric(j,"evadeClock",0,0,5);t.serviceClock=numeric(j,"serviceClock",0,0,8);
+ t.ammunition=integer(j,"rounds",180,0,180);t.missiles=integer(j,"missiles",2,0,2);t.countermeasures=integer(j,"decoys",2,0,2);t.chargeWeapon=integer(j,"chargeWeapon",-1,-1,4);t.salvos=integer(j,"salvos",0,0,1000000000);t.venting=j.value("venting",false);
+}
+
+}
+J encodeCombatState(const hyperion::flight::CombatState& c){return combat(c);}
+hyperion::flight::CombatState decodeCombatState(const J& j){return combat(j);}
+J encodeFlight(const hyperion::flight::Game& f,const Economy& e){
+ J result={{"schema",2},{"combatRevision",5},{"valid",f.valid},{"star",f.star},{"deployed",f.deployed},{"docked",f.docked},{"autopilot",f.autopilot},
+ {"target",f.savedTarget},{"berth",f.savedBerth},{"dock",f.savedDock},{"time",f.time},{"kills",f.kills},{"deliveries",f.deliveries},
+ {"position",vector(f.ship.position)},{"velocity",vector(f.ship.velocity)},{"forward",vector(f.ship.forward)},{"up",vector(f.ship.up)},
+ {"throttle",f.ship.throttle},{"shield",f.ship.shield},{"assist",f.ship.assist},{"gear",f.ship.gear},{"cruise",f.ship.cruise},{"launchAssist",f.launchAssist},
+ {"courier",{{"active",f.courier.active},{"issuer",f.courier.issuer},{"destination",f.courier.destination},{"escrow",f.courier.escrow},{"deadline",f.courier.deadline}}}};
+ if(hyperion::flight::length(f.ship.angularVelocity)>0||hyperion::flight::length(f.ship.thrusters)>0||f.ship.boostLevel>0||f.ship.assistCaptureTime>0){
+  result["dynamics"]={{"spin",vector(f.ship.angularVelocity)},{"thrusters",vector(f.ship.thrusters)}};
+  if(f.ship.boostLevel>0)result["dynamics"]["boost"]=f.ship.boostLevel;
+  if(f.ship.assistCaptureTime>0)result["dynamics"]["capture"]={{"velocity",vector(f.ship.assistCapture)},{"remaining",f.ship.assistCaptureTime}};
+ }
+ result["combat"]=combat(f.ship.combat);result["combatTarget"]=f.combatTarget;result["aimSystem"]=f.aimSystem;result["combatOrder"]=f.combatOrder;result["lock"]=f.lock;
+ result["traffic"]=J::array();for(const auto& t:f.traffic){if(!t.routeId.empty()){bool found=false;for(auto& r:e.routes)if(r.id==t.routeId&&r.outbound&&r.trips==t.trip)found=true;if(!found)continue;}result["traffic"].push_back({{"genome",encodeGenome(t.genome)},{"home",t.home},{"kind",t.kind},{"faction",t.faction},{"phase",t.phase},{"health",t.health},{"dead",t.dead},{"respawn",t.respawn},{"fireClock",t.fireClock},{"route",t.routeId},{"trip",t.trip},{"id",t.id},{"role",t.role},{"position",vector(t.position)},{"velocity",vector(t.velocity)},{"forward",vector(t.forward)},{"positioned",t.positioned},{"state",t.state},{"stateClock",t.stateClock},{"shield",t.shield},{"armour",t.armour},{"shieldDelay",t.shieldDelay},{"tactics",tactics(t)},{"managed",t.managed},{"pirate",t.pirate},{"hostile",t.hostile},{"assaultReported",t.assaultReported},{"name",t.name},{"allegiance",t.allegiance},{"band",t.band},{"reason",t.reason},{"enemies",t.enemies}});}
+ result["bolts"]=J::array();for(const auto& b:f.bolts)result["bolts"].push_back({{"position",vector(b.position)},{"velocity",vector(b.velocity)},{"life",b.life},{"hostile",b.hostile},{"weapon",b.weapon},{"damage",b.damage},{"owner",b.owner},{"target",b.target},{"module",b.module}});
+ result["wrecks"]=J::array();for(const auto& w:f.wrecks)result["wrecks"].push_back({{"position",vector(w.position)},{"velocity",vector(w.velocity)},{"life",w.life},{"cargo",w.cargo},{"id",w.id}});
+ return result;
+}
+hyperion::flight::Game decodeFlight(const J& j,const State& s,Universe& u){
+ if(!j.is_object()||(j.value("schema",0)!=1&&j.value("schema",0)!=2))throw std::runtime_error("Unsupported flight save");hyperion::flight::Game f;
+ f.valid=j.value("valid",false);f.star=string(j,"star");f.deployed=j.value("deployed",false);f.docked=j.value("docked",true);f.autopilot=j.value("autopilot",false);
+ if(f.valid&&(f.star!=s.currentStar||u.star(f.star).id!=f.star))throw std::runtime_error("Flight star disagrees with vessel location");
+ f.savedTarget=string(j,"target");f.savedDock=string(j,"dock");f.savedBerth=string(j,"berth");
+ auto reference=[&](const std::string& id){if(id.empty())return;auto split=id.find(':');if(split==std::string::npos)throw std::runtime_error("Invalid flight port");auto kind=id.substr(0,split),key=id.substr(split+1);if(kind=="relay"){auto bodies=u.planets(s.currentStar);bool found=false;for(auto& p:bodies)if(p.id==key)found=true;if(!found)throw std::runtime_error("Unknown flight relay");}else if(kind=="minor"){bool found=false;for(const auto& b:u.minorBodies(s.currentStar))if(b.id==key)found=true;if(!found)throw std::runtime_error("Unknown minor body");}else if(kind=="surface"||kind=="orbit"){auto* p=findSettlement(s.economy,key);if(!p||p->star!=s.currentStar)throw std::runtime_error("Unknown flight settlement");}else if(kind=="den"){bool found=false;for(const auto& b:s.economy.pirates)if(b.id==key&&b.star==s.currentStar)found=true;if(!found)throw std::runtime_error("Unknown pirate anchorage");}else throw std::runtime_error("Invalid flight port type");};
+ if(f.valid){reference(f.savedTarget);reference(f.savedDock);reference(f.savedBerth);if(f.savedTarget.empty()||f.savedBerth.empty())throw std::runtime_error("Missing flight destination");}
+ if(f.savedDock.rfind("minor:",0)==0||f.savedBerth.rfind("minor:",0)==0)throw std::runtime_error("Minor body has no docking facilities");
+ if(!f.docked&&!f.savedDock.empty())throw std::runtime_error("Moving ship has docking clamps");
+ f.ship.position=vector(j.at("position"),1e7);f.ship.velocity=vector(j.at("velocity"),3000);
+ auto forward=vector(j.at("forward"),1.1),up=vector(j.at("up"),1.1);
+ if(hyperion::flight::length(forward)<.9||hyperion::flight::length(up)<.9||std::abs(hyperion::flight::dot(hyperion::flight::unit(forward),hyperion::flight::unit(up)))>.1)throw std::runtime_error("Invalid flight attitude");f.orient(forward,up);if(std::abs(hyperion::flight::length(forward)-1)<1e-10&&std::abs(hyperion::flight::length(up)-1)<1e-10&&std::abs(hyperion::flight::dot(forward,up))<1e-10){f.ship.forward=forward;f.ship.up=up;}
+ f.ship.vessel=s.economy.vessel;f.ship.throttle=numeric(j,"throttle",0,0,1);f.ship.shield=numeric(j,"shield",100,0,hyperion::flight::shieldCapacity(f.ship.vessel));f.ship.assist=j.value("assist",true);f.ship.gear=j.value("gear",true);f.ship.cruise=j.value("cruise",false);
+ f.ship.fuel=s.fuel/s.maxFuel*100;f.ship.hull=s.hull;f.ship.previous=f.ship.position;
+ if(j.contains("combat"))f.ship.combat=combat(j.at("combat"));f.combatTarget=string(j,"combatTarget");f.aimSystem=integer(j,"aimSystem",0,0,3);f.combatOrder=integer(j,"combatOrder",0,0,2);f.lock=numeric(j,"lock",0,0,1);
+ f.launchAssist=numeric(j,"launchAssist",0,0,3.2);if(f.docked||f.autopilot)f.launchAssist=0;
+ if(j.contains("dynamics")){const auto& d=j.at("dynamics");if(!d.is_object())throw std::runtime_error("Invalid flight dynamics");f.ship.angularVelocity=vector(d.at("spin"),6);f.ship.thrusters=vector(d.at("thrusters"),1.000001);if(hyperion::flight::length(f.ship.thrusters)>1.000001)throw std::runtime_error("Invalid thruster load");
+  f.ship.boostLevel=numeric(d,"boost",0,0,1);
+  if(d.contains("capture")){const auto& c=d.at("capture");if(!c.is_object())throw std::runtime_error("Invalid assist capture");f.ship.assistCapture=vector(c.at("velocity"),3000);f.ship.assistCaptureTime=numeric(c,"remaining",0,0,.8);if(!f.ship.assist||f.docked||f.autopilot)throw std::runtime_error("Assist capture without manual flight");}
+ }
+ f.time=numeric(j,"time",0,0,1e12);f.kills=int(numeric(j,"kills",0,0,1e9));f.deliveries=int(numeric(j,"deliveries",0,0,1e9));
+ const auto& c=j.at("courier");f.courier.active=c.value("active",false);f.courier.issuer=string(c,"issuer");f.courier.destination=string(c,"destination");f.courier.escrow=int64_t(numeric(c,"escrow",0,0,1000000));f.courier.deadline=numeric(c,"deadline",0,0,1e12);
+ if(f.courier.active){if(!findSettlement(s.economy,f.courier.issuer)||!findSettlement(s.economy,f.courier.destination)||f.courier.issuer==f.courier.destination||f.courier.escrow<1)throw std::runtime_error("Invalid courier escrow");}
+ else if(f.courier.escrow!=0)throw std::runtime_error("Unassigned courier escrow");
+ size_t portCount=u.planets(s.currentStar).size();for(auto& p:s.economy.settlements)if(p.star==s.currentStar)portCount+=2;for(const auto& b:s.economy.pirates)if(b.star==s.currentStar)portCount++;
+ auto traffic=j.value("traffic",J::array());if(!traffic.is_array()||traffic.size()>512)throw std::runtime_error("Invalid flight traffic");
+ for(auto& item:traffic){hyperion::flight::Traffic t;if(j.value("combatRevision",0)>=5)t.genome=decodeGenome(item.at("genome"));t.home=int(numeric(item,"home",0,0,double(portCount-1)));t.kind=int(numeric(item,"kind",0,0,2));t.faction=int(numeric(item,"faction",3,0,4));t.phase=numeric(item,"phase",0,0,1e6);t.health=numeric(item,"health",100,-1000,240);t.role=integer(item,"role",0,0,3);if(item.contains("tactics"))tactics(t,item["tactics"]);t.id=string(item,"id");t.managed=item.value("managed",false);t.pirate=item.value("pirate",false);t.hostile=item.value("hostile",true);t.assaultReported=item.value("assaultReported",false);t.name=string(item,"name");t.allegiance=string(item,"allegiance");t.band=string(item,"band");t.reason=string(item,"reason");if(item.contains("enemies")){if(!item["enemies"].is_array()||item["enemies"].size()!=5)throw std::runtime_error("Invalid hostility table");for(int k=0;k<5;k++)t.enemies[k]=item["enemies"][k].get<bool>();}if(t.managed){bool known=false;for(const auto& c:s.economy.captains)if(c.id==t.id&&c.star==s.currentStar){known=true;if(j.value("combatRevision",0)>=5&&t.genome!=c.genome)throw std::runtime_error("Actor profile disagrees with captain record");}if(!known||t.kind!=1)throw std::runtime_error("Unknown managed combat ship");}t.shield=numeric(item,"shield",0,0,100);t.armour=numeric(item,"armour",100,0,100);t.shieldDelay=numeric(item,"shieldDelay",0,0,30);t.state=integer(item,"state",0,0,7);t.stateClock=numeric(item,"stateClock",0,0,30);if(item.contains("position")){t.position=t.previous=vector(item.at("position"),1e7);t.velocity=vector(item.at("velocity"),3000);t.forward=vector(item.at("forward"),1.1);t.positioned=item.value("positioned",true);}t.dead=item.value("dead",false);t.respawn=numeric(item,"respawn",0,-.1,1e12);t.fireClock=numeric(item,"fireClock",0,-1e12,1e12);t.routeId=string(item,"route");t.trip=int(numeric(item,"trip",-1,-1,1e9));if(!t.routeId.empty()){bool found=false;for(auto& route:s.economy.routes)if(route.id==t.routeId)found=true;if(!found)throw std::runtime_error("Unknown flight freight route");}f.traffic.push_back(t);}
+ auto bolts=j.value("bolts",J::array());if(!bolts.is_array()||bolts.size()>1024)throw std::runtime_error("Invalid weapon stream");for(auto& item:bolts){hyperion::flight::Bolt b;b.position=b.previous=vector(item.at("position"),1e7);b.velocity=vector(item.at("velocity"),10000);b.life=numeric(item,"life",1,0,12);b.hostile=item.value("hostile",false);b.weapon=integer(item,"weapon",-1,-1,4);b.module=integer(item,"module",0,0,3);b.damage=numeric(item,"damage",0,0,1000);b.owner=string(item,"owner");b.target=string(item,"target");f.bolts.push_back(b);}
+ auto wrecks=j.value("wrecks",J::array());if(!wrecks.is_array()||wrecks.size()>48)throw std::runtime_error("Invalid salvage field");
+ for(const auto& item:wrecks){hyperion::flight::Wreck w;w.position=vector(item.at("position"),1e7);w.velocity=vector(item.at("velocity"),3000);w.life=numeric(item,"life",180,0,180);w.id=string(item,"id");auto cargo=item.at("cargo");if(!cargo.is_array()||cargo.size()!=3)throw std::runtime_error("Invalid wreck cargo");for(int k=0;k<3;k++){w.cargo[k]=cargo[k].get<double>();if(!std::isfinite(w.cargo[k])||w.cargo[k]<0||w.cargo[k]>100)throw std::runtime_error("Invalid salvage quantity");}f.wrecks.push_back(w);}
+ if(s.mode==Mode::Flight&&(!f.valid||f.deployed))throw std::runtime_error("Flight view has no available vessel");return f;
+}
+}

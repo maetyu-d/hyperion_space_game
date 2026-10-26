@@ -1,0 +1,226 @@
+[
+  {
+    "check": "offers",
+    "exit": 0,
+    "seconds": 3.39,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-offers/offers.jpg"
+    ]
+  },
+  {
+    "check": "offers-small",
+    "exit": 0,
+    "seconds": 2.4,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-offers-small/offers-small.jpg"
+    ]
+  },
+  {
+    "check": "accepted",
+    "exit": 0,
+    "seconds": 2.75,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-accepted/accepted.jpg"
+    ]
+  },
+  {
+    "check": "relief-ready",
+    "exit": 0,
+    "seconds": 2.77,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-relief-ready/relief-ready.jpg"
+    ]
+  },
+  {
+    "check": "completed",
+    "exit": 0,
+    "seconds": 2.43,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-completed/completed.jpg"
+    ]
+  },
+  {
+    "check": "survey-ready",
+    "exit": 0,
+    "seconds": 2.66,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-survey-ready/survey-ready.jpg"
+    ]
+  },
+  {
+    "check": "escort",
+    "exit": 0,
+    "seconds": 3.04,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-escort/escort.jpg"
+    ]
+  },
+  {
+    "check": "storm",
+    "exit": 0,
+    "seconds": 2.2,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-storm/storm.jpg"
+    ]
+  },
+  {
+    "check": "storm-reduced",
+    "exit": 0,
+    "seconds": 1.98,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-storm-reduced/storm-reduced.jpg"
+    ]
+  },
+  {
+    "check": "planning",
+    "exit": 0,
+    "seconds": 14.29,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-0-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-0-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-1-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-1-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-2-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-2-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-3-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-3-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-4-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-4-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-5-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-5-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-6-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-6-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-7-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-planning/strategy-7-9.jpg"
+    ]
+  },
+  {
+    "check": "helm",
+    "exit": 0,
+    "seconds": 23.67
+  },
+  {
+    "check": "landing",
+    "exit": 0,
+    "seconds": 16.59,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-landing/transition-9.jpg"
+    ]
+  },
+  {
+    "check": "clouds",
+    "exit": 0,
+    "seconds": 9.75,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds/cloud-occlusion-9.jpg"
+    ]
+  },
+  {
+    "check": "combat",
+    "exit": 0,
+    "seconds": 40.17,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-12-charge.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-12.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-13.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-14.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-15.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-7-planning.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-8-quote.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-combat/combat-9.jpg"
+    ]
+  },
+  {
+    "check": "ui",
+    "exit": 0,
+    "seconds": 22.0
+  },
+  {
+    "check": "offers-final",
+    "exit": 0,
+    "seconds": 3.63,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-offers-final/offers-final.jpg"
+    ],
+    "binarySHA256": "07c1e5e17e9fcf81771c7434cc3acda6f326fa404fd82f0795468e8849d18f3d"
+  },
+  {
+    "check": "offers-small-final",
+    "exit": 0,
+    "seconds": 2.43,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-offers-small-final/offers-small-final.jpg"
+    ],
+    "binarySHA256": "07c1e5e17e9fcf81771c7434cc3acda6f326fa404fd82f0795468e8849d18f3d"
+  },
+  {
+    "check": "ready-final",
+    "exit": 0,
+    "seconds": 2.92,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-ready-final/ready-final.jpg"
+    ],
+    "binarySHA256": "07c1e5e17e9fcf81771c7434cc3acda6f326fa404fd82f0795468e8849d18f3d"
+  },
+  {
+    "check": "storm-final",
+    "exit": 0,
+    "seconds": 2.31,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-storm-final/storm-final.jpg"
+    ],
+    "binarySHA256": "07c1e5e17e9fcf81771c7434cc3acda6f326fa404fd82f0795468e8849d18f3d"
+  },
+  {
+    "check": "clouds-final",
+    "exit": 0,
+    "seconds": 10.07,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-340-clouds-final/cloud-occlusion-9.jpg"
+    ],
+    "binarySHA256": "07c1e5e17e9fcf81771c7434cc3acda6f326fa404fd82f0795468e8849d18f3d"
+  }
+]

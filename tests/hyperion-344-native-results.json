@@ -1,0 +1,138 @@
+[
+  {
+    "check": "minor-bodies",
+    "exit": 0,
+    "seconds": 11.8,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-bodies/minor-body-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-bodies/minor-body-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-bodies/minor-body-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-bodies/minor-body-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-bodies/minor-body-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-bodies/minor-body-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-bodies/minor-body-6.jpg"
+    ],
+    "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9"
+  },
+  {
+    "check": "minor-small",
+    "exit": 0,
+    "seconds": 7.05,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-small/minor-body-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-small/minor-body-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-small/minor-body-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-small/minor-body-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-small/minor-body-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-small/minor-body-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-minor-small/minor-body-6.jpg"
+    ],
+    "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9"
+  },
+  {
+    "check": "screen-fit",
+    "exit": 0,
+    "seconds": 12.49,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-screen-fit/screen-fit-7.jpg"
+    ],
+    "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9"
+  },
+  {
+    "check": "cloud-occlusion",
+    "exit": 0,
+    "seconds": 10.48,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-cloud-occlusion/cloud-occlusion-9.jpg"
+    ],
+    "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9"
+  },
+  {
+    "check": "landing",
+    "exit": 0,
+    "seconds": 15.45,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-landing/transition-9.jpg"
+    ],
+    "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9"
+  },
+  {
+    "check": "combat",
+    "exit": 0,
+    "seconds": 34.62,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-12-charge.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-12.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-13.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-14.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-15.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-7-planning.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-8-quote.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-combat/combat-9.jpg"
+    ],
+    "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9"
+  },
+  {
+    "check": "planning",
+    "exit": 0,
+    "seconds": 14.11,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-0-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-0-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-1-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-1-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-2-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-2-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-3-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-3-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-4-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-4-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-5-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-5-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-6-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-6-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-7-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-planning/strategy-7-9.jpg"
+    ],
+    "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9"
+  }
+]

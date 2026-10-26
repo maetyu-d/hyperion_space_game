@@ -1,0 +1,11 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1728x1080
+Optional HUD: [{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":0,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":1,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":2,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":3,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":4,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":5,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":6,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":true,"scene":7,"width":960},{"enhanced":false,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":8,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":9,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":10,"width":960},{"enhanced":true,"flightTime":0.0,"height":600,"hidden":false,"hours":0.0,"panel":false,"scene":11,"width":960}]
+Hyperion native run: 480 frames / shaders OK / 1920x1200
+Measured render rate: 24.4598 frames/s
+Sun shadow cache: 2 updates / 80 active frames

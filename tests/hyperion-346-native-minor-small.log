@@ -1,0 +1,11 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1296x810
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1296x810
+Generated minor bodies: [{"count":47,"detailFields":0,"hours":0.0,"hull":100.0,"id":"HOME#2/moon/0","kind":"Moon","materialWidth":0,"scene":0,"visibleBodies":0},{"count":47,"detailFields":1,"hours":0.0,"hull":100.0,"id":"HOME#2/moon/0","kind":"Moon","materialWidth":2048,"scene":1,"visibleBodies":7},{"count":47,"detailFields":1,"hours":0.0,"hull":100.0,"id":"HOME#2/moon/0","kind":"Moon","materialWidth":2048,"scene":2,"visibleBodies":6},{"count":47,"detailFields":1,"hours":0.0,"hull":100.0,"id":"HOME/asteroid/0/0","kind":"Asteroid","materialWidth":2048,"scene":3,"visibleBodies":14},{"count":47,"detailFields":0,"hours":0.0,"hull":100.0,"id":"HOME/comet/0","kind":"Comet","materialWidth":256,"scene":4,"visibleBodies":27},{"count":47,"detailFields":1,"hours":0.0,"hull":100.0,"id":"HOME/comet/0","kind":"Comet","materialWidth":2048,"scene":5,"visibleBodies":21},{"count":47,"detailFields":0,"hours":0.0,"hull":100.0,"id":"HOME/asteroid/0/0","kind":"Asteroid","materialWidth":256,"scene":6,"visibleBodies":14}]
+Hyperion native run: 210 frames / shaders OK / 1440x900
+Measured render rate: 30.2029 frames/s
+Sun shadow cache: 0 updates / 0 active frames

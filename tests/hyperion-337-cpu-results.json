@@ -1,0 +1,140 @@
+[
+  {
+    "suite": "hyperion_architecture_tests",
+    "exit": 0,
+    "seconds": 0.414,
+    "output": "PASS: 26140 architecture geometry checks; closed chamfers, cones, tanks, ellipsoids and clear mooring collars; outward unit normals; recessed frames, seam-free window UVs, LOD hysteresis and nondegenerate meshes\n"
+  },
+  {
+    "suite": "hyperion_branding_tests",
+    "exit": 0,
+    "seconds": 0.34,
+    "output": "Branding: 19 checks passed / renamed catalogue, save paths, safe adoption, exact fields, precedence, fresh/custom saves and conflict protection\n"
+  },
+  {
+    "suite": "hyperion_building_material_tests",
+    "exit": 0,
+    "seconds": 0.293,
+    "output": "PASS: 2476 material checks; periodic values and derivatives, deterministic grain/detail packing, useful mask coverage and exact distant averages\n"
+  },
+  {
+    "suite": "hyperion_combat_tests",
+    "exit": 0,
+    "seconds": 0.488,
+    "output": "Combat: 67 checks passed / damage, systems, power, heat, weapons, missiles, countermeasures, collision, AI, finite services, salvage, turns and saves\n"
+  },
+  {
+    "suite": "hyperion_economy_tests",
+    "exit": 0,
+    "seconds": 0.735,
+    "output": "PASS: seeded societies; fixed-clock determinism; conservation of money, goods and freight; real recipes, staffing and power; starvation cascade; runoff; finite markets; diplomacy and sanctions; settlement construction; technology prerequisites; contract escrow; docking; complete save/reopen; invalid-state rollback\n"
+  },
+  {
+    "suite": "hyperion_ecosystem_tests",
+    "exit": 0,
+    "seconds": 0.74,
+    "output": "Ecosystems: 332 checks passed / trophic cascades, budgets, dispersal, habitats, finite harvests, food, medicine, markets, turns and migration\n"
+  },
+  {
+    "suite": "hyperion_frontier_tests",
+    "exit": 0,
+    "seconds": 0.837,
+    "output": "Frontier integration: 17018 checks passed\n"
+  },
+  {
+    "suite": "hyperion_handling_tests",
+    "exit": 0,
+    "seconds": 0.698,
+    "output": "Handling: 52 checks passed / momentum, RCS, engine spool, bounded thrust, mass, braking, boost, gravity, drag, hover, frame rates and saves\n"
+  },
+  {
+    "suite": "hyperion_landing_tests",
+    "exit": 0,
+    "seconds": 0.587,
+    "output": "PASS: 3325 landing checks; gradual approach and departure, pad contact, safe manual landings, hard contact, deterministic detail, save/reload and strategy freeze\n"
+  },
+  {
+    "suite": "hyperion_life_graphics_tests",
+    "exit": 0,
+    "seconds": 0.702,
+    "output": "Life graphics: 637101 checks / 24 anatomical LODs / 14868 distant and 30634 close triangles / tissue roles, smooth normals, winding, appendages and footprints passed\n"
+  },
+  {
+    "suite": "hyperion_living_tests",
+    "exit": 0,
+    "seconds": 1.173,
+    "output": "Living universe: 26265 checks / 1022 ship registries / 6 body plans / 7 habitat features passed\nAI audit: 40 firing actors / 3 actual primary types\n"
+  },
+  {
+    "suite": "hyperion_planning_tests",
+    "exit": 0,
+    "seconds": 0.839,
+    "output": "PASS: 31 planning checks; read-only briefings, exact pressure/battery forecasts, live threats, colony and contract interrupts, and workspace restoration\n"
+  },
+  {
+    "suite": "hyperion_procedural_tests",
+    "exit": 0,
+    "seconds": 1.199,
+    "output": "Procedural generation: 24730 checks passed / 233 systems / 9 world types / 15 provinces / 953 supply links / 512x512 terrain cache 79.1371 ms\n"
+  },
+  {
+    "suite": "hyperion_review_tests",
+    "exit": 0,
+    "seconds": 1.036,
+    "output": "PASS: 64 review regressions; pause gate, free charts, physical access, pressure, refuelling, deadlines, fuel exhaustion, nearest landing and concurrent save recovery\n"
+  },
+  {
+    "suite": "hyperion_scene_tests",
+    "exit": 0,
+    "seconds": 0.468,
+    "output": "PASS: 7404 living-world checks; real production activity, stable growth, distinct factions, safe freight, save compatibility and turn-based freeze\n"
+  },
+  {
+    "suite": "hyperion_security_tests",
+    "exit": 0,
+    "seconds": 0.622,
+    "output": "Security integration: 79 checks passed\n"
+  },
+  {
+    "suite": "hyperion_shipyard_tests",
+    "exit": 0,
+    "seconds": 0.635,
+    "output": "Shipyards: 94 checks passed / finite inventories, ownership, quotes, refits, repairs, flight, combat, capacity, strategy turns and saves\n"
+  },
+  {
+    "suite": "hyperion_strategy_tests",
+    "exit": 0,
+    "seconds": 2.171,
+    "output": "PASS: 765 strategy checks; exact helm handoff, fixed-time hold, read-only move previews, ocean/surface endpoints, blocked orders, interruptible waits, reports and held-input release\n"
+  },
+  {
+    "suite": "hyperion_tactics_tests",
+    "exit": 0,
+    "seconds": 0.539,
+    "output": "Tactics: 61 checks passed / resonance, precision, intercepts, enemy systems, charge, heat, evasion, finite defence, workshop economy, persistence and turns\n"
+  },
+  {
+    "suite": "hyperion_tests",
+    "exit": 0,
+    "seconds": 1.0,
+    "output": "PASS: exact prototype fixtures (4 seeds / Unicode), deterministic universe, terrain, exploration, scans, economy, navigation, pressure safety, save roundtrip, malformed imports, 1,000 idle seconds and 128 expedition turns\n"
+  },
+  {
+    "suite": "hyperion_turn_tests",
+    "exit": 0,
+    "seconds": 0.607,
+    "output": "PASS: 55 turn-based checks; idle-world freeze, explicit actions, waypoint steps, economy, hazards, navigator resolution, cockpit real time, deadlines and save/reload\n"
+  },
+  {
+    "suite": "hyperion_ui_tests",
+    "exit": 0,
+    "seconds": 0.373,
+    "output": "PASS: 108 pointer checks; short clicks, one dispatch, held drags, ordered bursts and gesture boundaries\n"
+  },
+  {
+    "suite": "hyperion_wildlife_tests",
+    "exit": 0,
+    "seconds": 0.895,
+    "output": "Visible wildlife: 206527 checks / 12 body plans, 24 cached LODs / 14868 distant and 30634 close triangles / local sampling 1.25579 ms / pursuit, groups, rest, observer response, settlements, shorelines, oceans, freeze and save identities passed\n"
+  }
+]

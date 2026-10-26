@@ -1,0 +1,22 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.13013 / 0.49768
+Sun shadow storage: R32F / 1024
+Surface transition / frame 0 / clearance 13.7451 / speed 0.328282 / docked 0 / departure 0
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1728x1080
+Surface transition / frame 40 / clearance 4.49788 / speed 3.41647 / docked 0 / departure 0
+Surface transition / frame 80 / clearance 1.10787 / speed 0.779167 / docked 0 / departure 0
+Surface transition / frame 120 / clearance 0.273626 / speed 0.191343 / docked 0 / departure 0
+Surface transition / frame 160 / clearance 0.0642442 / speed 0.0503544 / docked 0 / departure 0
+Surface transition / frame 200 / clearance 5.61172e-05 / speed 0.0100551 / docked 0 / departure 3.05
+Surface transition / frame 240 / clearance 16.0467 / speed 13.8776 / docked 0 / departure 1.05
+Surface transition / frame 280 / clearance 30.5405 / speed 6.60797 / docked 0 / departure 0
+Surface transition / frame 320 / clearance 32.6289 / speed 6.79672 / docked 0 / departure 0
+Surface transition / frame 360 / clearance 34.4688 / speed 6.79959 / docked 0 / departure 0
+Surface transition / frame 400 / clearance 37.2848 / speed 6.79964 / docked 0 / departure 0
+Surface transition verified / contact step 0.0250376 / contact turn 0 degrees / hull 100
+Hyperion native run: 440 frames / shaders OK / 1920x1200
+Measured render rate: 34.7387 frames/s
+Sun shadow cache: 25 updates / 440 active frames

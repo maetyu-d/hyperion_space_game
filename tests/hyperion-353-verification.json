@@ -1,0 +1,116 @@
+{
+  "version": "3.53.0",
+  "scope": "Dive Enter follows the priced next action: approach, reveal-only sonar, deliberate Study, one physical return step, recovery or battery recharge. Collection stays separate and optional. A sorted browser exposes six nearest resolved sonar contacts; free selection plots the genuine contact, closes the picker and returns the panel to its primary action. Suggested sites compare real purpose, certification use and approximate movement costs. Several deliberate studies and finite collections can share one dive. Recovery reports actual elapsed deployment-to-recovery time, hull change and net held cargo, with no extra payout. The chart has a smaller panel-open objective card, fewer repeated biology labels and an offscreen buoy bearing.",
+  "cpuSuites": 33,
+  "oceanChecks": 347,
+  "additionalOceanChecks": 201,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "sanitizedSuites": [
+    "ocean / 347 checks",
+    "continuity / 118 checks",
+    "fieldwork / 112 checks"
+  ],
+  "nativeChecks": [
+    "ocean",
+    "ocean-small",
+    "ocean-fullscreen",
+    "continuity",
+    "fieldwork",
+    "planner",
+    "screen-fit",
+    "hud"
+  ],
+  "nativeCaptures": 168,
+  "oceanScenariosPerSize": 13,
+  "requestedScreenSizes": [
+    "1280x800 / full effects",
+    "720x450 / reduced effects",
+    "fullscreen / reduced effects"
+  ],
+  "realPointerAndKeyboardControlsVerified": [
+    "free survey choice returns to primary action",
+    "sonar ping reveals without taking resources",
+    "Enter studies the actual goal",
+    "K continues return through the shallow second leg",
+    "Enter recovers at the buoy",
+    "Enter prioritizes pressure ascent",
+    "Enter performs priced recharge",
+    "resolved sonar contact selection and panel reset",
+    "Enter studies a selected sonar contact",
+    "optional finite mineral collection",
+    "honest recovery debrief and cargo conservation",
+    "Enter respects the manual one-step preview"
+  ],
+  "canonicalStateSchemaStorageWorldGenerationFlightInternalsAndAssetsUnchanged": true,
+  "multiSiteStudyAndFiniteCollection": true,
+  "noInventedCargoOrCompletionPayout": true,
+  "sonarContactsFilteredAndSorted": true,
+  "siteEstimateQueryAndContextualQuotesReadOnly": true,
+  "contextualRechargeHonorsDeadlineAndPauseGates": true,
+  "diveReportLifetime": "session; new dive, import or new campaign clear the report; existing catalogue evidence and completed-survey markers remain persistent",
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.52
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.51
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.51
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.48
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.5
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.51
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.52
+    }
+  ],
+  "changedFiles": [
+    "src/planning.cpp",
+    "src/renderer.hpp",
+    "src/game.hpp",
+    "src/ocean_renderer.cpp",
+    "src/fieldwork.cpp",
+    "src/field_renderer.cpp",
+    "src/ocean_ops.cpp",
+    "src/main.cpp",
+    "src/renderer.cpp",
+    "src/game.cpp",
+    "tests/ocean_ops.cpp",
+    "CMakeLists.txt",
+    "README.md"
+  ],
+  "newSourceFiles": [],
+  "binarySHA256": "b77e14069cda3f301d2ab7a757d550f1800d03ff167b8e12d1886da47fa397a0",
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

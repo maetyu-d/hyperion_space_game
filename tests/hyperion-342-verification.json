@@ -1,0 +1,74 @@
+{
+  "version": "3.42.0",
+  "name": "Hyperion",
+  "scope": "Minimal cockpit: consolidated flight readings above the spectral radar, shorter instrument deck, compact contextual guidance, single weapon telemetry group, lighter toolbar and fine static spectral inlays.",
+  "changedSource": [
+    "src/flight_renderer.cpp",
+    "src/renderer.cpp"
+  ],
+  "cpuSuites": 25,
+  "nativeChecks": [
+    "orbit",
+    "surface-small",
+    "escort",
+    "storm",
+    "offers-small",
+    "combat",
+    "landing",
+    "planning",
+    "helm",
+    "ui"
+  ],
+  "nativeCaptures": 85,
+  "fullAndMinimumWindowsReviewed": true,
+  "brightStormReadabilityReviewed": true,
+  "coreSimulationPhysicsStorageAndAssetsUnchanged": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.44
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.41
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.41
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.43
+    }
+  ],
+  "legacyAndMissionSavesFrozenExactly": true,
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "binarySHA256": "2e351b507c6951fbdf97d56b8cc359259335b6294c4a97a54b1a6f2cc44961b6",
+  "priorReleasePreserved": true,
+  "preview": "Hyperion-preview.png",
+  "aimAndInstrumentClearanceReviewed": true,
+  "instrumentDeckHeightLogical": 104,
+  "previousDeckHeightLogical": 118,
+  "landingGuidanceHeightLogical": 57,
+  "previousLandingGuidanceHeightLogical": 91,
+  "staticSpectralAccents": true,
+  "newRenderPasses": 0
+}

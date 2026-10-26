@@ -1,0 +1,134 @@
+{
+  "version": "3.44.0",
+  "scope": "Seeded moons, debris belts and comets; shared canonical orbits; cratered and irregular surfaces, spectral materials and soft comet tails; selectable chart and cockpit fly-by destinations; safe navigation, physical contacts, weapon occlusion and single-use surveys in the existing hold and atlas.",
+  "cpuSuites": 27,
+  "minorChecks": 644011,
+  "auditedSystems": 90,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "minor-bodies",
+    "minor-small",
+    "screen-fit",
+    "cloud-occlusion",
+    "landing",
+    "combat",
+    "planning"
+  ],
+  "nativeCaptures": 80,
+  "fullAndSmallReducedEffectsViewsReviewed": true,
+  "minorSurfaceAndCometGlowReviewed": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.39
+    }
+  ],
+  "originalAssetsUnchanged": true,
+  "priorReleasePreserved": true,
+  "flybyOnly": true,
+  "newSource": [
+    "src/minor_bodies.hpp",
+    "src/minor_bodies.cpp",
+    "src/flight/minor_bodies.cpp",
+    "src/flight/minor_renderer.cpp",
+    "src/flight/minor_shaders.hpp",
+    "tests/minor_bodies.cpp"
+  ],
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/renderer.hpp",
+    "src/game.hpp",
+    "src/missions_game.cpp",
+    "src/flight_storage.cpp",
+    "src/universe.hpp",
+    "src/economy_game.cpp",
+    "src/universe.cpp",
+    "src/flight_renderer.cpp",
+    "src/main.cpp",
+    "src/renderer.cpp",
+    "src/flight_game.cpp",
+    "src/game.cpp",
+    "src/flight/renderer.hpp",
+    "src/flight/game.hpp",
+    "src/flight/handling.cpp",
+    "src/flight/combat.cpp",
+    "src/flight/renderer.cpp",
+    "src/flight/game.cpp",
+    "tests/frontier.cpp"
+  ],
+  "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9",
+  "performance": [
+    {
+      "name": "space-old",
+      "meanMs": 20.13250700000001,
+      "p95Ms": 22.635625,
+      "fps": 49.67091281776281
+    },
+    {
+      "name": "space",
+      "meanMs": 20.21136641111112,
+      "p95Ms": 23.411375,
+      "fps": 49.47711004092499
+    },
+    {
+      "name": "moon",
+      "meanMs": 16.863858588888878,
+      "p95Ms": 18.964834,
+      "fps": 59.29840995339417
+    },
+    {
+      "name": "asteroid",
+      "meanMs": 16.88404905555555,
+      "p95Ms": 19.472375,
+      "fps": 59.22749908565082
+    },
+    {
+      "name": "comet",
+      "meanMs": 16.45415557222221,
+      "p95Ms": 18.42975,
+      "fps": 60.7749206946963
+    }
+  ],
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app"
+}

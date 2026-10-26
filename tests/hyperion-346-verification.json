@@ -1,0 +1,155 @@
+{
+  "version": "3.46.0",
+  "scope": "Fine mineral inclusions, frost, salt, sand and basalt detail; porous building coatings, aggregate and brushed alloys; physical-scale seeded hull armour, identification bands, thermal/engine deposits and condition-driven scars; crater terraces, radial ejecta, breccia and local grains for minor bodies; continuous close relief slopes remove enlarged height-texel steps. Solid weapon housings retain small spectral emitters.",
+  "cpuSuites": 28,
+  "buildingMaterialChecks": 2476,
+  "materialSanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "close",
+    "close-small",
+    "surface-detail",
+    "minor-bodies",
+    "minor-small",
+    "architecture",
+    "screen-fit",
+    "materials",
+    "cloud-occlusion",
+    "landing",
+    "combat",
+    "planning"
+  ],
+  "nativeCaptures": 254,
+  "closeBuildingViews": 8,
+  "generatedFactionHulls": 5,
+  "closeMinorSurfaces": 3,
+  "fullAndCompactViewsReviewed": true,
+  "groundCoverageSamples": 256,
+  "maximumCloseMaterialFields": 2,
+  "newTextureAllocations": 0,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.62
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.6
+    }
+  ],
+  "simulationPhysicsWorldGenerationStorageAndAssetsUnchanged": true,
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/main.cpp",
+    "src/flight/minor_renderer.cpp",
+    "src/flight/settlements.cpp",
+    "src/flight/geology.hpp",
+    "src/flight/building_material.hpp",
+    "src/flight/minor_shaders.hpp",
+    "src/flight/shaders.hpp",
+    "src/flight/architecture.hpp",
+    "src/flight/surface_detail.hpp",
+    "src/flight/renderer.cpp"
+  ],
+  "binarySHA256": "8f2638297145cec9340eba100f185491bfe43c1ddae816460dfcac0deb3b788b",
+  "performance": [
+    {
+      "name": "space-old",
+      "meanMs": 22.730510677777783,
+      "p95Ms": 28.703625,
+      "fps": 43.9937322207916
+    },
+    {
+      "name": "space",
+      "meanMs": 20.646308316666655,
+      "p95Ms": 28.302208,
+      "fps": 48.43480900615795
+    },
+    {
+      "name": "ground-old",
+      "meanMs": 26.208619655555545,
+      "p95Ms": 34.754875,
+      "fps": 38.155386019653506
+    },
+    {
+      "name": "ground",
+      "meanMs": 25.6657029888889,
+      "p95Ms": 34.243334,
+      "fps": 38.96250184274774
+    },
+    {
+      "name": "settlement-old",
+      "meanMs": 28.554146538888887,
+      "p95Ms": 38.7155,
+      "fps": 35.021183303029744
+    },
+    {
+      "name": "settlement",
+      "meanMs": 28.19298538888888,
+      "p95Ms": 42.299875,
+      "fps": 35.469815849800334
+    },
+    {
+      "name": "asteroid-old",
+      "meanMs": 20.553469438888882,
+      "p95Ms": 32.351291,
+      "fps": 48.653586343331234
+    },
+    {
+      "name": "asteroid",
+      "meanMs": 18.66876183333333,
+      "p95Ms": 26.1855,
+      "fps": 53.565416331707986
+    },
+    {
+      "name": "close-enemy",
+      "meanMs": 30.891445833333307,
+      "p95Ms": 46.9605,
+      "fps": 32.37142105278068
+    },
+    {
+      "name": "close-moon",
+      "meanMs": 24.8451398111111,
+      "p95Ms": 41.330459,
+      "fps": 40.249320696226704
+    }
+  ],
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

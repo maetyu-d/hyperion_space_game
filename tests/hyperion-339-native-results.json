@@ -1,0 +1,143 @@
+[
+  {
+    "check": "shot-0",
+    "exit": 0,
+    "seconds": 3.58
+  },
+  {
+    "check": "shot-3",
+    "exit": 0,
+    "seconds": 2.56
+  },
+  {
+    "check": "shot-8",
+    "exit": 0,
+    "seconds": 2.22
+  },
+  {
+    "check": "shot-11",
+    "exit": 0,
+    "seconds": 2.56
+  },
+  {
+    "check": "shot-12",
+    "exit": 0,
+    "seconds": 3.23
+  },
+  {
+    "check": "shot-38",
+    "exit": 0,
+    "seconds": 2.37
+  },
+  {
+    "check": "shot-44",
+    "exit": 0,
+    "seconds": 2.56
+  },
+  {
+    "check": "benchmark-0",
+    "exit": 0,
+    "seconds": 6.98
+  },
+  {
+    "check": "benchmark-11",
+    "exit": 0,
+    "seconds": 7.84
+  },
+  {
+    "check": "surface",
+    "exit": 0,
+    "seconds": 22.77,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-12.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-13.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-surface/surface-detail-atlas.jpg"
+    ]
+  },
+  {
+    "check": "water",
+    "exit": 0,
+    "seconds": 14.03,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-water/water-9.jpg"
+    ]
+  },
+  {
+    "check": "cloud-occlusion",
+    "exit": 0,
+    "seconds": 11.26,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-cloud-occlusion/cloud-occlusion-9.jpg"
+    ]
+  },
+  {
+    "check": "strategy-tour",
+    "exit": 0,
+    "seconds": 13.22,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-strategy-tour/0-GALAXY.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-strategy-tour/1-ORBIT.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-strategy-tour/2-SURFACE.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-strategy-tour/3-OCEAN.jpg"
+    ]
+  },
+  {
+    "check": "planning",
+    "exit": 0,
+    "seconds": 10.15,
+    "images": []
+  },
+  {
+    "check": "reduced-flight",
+    "exit": 0,
+    "seconds": 9.55,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-339-reduced-flight/flight-beauty-9.jpg"
+    ]
+  }
+]

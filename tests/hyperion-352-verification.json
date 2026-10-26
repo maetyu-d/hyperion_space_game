@@ -1,0 +1,119 @@
+{
+  "version": "3.52.0",
+  "scope": "Underwater is a turn-based submersible survey expedition: choose a genuine generated habitat, mineral/vent or signal site; plot and advance; reveal with sonar; explicitly Study and optionally Collect; physically return to the launch buoy and recover. A quieter side-on chart shows depth, certification, actual floor, buoy, sonar envelope, next movement and a clear objective. Dedicated operations prioritize the current stage, safe ascent, evidence and recovery. Deep cockpit, orbital and chart docking transfers require physical ascent. Existing cargo, ecology, economy, missions, turn clock and emergency hull-breach recovery remain connected.",
+  "cpuSuites": 33,
+  "newOceanChecks": 146,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "sanitizedSuites": [
+    "ocean / 146 checks",
+    "continuity / 118 checks",
+    "fieldwork / 112 checks"
+  ],
+  "nativeChecks": [
+    "ocean",
+    "ocean-small",
+    "ocean-fullscreen",
+    "continuity",
+    "fieldwork",
+    "planner",
+    "screen-fit",
+    "hud"
+  ],
+  "nativeCaptures": 138,
+  "oceanScenariosPerSize": 8,
+  "requestedScreenSizes": [
+    "1280x800 / full effects",
+    "720x450 / reduced effects",
+    "fullscreen / reduced effects"
+  ],
+  "realPointerAndKeyboardControlsVerified": [
+    "open dedicated dive operations",
+    "select genuine site without spending time",
+    "sonar reveals without cataloguing or taking resources",
+    "Study records actual research with specimens intact",
+    "Return K uses at most six movement turns per press, including the shallow second leg",
+    "recover at physical launch buoy",
+    "one-step ascent escapes pressure danger",
+    "recharge only until sonar readiness"
+  ],
+  "sonarStudyAndCollectionSeparate": true,
+  "physicalReturnAndAscent": true,
+  "noInventedCargoOrCompletionPayout": true,
+  "surveyCompletionPersistsInCatalogue": true,
+  "operationAndUnrecordedSonarLifetime": "session; completed survey markers and studied evidence persist in existing save catalogue",
+  "canonicalStateSchemaStorageWorldGenerationFlightInternalsAndAssetsUnchanged": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.6
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.6
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.85
+    }
+  ],
+  "changedFiles": [
+    "src/planning.cpp",
+    "src/renderer.hpp",
+    "src/game.hpp",
+    "src/wildlife_renderer.cpp",
+    "src/economy_renderer.cpp",
+    "src/fieldwork.cpp",
+    "src/economy_game.cpp",
+    "src/continuity.cpp",
+    "src/field_renderer.cpp",
+    "src/main.cpp",
+    "src/renderer.cpp",
+    "src/flight_game.cpp",
+    "src/game.cpp",
+    "tests/planning.cpp",
+    "tests/review.cpp",
+    "tests/simulation.cpp",
+    "CMakeLists.txt",
+    "README.md"
+  ],
+  "newFiles": [
+    "src/ocean_ops.cpp",
+    "src/ocean_renderer.cpp",
+    "tests/ocean_ops.cpp"
+  ],
+  "binarySHA256": "41f87784315ebb42a1bc01d533c301785021ec94b74ea7fefcf74c1bdd21ac41",
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

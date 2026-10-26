@@ -1,0 +1,104 @@
+{
+  "version": "3.50.0",
+  "scope": "R opens contextual next moves: focused non-invasive study, separately chosen finite collection, conservative real ecosystem samples, extra research, faster travel with previewed terrain/weather wear, field repairs from shared cargo, route following bounded to six actual turns with discovery/danger/deadline interrupts, relevant missions and owned outpost problems. One combined resolution includes the full journey costs and colony changes.",
+  "cpuSuites": 31,
+  "newFieldworkChecks": 112,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "fieldwork",
+    "fieldwork-small",
+    "fieldwork-fullscreen",
+    "planner",
+    "screen-fit",
+    "hud"
+  ],
+  "nativeCaptures": 102,
+  "fieldworkScenariosPerSize": 8,
+  "screenSizes": [
+    "1280x800",
+    "720x450 / reduced",
+    "fullscreen"
+  ],
+  "realPointerControlsVerified": [
+    "study actual generated surface contact",
+    "collect finite material cache",
+    "repair with real carried supplies",
+    "follow six turns with one report",
+    "push to previewed endpoint",
+    "study actual ocean contact",
+    "inspect linked owned outpost"
+  ],
+  "depletedHabitatCollectionDisabled": true,
+  "fieldQuotesReadOnly": true,
+  "finiteCollectionSurvivesReload": true,
+  "legacyScansCannotDoubleCollect": true,
+  "routePreservedOnDeadlineStop": true,
+  "wholeJourneyCostsAndReportVerified": true,
+  "campaignSchemaWorldGenerationFlightHandlingHUDMaterialsAndAssetsUnchanged": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.54
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.71
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.73
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.65
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.57
+    }
+  ],
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/planning.cpp",
+    "src/renderer.hpp",
+    "src/game.hpp",
+    "src/turns.cpp",
+    "src/main.cpp",
+    "src/turn_renderer.cpp",
+    "src/renderer.cpp",
+    "src/game.cpp"
+  ],
+  "newFiles": [
+    "src/fieldwork.cpp",
+    "src/field_renderer.cpp",
+    "tests/fieldwork.cpp"
+  ],
+  "binarySHA256": "ce055bd8e9b3f8c1a0081587444803925bad7db0db6967462ba34f577c24fb58",
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

@@ -1,0 +1,92 @@
+{
+  "version": "3.39.0",
+  "name": "Hyperion",
+  "scope": "Modest spectral pigment and highlight colour increase; shaders only.",
+  "cpuSuites": 24,
+  "nativeChecks": [
+    "shot-0",
+    "shot-3",
+    "shot-8",
+    "shot-11",
+    "shot-12",
+    "shot-38",
+    "shot-44",
+    "benchmark-0",
+    "benchmark-11",
+    "surface",
+    "water",
+    "cloud-occlusion",
+    "strategy-tour",
+    "planning",
+    "reduced-flight"
+  ],
+  "nativeGalleryCaptures": 55,
+  "comparisonPoses": [
+    0,
+    3,
+    8,
+    11,
+    12,
+    38,
+    44
+  ],
+  "representativeFullAndReducedImagesReviewed": true,
+  "cloudOcclusionVerified": true,
+  "unchangedNonShaderImplementationAndAssets": true,
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/flight/architecture.hpp",
+    "src/flight/shaders.hpp",
+    "src/flight/surface_detail.hpp",
+    "src/shaders.hpp"
+  ],
+  "additionalTextureSamples": 0,
+  "additionalRenderPasses": 0,
+  "materialRoughnessUnchanged": true,
+  "bloomStrengthUnchanged": true,
+  "flightBenchmarks": [
+    {
+      "scene": 0,
+      "beforeMeanMs": 24.888312516666655,
+      "afterMeanMs": 22.26487640555557,
+      "beforeP95Ms": 31.7395,
+      "afterP95Ms": 29.615167
+    },
+    {
+      "scene": 11,
+      "beforeMeanMs": 29.166118499999993,
+      "afterMeanMs": 25.42570930555555,
+      "beforeP95Ms": 34.497209,
+      "afterP95Ms": 27.592667
+    }
+  ],
+  "benchmarkScope": "Sequential native 240-frame runs, 60-frame warmup, 960x600 logical window / 1920x1200 Retina output, no vsync; timings vary with desktop load.",
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0,
+      "seconds": 3.48
+    },
+    {
+      "check": "architecture-close",
+      "exit": 0,
+      "seconds": 6.72
+    },
+    {
+      "check": "established-save",
+      "exit": 0,
+      "seconds": 1.47
+    },
+    {
+      "check": "boost-capture-save",
+      "exit": 0,
+      "seconds": 1.42
+    }
+  ],
+  "establishedAndAdvancedSavesFrozenExactly": true,
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "binarySHA256": "bd5b74f79efbd31b64ffb6c3c452d181ddd90f7e6f9b3cb117acfd7f30b18f23",
+  "priorReleasePreserved": true,
+  "preview": "Hyperion-preview.png"
+}

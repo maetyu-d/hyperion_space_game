@@ -1,0 +1,110 @@
+{
+  "version": "3.51.0",
+  "scope": "Two-way K switching and O strategy return restore chart, selection, camera and workspace while retaining the physical ship and manual helm. Same-site redeployment restores session surface routes; recovered ocean targets resume from the surface with real transfer costs. Approach travels to study range with route interrupts; recharge resolves only needed full hours and stops for events or before deadlines. Transfer previews and handoff feedback distinguish free planning from paid recovery/deployment.",
+  "diagnosticNotes": "The ten-scenario fullscreen control run passed with reduced effects; full effects passed in the normal windowed run. Earlier full-effect fullscreen attempts ended before completing, including one disk-full capture failure.",
+  "cpuSuites": 32,
+  "newContinuityChecks": 118,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "sanitizedSuites": [
+    "continuity",
+    "fieldwork"
+  ],
+  "nativeChecks": [
+    "continuity",
+    "continuity-small",
+    "continuity-fullscreen",
+    "fieldwork",
+    "planner",
+    "screen-fit",
+    "hud"
+  ],
+  "nativeCaptures": 130,
+  "continuityScenariosPerSize": 10,
+  "screenSizes": [
+    "1280x800",
+    "720x450 / reduced",
+    "fullscreen / reduced effects"
+  ],
+  "realPointerAndKeyboardControlsVerified": [
+    "strategy button",
+    "cockpit button",
+    "K returns to strategy",
+    "L physically redeploys",
+    "recover submersible",
+    "restore dive target",
+    "approach into study range",
+    "recharge to scanner readiness"
+  ],
+  "sameSitePlansRestored": true,
+  "DifferentLandingCannotInheritRemoteRoute": true,
+  "oceanTargetRecallDoesNotTeleportDepth": true,
+  "readOnlyTransferAndConvenienceQuotes": true,
+  "recallLifetime": "session; import and new campaign clear recall",
+  "deadlineRechargeReturnsBeforeExpiry": true,
+  "campaignSchemaWorldGenerationFlightHandlingMaterialsAndAssetsUnchanged": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.55
+    }
+  ],
+  "changedFiles": [
+    "src/planning.cpp",
+    "src/game.hpp",
+    "src/fieldwork.cpp",
+    "src/field_renderer.cpp",
+    "src/main.cpp",
+    "src/renderer.cpp",
+    "src/flight_game.cpp",
+    "src/game.cpp",
+    "CMakeLists.txt",
+    "README.md"
+  ],
+  "newFiles": [
+    "src/continuity.cpp",
+    "tests/continuity.cpp"
+  ],
+  "binarySHA256": "e5dab0e63a4e0cdab5bb01b8b22099036052aed6c40d37c80c779e6523f78947",
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

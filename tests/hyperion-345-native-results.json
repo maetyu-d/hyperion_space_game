@@ -1,0 +1,199 @@
+[
+  {
+    "check": "surface-detail",
+    "exit": 0,
+    "seconds": 21.62,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-12.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-13.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-surface-detail/surface-detail-atlas.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "minor-bodies",
+    "exit": 0,
+    "seconds": 12.18,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-body-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-body-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-body-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-body-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-body-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-body-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-body-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-material-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-material-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-bodies/minor-material-5.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "minor-small",
+    "exit": 0,
+    "seconds": 8.69,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-body-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-body-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-body-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-body-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-body-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-body-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-body-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-material-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-material-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-minor-small/minor-material-5.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "screen-fit",
+    "exit": 0,
+    "seconds": 13.31,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-screen-fit/screen-fit-7.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "materials",
+    "exit": 0,
+    "seconds": 19.56,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/geology-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-materials/material-9.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "cloud-occlusion",
+    "exit": 0,
+    "seconds": 10.73,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-cloud-occlusion/cloud-occlusion-9.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "landing",
+    "exit": 0,
+    "seconds": 15.79,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-landing/transition-9.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "combat",
+    "exit": 0,
+    "seconds": 35.8,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-10.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-11.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-12-charge.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-12.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-13.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-14.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-15.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-7-planning.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-7.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-8-quote.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-8.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-combat/combat-9.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  },
+  {
+    "check": "planning",
+    "exit": 0,
+    "seconds": 14.36,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-0-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-0-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-1-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-1-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-2-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-2-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-3-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-3-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-4-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-4-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-5-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-5-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-6-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-6-9.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-7-49.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-planning/strategy-7-9.jpg"
+    ],
+    "binarySHA256": "6b5743be32203650fb18ff6bbec787e213a91c66cd15ff741d3f15117f0b54b3"
+  }
+]

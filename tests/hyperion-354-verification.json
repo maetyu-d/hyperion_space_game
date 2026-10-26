@@ -1,0 +1,123 @@
+{
+  "version": "3.54.0",
+  "scope": "Underwater uses a compact header and action dock, with optional Sites, Contacts and Details pages. Site selection closes the drawer; real time forecasts, ecology and turn reports remain available on demand. Shift+Space quiet listening resolves shorter-range acoustic contacts for two power and one hour, excluding silent minerals. Active sonar spends twelve power, reaches farther and temporarily alarms visible wildlife; alarm decay follows committed hours. After a deliberate Study, Enter can freely replan to a genuine resolved unstudied contact, unless hull damage or full cargo prioritizes recovery. C remains optional finite/ecological sampling, K deliberately returns and Enter then continues home. Manual routes, pressure ascent, honest debriefs and physical recovery remain intact. Canonical save schema, world generation, flight internals and assets are unchanged.",
+  "cpuSuites": 33,
+  "oceanChecks": 450,
+  "additionalOceanChecks": 103,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "sanitizedSuites": [
+    "ocean / 450 checks",
+    "continuity / 118 checks",
+    "fieldwork / 112 checks"
+  ],
+  "nativeChecks": [
+    "ocean",
+    "ocean-small",
+    "ocean-fullscreen",
+    "continuity",
+    "fieldwork",
+    "planner",
+    "screen-fit",
+    "hud"
+  ],
+  "nativeCaptures": 180,
+  "oceanScenariosPerSize": 15,
+  "requestedScreenSizes": [
+    "1280x800 / full effects",
+    "720x450 / reduced effects",
+    "fullscreen / reduced effects"
+  ],
+  "quietListeningExcludesMinerals": true,
+  "wildlifeAlarmDecaysOnTurns": true,
+  "freeContinuationDoesNotRewardOrSpendTime": true,
+  "minimalDiveDockAndOptionalDrawer": true,
+  "realPointerAndKeyboardControlsVerified": [
+    "Shift+Space quiet sonar and I Details",
+    "free next-contact Enter while paused with closed drawer",
+    "selecting current site also closes the drawer",
+    "free survey choice returns to primary action",
+    "sonar ping reveals without taking resources",
+    "Enter studies the actual goal",
+    "K continues return through the shallow second leg",
+    "Enter recovers at the buoy",
+    "Enter prioritizes pressure ascent",
+    "Enter performs priced recharge",
+    "resolved sonar contact selection and panel reset",
+    "Enter studies a selected sonar contact",
+    "optional finite mineral collection",
+    "honest recovery debrief and cargo conservation",
+    "Enter respects the manual one-step preview"
+  ],
+  "canonicalStateSchemaStorageWorldGenerationFlightInternalsAndAssetsUnchanged": true,
+  "multiSiteStudyAndFiniteCollection": true,
+  "noInventedCargoOrCompletionPayout": true,
+  "sonarContactsFilteredAndSorted": true,
+  "siteEstimateQueryAndContextualQuotesReadOnly": true,
+  "contextualRechargeHonorsDeadlineAndPauseGates": true,
+  "diveReportLifetime": "session; new dive, import or new campaign clear the report; existing catalogue evidence and completed-survey markers remain persistent",
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.54
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.54
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.61
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.57
+    }
+  ],
+  "changedFiles": [
+    "src/planning.cpp",
+    "src/renderer.hpp",
+    "src/game.hpp",
+    "src/wildlife_renderer.cpp",
+    "src/ocean_renderer.cpp",
+    "src/fieldwork.cpp",
+    "src/ocean_ops.cpp",
+    "src/main.cpp",
+    "src/renderer.cpp",
+    "src/game.cpp",
+    "tests/ocean_ops.cpp",
+    "CMakeLists.txt",
+    "README.md"
+  ],
+  "newSourceFiles": [],
+  "binarySHA256": "d2c69764c0eb9051200307a27f26d8880e50f06a450f58141ebee069a18d08f1",
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

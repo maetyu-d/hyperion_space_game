@@ -1,0 +1,11 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.13013 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1600x1000
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1600x1000
+Strategy handoffs verified / [{"briefingItems":1,"handoffSettled":true,"hours":0.0,"hull":37.0,"interruption":"","mode":"ORBIT","report":"Awaiting orders","scene":0,"throttle":0.0,"turns":0,"warnings":1,"workspaceRestored":false},{"briefingItems":1,"handoffSettled":true,"hours":2.0,"hull":80.0,"interruption":"","mode":"ORBIT","report":"Turn 2 / 1 h resolved","scene":1,"throttle":0.0,"turns":2,"warnings":1,"workspaceRestored":false},{"briefingItems":2,"handoffSettled":true,"hours":0.0,"hull":100.0,"interruption":"","mode":"ORBIT","report":"Awaiting orders","scene":2,"throttle":0.0,"turns":0,"warnings":2,"workspaceRestored":false},{"briefingItems":1,"handoffSettled":true,"hours":1.0,"hull":100.0,"interruption":"Accepted delivery contract resolved","mode":"ORBIT","report":"Turn 1 / 1 h resolved / rations -1.0","scene":3,"throttle":0.0,"turns":1,"warnings":1,"workspaceRestored":false},{"briefingItems":2,"handoffSettled":true,"hours":2.0,"hull":100.0,"interruption":"Helix / CALLOW / Medical emergency","mode":"ORBIT","report":"Turn 2 / 1 h resolved","scene":4,"throttle":0.0,"turns":2,"warnings":2,"workspaceRestored":false},{"briefingItems":2,"handoffSettled":true,"hours":2.0,"hull":100.0,"interruption":"Helix / CALLOW / Medical emergency","mode":"FLIGHT","report":"Turn 2 / 1 h resolved","scene":5,"throttle":0.0,"turns":2,"warnings":2,"workspaceRestored":false},{"briefingItems":2,"handoffSettled":true,"hours":2.0,"hull":100.0,"interruption":"Helix / CALLOW / Medical emergency","mode":"ORBIT","report":"Turn 2 / 1 h resolved","scene":6,"throttle":0.0,"turns":2,"warnings":2,"workspaceRestored":true},{"briefingItems":2,"handoffSettled":true,"hours":2.0,"hull":100.0,"interruption":"Helix / CALLOW / Medical emergency","mode":"ORBIT","report":"Turn 2 / 1 h resolved","scene":7,"throttle":0.0,"turns":2,"warnings":2,"workspaceRestored":true}]
+Hyperion native run: 480 frames / shaders OK / 1600x1000
+Measured render rate: 40.4949 frames/s
+Sun shadow cache: 0 updates / 0 active frames

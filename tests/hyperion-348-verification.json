@@ -1,0 +1,124 @@
+{
+  "version": "3.48.0",
+  "scope": "Minimal cockpit HUD: remove duplicate tapes, compass and navigation plaques; smaller unframed lower instruments; idle weapon readings hidden. Optional F8 guidance uses small bearing/velocity marks, close-flight true horizon strokes, manual braking warning and an unboxed combat label. Guidance off no longer restores large legacy labels. Camera-centred aim in both modes; F9 and remembered preference retained.",
+  "cpuSuites": 29,
+  "hudChecks": 7036,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "hud",
+    "hud-small",
+    "hud-fullscreen",
+    "screen-fit",
+    "combat",
+    "planning",
+    "landing"
+  ],
+  "nativeCaptures": 96,
+  "hudScenariosPerSize": 12,
+  "screenSizes": [
+    "1280x800",
+    "720x450 / reduced",
+    "fullscreen"
+  ],
+  "realMenuPointerToggleVerified": true,
+  "hudHideRestoreVerified": true,
+  "campaignAndFlightClocksFrozenDuringHudFixtures": true,
+  "displayPreferenceRoundtripsAndAtomicReplacementVerified": true,
+  "newRenderPasses": 0,
+  "simulationPhysicsWorldGenerationStorageMaterialsAndAssetsUnchanged": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.54
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.6
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.6
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.81
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.55
+    }
+  ],
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/flight_hud.cpp",
+    "src/flight_renderer.cpp",
+    "src/renderer.cpp",
+    "src/flight/hud.hpp",
+    "tests/flight_hud.cpp"
+  ],
+  "binarySHA256": "57f7c9ea99bc595ead015122b693335432efa28ce0d45fadaacb72f9a81377f7",
+  "performance": [
+    {
+      "name": "space-old",
+      "meanMs": 26.32800575000001,
+      "p50Ms": 22.792334,
+      "p95Ms": 41.393375,
+      "fps": 37.98236788215528
+    },
+    {
+      "name": "space-minimal",
+      "meanMs": 21.326451399999993,
+      "p50Ms": 20.622042,
+      "p95Ms": 27.064834,
+      "fps": 46.890126315154355
+    },
+    {
+      "name": "space-enhanced",
+      "meanMs": 19.47459213888889,
+      "p50Ms": 19.351458,
+      "p95Ms": 21.354292,
+      "fps": 51.348957291028235
+    },
+    {
+      "name": "ground-minimal",
+      "meanMs": 26.358692866666672,
+      "p50Ms": 24.053708,
+      "p95Ms": 36.946417,
+      "fps": 37.93814833908569
+    },
+    {
+      "name": "ground-enhanced",
+      "meanMs": 26.091584983333345,
+      "p50Ms": 24.48425,
+      "p95Ms": 36.777834,
+      "fps": 38.32653327265381
+    }
+  ],
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

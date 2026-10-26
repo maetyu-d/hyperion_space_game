@@ -1,0 +1,66 @@
+{
+  "version": 3,
+  "seed": "MERIDIAN-0001",
+  "mode": "galaxy",
+  "viewStar": "HOME",
+  "currentStar": "HOME",
+  "selectedStar": "HOME",
+  "selectedPlanet": 2,
+  "activeStar": "HOME",
+  "activePlanet": 2,
+  "galaxy": {
+    "x": 65,
+    "y": 28,
+    "z": 0.74
+  },
+  "surface": {
+    "x": 0,
+    "y": 0,
+    "tx": 0,
+    "ty": 0
+  },
+  "ocean": {
+    "x": 0,
+    "depth": 75,
+    "atY": 0,
+    "tx": 0,
+    "tDepth": 75
+  },
+  "fuel": 190,
+  "maxFuel": 240,
+  "hull": 100,
+  "battery": 100,
+  "resources": {
+    "metal": 60,
+    "crystal": 22,
+    "organic": 24,
+    "data": 8
+  },
+  "upgrades": {
+    "drive": 0,
+    "sonar": 0,
+    "pressure": 0,
+    "exosuit": 0
+  },
+  "visitedStars": [
+    "HOME"
+  ],
+  "visitedPlanets": [],
+  "discovered": [],
+  "scanned": {},
+  "locations": {},
+  "hours": 0,
+  "log": [
+    {
+      "time": 0,
+      "msg": "Survey vessel NOMA commissioned at Meridian. The navigational atlas contains one authenticated star."
+    },
+    {
+      "time": 0,
+      "msg": "There is a recurring transmission beneath the water of Nacre. Its source remains unknown."
+    }
+  ],
+  "flags": {},
+  "totalDistance": 0,
+  "turns": 0
+}

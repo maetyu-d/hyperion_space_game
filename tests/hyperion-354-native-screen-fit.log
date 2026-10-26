@@ -1,0 +1,29 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1440x900
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1440x900
+Weather depth: R32F / matched terrain / 1600x1000
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1600x1000
+Weather depth: R32F / matched terrain / 1920x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1920x1080
+Weather depth: R32F / matched terrain / 1257x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1257x1080
+Weather depth: R32F / matched terrain / 1978x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1978x1080
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1728x1080
+Weather depth: R32F / matched terrain / 1440x900
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1440x900
+Screen fit: 8 scenarios / small windows, monitor work area, fullscreen, pointer alignment, modals and strategy verified
+Hyperion native run: 320 frames / shaders OK / 1600x1000
+Measured render rate: 28.4038 frames/s
+Sun shadow cache: 0 updates / 0 active frames

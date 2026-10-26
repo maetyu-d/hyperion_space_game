@@ -1,0 +1,47 @@
+[
+  {
+    "check": "orbit",
+    "exit": 0,
+    "seconds": 3.82,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-342-orbit/orbit.jpg"
+    ],
+    "binarySHA256": "0f9f25315d36192b16bad2fa7e52e0f6574ad9101c01ece6cb140a05c6d37bed"
+  },
+  {
+    "check": "surface-small",
+    "exit": 0,
+    "seconds": 2.44,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-342-surface-small/surface-small.jpg"
+    ],
+    "binarySHA256": "0f9f25315d36192b16bad2fa7e52e0f6574ad9101c01ece6cb140a05c6d37bed"
+  },
+  {
+    "check": "escort",
+    "exit": 0,
+    "seconds": 3.21,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-342-escort/escort.jpg"
+    ],
+    "binarySHA256": "0f9f25315d36192b16bad2fa7e52e0f6574ad9101c01ece6cb140a05c6d37bed"
+  },
+  {
+    "check": "storm",
+    "exit": 0,
+    "seconds": 2.31,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-342-storm/storm.jpg"
+    ],
+    "binarySHA256": "0f9f25315d36192b16bad2fa7e52e0f6574ad9101c01ece6cb140a05c6d37bed"
+  },
+  {
+    "check": "offers-small",
+    "exit": 0,
+    "seconds": 2.59,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-342-offers-small/offers-small.jpg"
+    ],
+    "binarySHA256": "0f9f25315d36192b16bad2fa7e52e0f6574ad9101c01ece6cb140a05c6d37bed"
+  }
+]

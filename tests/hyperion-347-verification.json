@@ -1,0 +1,129 @@
+{
+  "version": "3.47.0",
+  "scope": "Optional F8 flight director with independent remembered display preference, Menu and Settings controls; speed/AGL/thrust tapes, clipped local attitude and heading, inertial prograde/retrograde, drift/spin/VSI, actual berth bearing, braking distance, target relative closure, aft cues, charge state and labelled shield/hull bars. Minimal HUD and F9 hide/restore retained.",
+  "cpuSuites": 29,
+  "hudChecks": 7306,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "hud",
+    "hud-small",
+    "hud-fullscreen",
+    "screen-fit",
+    "combat",
+    "planning",
+    "landing"
+  ],
+  "nativeCaptures": 96,
+  "hudScenariosPerSize": 12,
+  "screenSizes": [
+    "1280x800",
+    "720x450 / reduced",
+    "fullscreen"
+  ],
+  "realMenuPointerToggleVerified": true,
+  "hudHideRestoreVerified": true,
+  "campaignAndFlightClocksFrozenDuringHudFixtures": true,
+  "displayPreferenceRoundtripsAndAtomicReplacementVerified": true,
+  "newRenderPasses": 0,
+  "simulationPhysicsWorldGenerationStorageMaterialsAndAssetsUnchanged": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.75
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.61
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.64
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.94
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.81
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.88
+    }
+  ],
+  "newFiles": [
+    "src/flight_hud.cpp",
+    "src/flight/hud.hpp",
+    "src/display_preferences.hpp",
+    "tests/flight_hud.cpp"
+  ],
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/renderer.hpp",
+    "src/flight_renderer.cpp",
+    "src/main.cpp",
+    "src/renderer.cpp"
+  ],
+  "binarySHA256": "a8deebcd34b6a5574f44ed92e924c1f0083467e75c09da58551c43d594f3b2db",
+  "performance": [
+    {
+      "name": "space-old",
+      "meanMs": 26.864942811111092,
+      "p50Ms": 26.093708,
+      "p95Ms": 33.167916,
+      "fps": 37.22323204002539
+    },
+    {
+      "name": "space-minimal",
+      "meanMs": 26.19066338888889,
+      "p50Ms": 25.322291,
+      "p95Ms": 32.127542,
+      "fps": 38.18154527633078
+    },
+    {
+      "name": "space-enhanced",
+      "meanMs": 20.253863450000008,
+      "p50Ms": 20.156042,
+      "p95Ms": 22.037417,
+      "fps": 49.373296234008116
+    },
+    {
+      "name": "ground-minimal",
+      "meanMs": 30.817667183333327,
+      "p50Ms": 30.963208,
+      "p95Ms": 35.474375,
+      "fps": 32.448919447764546
+    },
+    {
+      "name": "ground-enhanced",
+      "meanMs": 32.29923337777779,
+      "p50Ms": 32.10825,
+      "p95Ms": 35.642959,
+      "fps": 30.96048715162418
+    }
+  ],
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

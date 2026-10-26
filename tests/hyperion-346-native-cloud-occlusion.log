@@ -1,0 +1,46 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / spectral silk / auroras / 3D cockpit / 1728x1080
+Weather depth audit: 0.00000 .. 24819.91602 / centre 0.00000
+Weather depth audit: 0.00000 .. 24819.91602 / centre 0.00000
+Cloud occlusion / scene 0 / tested 160931 / leaks 0 / aurora leaks 0 / max cloud 0.996094
+Weather depth audit: 0.00000 .. 24093.49609 / centre 0.00000
+Weather depth audit: 0.00000 .. 24093.49609 / centre 0.00000
+Cloud occlusion / scene 1 / tested 191760 / leaks 0 / aurora leaks 0 / max cloud 0.996094
+Weather depth audit: 0.00000 .. 175.10097 / centre 6.44967
+Weather depth audit: 0.00000 .. 175.10097 / centre 6.44967
+Cloud occlusion / scene 2 / tested 411825 / leaks 0 / aurora leaks 0 / max cloud 0.995117
+Weather depth audit: 0.00000 .. 24699.69727 / centre 0.00000
+Weather depth audit: 0.00000 .. 24699.69727 / centre 0.00000
+Cloud occlusion / scene 3 / tested 157630 / leaks 0 / aurora leaks 0 / max cloud 0.996582
+Weather depth audit: 0.00000 .. 29982.76172 / centre 0.00000
+Weather depth audit: 0.00000 .. 29982.76172 / centre 0.00000
+Cloud occlusion / scene 4 / tested 214727 / leaks 0 / aurora leaks 0 / max cloud 0.999023
+Weather depth audit: 0.00000 .. 25325.28125 / centre 0.00000
+Weather depth audit: 0.00000 .. 25325.28125 / centre 0.00000
+Cloud occlusion / scene 5 / tested 129062 / leaks 0 / aurora leaks 0 / max cloud 0.996094
+Weather depth audit: 0.00000 .. 25513.77930 / centre 0.00000
+Weather depth audit: 0.00000 .. 25513.77930 / centre 0.00000
+Cloud occlusion / scene 6 / tested 0 / leaks 0 / aurora leaks 0 / max cloud 0.997559
+Weather depth audit: 0.00000 .. 25494.75391 / centre 0.00000
+Weather depth audit: 0.00000 .. 25494.75391 / centre 0.00000
+Cloud occlusion / scene 7 / tested 0 / leaks 0 / aurora leaks 0 / max cloud 0.998535
+Weather depth audit: 0.00000 .. 25359.82031 / centre 0.00000
+Weather depth audit: 0.00000 .. 25359.82031 / centre 0.00000
+Cloud occlusion / scene 8 / tested 0 / leaks 0 / aurora leaks 0 / max cloud 0.999023
+Weather depth audit: 0.00000 .. 23937.92578 / centre 0.00000
+Weather depth audit: 0.00000 .. 23937.92578 / centre 0.00000
+Cloud occlusion / scene 9 / tested 0 / leaks 0 / aurora leaks 0 / max cloud 0.999512
+Weather depth audit: 0.00000 .. 21574.47070 / centre 0.00000
+Weather depth audit: 0.00000 .. 21574.47070 / centre 0.00000
+Cloud occlusion / scene 10 / tested 0 / leaks 0 / aurora leaks 0 / max cloud 0.999512
+Weather depth audit: 0.00000 .. 6322.10010 / centre 1381.67017
+Weather depth audit: 0.00000 .. 6322.10010 / centre 1381.67017
+Cloud occlusion / scene 11 / tested 0 / leaks 0 / aurora leaks 0 / max cloud 0.999512
+Hyperion native run: 216 frames / shaders OK / 1920x1200
+Measured render rate: 24.7003 frames/s
+Sun shadow cache: 76 updates / 198 active frames

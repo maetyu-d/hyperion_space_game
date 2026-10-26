@@ -1,0 +1,185 @@
+{
+  "version": "3.43.0",
+  "name": "Hyperion",
+  "scope": "Display-aware window sizing, uniform fitted UI coordinates and input, monitor work-area bounds, fullscreen restoration and proportional cockpit safe margins.",
+  "changedSource": [
+    "src/renderer.hpp",
+    "src/ui_layout.hpp",
+    "src/wildlife_renderer.cpp",
+    "src/flight_renderer.cpp",
+    "src/main.cpp",
+    "src/renderer.cpp",
+    "src/flight/renderer.cpp"
+  ],
+  "cpuSuites": 26,
+  "nativeChecks": [
+    "screen-fit",
+    "fullscreen",
+    "surface-small",
+    "storm-small",
+    "ui-small",
+    "combat-small",
+    "landing-small",
+    "planning-small"
+  ],
+  "nativeCaptures": 81,
+  "fullAndMinimumWindowsReviewed": true,
+  "brightStormReadabilityReviewed": true,
+  "coreSimulationPhysicsStorageAndAssetsUnchanged": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.44
+    }
+  ],
+  "legacyAndMissionSavesFrozenExactly": true,
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "binarySHA256": "7b82484eb0e3f104db230b3d684af127fbc4c70fa900b1ead4d629fb8610a7a7",
+  "priorReleasePreserved": true,
+  "preview": "Hyperion-preview.png",
+  "screenLayoutChecks": 1475,
+  "fittedSmallWindowsAndRetinaReviewed": true,
+  "monitorWorkAreaAndFullscreenVerified": true,
+  "pointerAlignmentVerified": true,
+  "screenFitScenes": [
+    {
+      "fullscreen": false,
+      "menuHitTest": "passed",
+      "renderHeight": 900,
+      "renderWidth": 1440,
+      "stage": 0,
+      "uiHeight": 600.0,
+      "uiScale": 0.75,
+      "uiWidth": 960.0,
+      "windowContained": true,
+      "windowHeight": 450,
+      "windowWidth": 720
+    },
+    {
+      "fullscreen": false,
+      "menuHitTest": "passed",
+      "renderHeight": 1000,
+      "renderWidth": 1600,
+      "stage": 1,
+      "uiHeight": 600.0,
+      "uiScale": 0.8333333134651184,
+      "uiWidth": 960.0,
+      "windowContained": true,
+      "windowHeight": 500,
+      "windowWidth": 800
+    },
+    {
+      "fullscreen": false,
+      "menuHitTest": "passed",
+      "renderHeight": 1440,
+      "renderWidth": 2560,
+      "stage": 2,
+      "uiHeight": 720.0,
+      "uiScale": 1.0,
+      "uiWidth": 1280.0,
+      "windowContained": true,
+      "windowHeight": 720,
+      "windowWidth": 1280
+    },
+    {
+      "fullscreen": false,
+      "menuHitTest": "passed",
+      "renderHeight": 1546,
+      "renderWidth": 1800,
+      "stage": 3,
+      "uiHeight": 824.5333251953125,
+      "uiScale": 0.9375,
+      "uiWidth": 960.0,
+      "windowContained": true,
+      "windowHeight": 773,
+      "windowWidth": 900
+    },
+    {
+      "fullscreen": false,
+      "menuHitTest": "passed",
+      "renderHeight": 1546,
+      "renderWidth": 2832,
+      "stage": 4,
+      "uiHeight": 773.0,
+      "uiScale": 1.0,
+      "uiWidth": 1416.0,
+      "windowContained": true,
+      "windowHeight": 773,
+      "windowWidth": 1416
+    },
+    {
+      "fullscreen": true,
+      "menuHitTest": "passed",
+      "renderHeight": 1800,
+      "renderWidth": 2880,
+      "stage": 5,
+      "uiHeight": 900.0,
+      "uiScale": 1.0,
+      "uiWidth": 1440.0,
+      "windowContained": true,
+      "windowHeight": 900,
+      "windowWidth": 1440
+    },
+    {
+      "fullscreen": false,
+      "menuHitTest": "modal",
+      "renderHeight": 900,
+      "renderWidth": 1440,
+      "stage": 6,
+      "uiHeight": 600.0,
+      "uiScale": 0.75,
+      "uiWidth": 960.0,
+      "windowContained": true,
+      "windowHeight": 450,
+      "windowWidth": 720
+    },
+    {
+      "fullscreen": false,
+      "menuHitTest": "passed",
+      "renderHeight": 1000,
+      "renderWidth": 1600,
+      "stage": 7,
+      "uiHeight": 600.0,
+      "uiScale": 0.8333333134651184,
+      "uiWidth": 960.0,
+      "windowContained": true,
+      "windowHeight": 500,
+      "windowWidth": 800
+    }
+  ],
+  "newSourceFiles": [
+    "src/screen_layout.hpp",
+    "src/window_fit.hpp",
+    "tests/screen_layout.cpp"
+  ]
+}

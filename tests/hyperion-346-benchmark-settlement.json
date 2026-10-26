@@ -1,0 +1,16 @@
+{
+  "fps": 35.469815849800334,
+  "meanMs": 28.19298538888888,
+  "measuredFrames": 180,
+  "outputHeight": 1200,
+  "outputWidth": 1920,
+  "p50Ms": 25.946917,
+  "p95Ms": 42.299875,
+  "p99Ms": 72.148625,
+  "reducedEffects": false,
+  "scene": 13,
+  "vsync": false,
+  "warmupFrames": 60,
+  "wildlifeBaseline": false,
+  "wildlifeBodies": 0
+}

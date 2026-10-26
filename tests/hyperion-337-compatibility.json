@@ -1,0 +1,41 @@
+{
+  "sourceVersion": "3.36.0",
+  "destinationVersion": "Hyperion 3.37.0",
+  "allFieldsUnchanged": true,
+  "reopensExactly": true,
+  "sourceUntouched": true,
+  "saveFormatUnchanged": true,
+  "newDynamicsRoundtripExactly": true,
+  "path": "/private/tmp/hyperion-337-compatibility-ddc_0po5",
+  "hull": 62.0,
+  "fuel": 123.0,
+  "shield": 210.0,
+  "rounds": 37,
+  "checks": [
+    {
+      "check": "previous-3.36",
+      "exit": 0,
+      "seconds": 2.1
+    },
+    {
+      "check": "hyperion",
+      "exit": 0,
+      "seconds": 1.67
+    },
+    {
+      "check": "hyperion-reopen",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "dynamics",
+      "exit": 0,
+      "seconds": 1.38
+    },
+    {
+      "check": "dynamics-reopen",
+      "exit": 0,
+      "seconds": 1.43
+    }
+  ]
+}

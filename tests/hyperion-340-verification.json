@@ -1,0 +1,103 @@
+{
+  "version": "3.40.0",
+  "name": "Hyperion",
+  "scope": "Procedural multi-stage missions, shared storm fronts and wind, exploration data commissions, combat impact/intent feedback, strategic forecasts and colony change reports.",
+  "missionFamilies": [
+    "contextual relief",
+    "real convoy escort",
+    "persistent captain interdiction",
+    "generated field research"
+  ],
+  "proceduralOperationsChecks": 1401,
+  "cpuSuites": 25,
+  "sanitizerSuites": 4,
+  "sanitizerScope": "Address and undefined behavior checks; Apple runtime does not support leak detection.",
+  "nativeChecks": [
+    "offers",
+    "offers-small",
+    "accepted",
+    "relief-ready",
+    "completed",
+    "survey-ready",
+    "escort",
+    "storm",
+    "storm-reduced",
+    "planning",
+    "helm",
+    "landing",
+    "clouds",
+    "combat",
+    "ui",
+    "offers-final",
+    "offers-small-final",
+    "ready-final",
+    "storm-final",
+    "clouds-final"
+  ],
+  "nativeCaptures": 83,
+  "representativeFullAndSmallImagesReviewed": true,
+  "cloudOcclusionVerifiedAfterWeatherOptimization": true,
+  "nativeHelmLandingCombatStrategyAndUIVerified": true,
+  "missionProgressEscrowAndPartialEscortPersist": true,
+  "planningClocksRemainFrozen": true,
+  "unchangedAssetsAndWorldGeometry": true,
+  "weatherSamplesOncePerCloudRay": true,
+  "benchmarks": [
+    {
+      "scene": 0,
+      "beforeMeanMs": 27.377803594444444,
+      "beforeP95Ms": 37.846625,
+      "afterMeanMs": 21.36341399722223,
+      "afterP95Ms": 25.826625
+    },
+    {
+      "scene": 11,
+      "beforeMeanMs": 25.597473244444448,
+      "beforeP95Ms": 28.155146000000002,
+      "afterMeanMs": 26.388123041666667,
+      "afterP95Ms": 31.8106665
+    }
+  ],
+  "benchmarkScope": "Two interleaved baseline/current runs per scene, 240 frames each including 60-frame warmup, 960x600 logical window / 1920x1200 Retina output, no vsync. Desktop load affects timings.",
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.41
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.39
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.39
+    }
+  ],
+  "legacyAndNewMissionSavesFrozenExactly": true,
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "binarySHA256": "07c1e5e17e9fcf81771c7434cc3acda6f326fa404fd82f0795468e8849d18f3d",
+  "priorReleasePreserved": true,
+  "preview": "Hyperion-preview.png"
+}

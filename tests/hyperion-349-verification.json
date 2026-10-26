@@ -1,0 +1,102 @@
+{
+  "version": "3.49.0",
+  "scope": "R opens an event-aware turn planner: selectable 1/3/6/12/24-hour waits, next-event waiting up to one day, chronological deadline/freight/research timeline and linked settlement inspection. Long waits interrupt on arrivals, warehouse holds, research, navigator docking and new threats in addition to existing crises, damage and missions. Plotted surface/ocean routes survive waiting. Latest 12 session resolutions include real intervals, exact whole-order costs and interrupt causes.",
+  "cpuSuites": 30,
+  "newTurnPlannerChecks": 54,
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "nativeChecks": [
+    "planner",
+    "planner-small",
+    "planner-fullscreen",
+    "strategy",
+    "screen-fit",
+    "hud"
+  ],
+  "nativeCaptures": 134,
+  "plannerScenariosPerSize": 16,
+  "screenSizes": [
+    "1280x800",
+    "720x450 / reduced",
+    "fullscreen"
+  ],
+  "realPointerControlsVerified": [
+    "duration selection",
+    "commit wait",
+    "browse older report",
+    "inspect linked settlement"
+  ],
+  "wholeOrderBatteryAndImpactCostsVerified": true,
+  "combinedOrderReportVerified": true,
+  "fractionalEconomicTickETAVerified": true,
+  "physicalNavigatorDockAndApproachingHostileInterruptsVerified": true,
+  "knownHeldFreightDoesNotRepeatInterrupt": true,
+  "timelineAndReportBrowsingDoNotAdvanceTime": true,
+  "plannedWaitDurationSurvivesCockpitHandoff": true,
+  "campaignSchemaWorldGenerationFlightHandlingHUDMaterialsAndAssetsUnchanged": true,
+  "frozenSaveRoundtripsExact": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.63
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.63
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.63
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.96
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.75
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.61
+    }
+  ],
+  "changedFiles": [
+    "CMakeLists.txt",
+    "README.md",
+    "src/planning.cpp",
+    "src/renderer.hpp",
+    "src/game.hpp",
+    "src/turns.cpp",
+    "src/economy_game.cpp",
+    "src/strategy_workspace.hpp",
+    "src/main.cpp",
+    "src/renderer.cpp",
+    "src/game.cpp"
+  ],
+  "newFiles": [
+    "src/turn_renderer.cpp",
+    "tests/turn_planner.cpp"
+  ],
+  "binarySHA256": "752fc5be0076d6343ad1a8700f91117101a0edb23a1a9e8f51b6276c3139b80f",
+  "preview": "Hyperion-preview.png",
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "priorReleasePreserved": true
+}

@@ -1,0 +1,70 @@
+{
+  "version": "3.38.0",
+  "name": "Hyperion",
+  "cpuSuites": 24,
+  "sanitizerSuites": 4,
+  "sanitizerScope": "Address and undefined behavior checks; Apple runtime does not support leak detection.",
+  "newHelmChecks": 36,
+  "handlingChecks": 52,
+  "landingChecks": 3326,
+  "strategyChecks": 765,
+  "nativeChecks": [
+    "helm-full",
+    "helm-small",
+    "landing",
+    "combat",
+    "strategy",
+    "ui"
+  ],
+  "nativeCaptures": 31,
+  "representativeFullAndSmallCapturesReviewed": true,
+  "precisionScalesForceRatherThanMomentum": true,
+  "mouseRatesFrameIndependent": true,
+  "boostPressureRampsOnAndOff": true,
+  "assistCaptureMatchesForwardSpeed": true,
+  "brakeClearsCompetingControllers": true,
+  "supportReservedWithinActualThrusterBudget": true,
+  "directionalAtmosphericDragAndSpinDamping": true,
+  "smoothAltitudeRestriction": true,
+  "planningFreezesBoostAndCapture": true,
+  "legacyFieldsUnchanged": true,
+  "newDynamicsRoundtripAndResume": true,
+  "unchangedGraphicsWorldAndStrategicSources": [
+    "src/flight/renderer.cpp",
+    "src/flight/renderer.hpp",
+    "src/flight/shaders.hpp",
+    "src/flight/life.cpp",
+    "src/flight/life_mesh.hpp",
+    "src/flight/life_shaders.hpp",
+    "src/flight/terrain.cpp",
+    "src/flight/settlements.cpp",
+    "src/wildlife.cpp",
+    "src/ecosystem.cpp",
+    "src/universe.cpp",
+    "src/procedural.cpp",
+    "src/turns.cpp",
+    "src/legacy_save.cpp"
+  ],
+  "allAssetsUnchanged": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0,
+      "seconds": 2.54
+    },
+    {
+      "check": "legacy",
+      "exit": 0,
+      "seconds": 1.4
+    },
+    {
+      "check": "boost-capture",
+      "exit": 0,
+      "seconds": 1.42
+    }
+  ],
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "binarySHA256": "49ed4743df2869f9a06f91ac7c3ce0047840a75f63f2abd86dc0256d91dda524",
+  "priorReleasePreserved": true,
+  "preview": "Hyperion-preview.png"
+}

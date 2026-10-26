@@ -1,0 +1,17 @@
+[
+  {
+    "check": "minor-bodies",
+    "exit": 0,
+    "seconds": 11.16,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-initial-minor-bodies/minor-body-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-initial-minor-bodies/minor-body-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-initial-minor-bodies/minor-body-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-initial-minor-bodies/minor-body-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-initial-minor-bodies/minor-body-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-initial-minor-bodies/minor-body-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-344-initial-minor-bodies/minor-body-6.jpg"
+    ],
+    "binarySHA256": "f3f10b85d4638b0f2eb22454f44369a72131ae7474ae92d522793b71a084dd18"
+  }
+]

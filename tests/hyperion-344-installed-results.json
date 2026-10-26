@@ -1,0 +1,46 @@
+{
+  "version": "3.44.0",
+  "binarySHA256": "59e23a1bb5f4922f6f86ebb4befbf72c997f4d514f85c25caa40470db1da7cb9",
+  "runs": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.43
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.45
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.42
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.39
+    }
+  ],
+  "frozenSaveRoundtripsExact": true
+}

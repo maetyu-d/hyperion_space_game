@@ -1,0 +1,24 @@
+{
+  "fps": 44.913790752077944,
+  "meanMs": 22.26487640555557,
+  "measuredFrames": 180,
+  "outputHeight": 1200,
+  "outputWidth": 1920,
+  "p50Ms": 21.119333,
+  "p95Ms": 29.615167,
+  "p99Ms": 39.208,
+  "profileMs": {
+    "auroras": 1.1472578703703429,
+    "bloomAndPost": 1.7683488425926095,
+    "cockpit": 0.712588194444436,
+    "planetsAndAtmosphere": 7.12223240740743,
+    "portsAndTraffic": 1.531957870370393,
+    "sky": 5.037962962962984
+  },
+  "reducedEffects": false,
+  "scene": 0,
+  "vsync": false,
+  "warmupFrames": 60,
+  "wildlifeBaseline": false,
+  "wildlifeBodies": 0
+}

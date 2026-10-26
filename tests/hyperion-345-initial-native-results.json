@@ -1,0 +1,38 @@
+[
+  {
+    "check": "minor-bodies",
+    "exit": 0,
+    "seconds": 15.17,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-body-0.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-body-1.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-body-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-body-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-body-4.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-body-5.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-body-6.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-material-2.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-material-3.jpg",
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-minor-bodies/minor-material-5.jpg"
+    ],
+    "binarySHA256": "c5474319a6c1c88cc5af2a5531bcb3aefc62915c6885e42fd6a283cc83504017"
+  },
+  {
+    "check": "surface",
+    "exit": 0,
+    "seconds": 2.8,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-surface/surface.jpg"
+    ],
+    "binarySHA256": "c5474319a6c1c88cc5af2a5531bcb3aefc62915c6885e42fd6a283cc83504017"
+  },
+  {
+    "check": "planet",
+    "exit": 0,
+    "seconds": 2.95,
+    "images": [
+      "/Users/user/Documents/SC tutorial/Hyperion/captures/hyperion-345-initial-planet/planet.jpg"
+    ],
+    "binarySHA256": "c5474319a6c1c88cc5af2a5531bcb3aefc62915c6885e42fd6a283cc83504017"
+  }
+]

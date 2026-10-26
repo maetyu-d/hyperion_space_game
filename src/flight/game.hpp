@@ -1,0 +1,144 @@
+#pragma once
+#include "vessel.hpp"
+#include "threat.hpp"
+#include "../minor_bodies.hpp"
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
+namespace hyperion::flight {
+constexpr double pi=3.14159265358979323846;
+struct V3 {
+  double x=0,y=0,z=0;
+  V3 operator+(V3 b)const{return{x+b.x,y+b.y,z+b.z};}
+  V3 operator-(V3 b)const{return{x-b.x,y-b.y,z-b.z};}
+  V3 operator-()const{return{-x,-y,-z};}
+  V3 operator*(double s)const{return{x*s,y*s,z*s};}
+  V3 operator/(double s)const{return *this*(1/s);}
+  V3& operator+=(V3 b){return *this=*this+b;}
+};
+inline double dot(V3 a,V3 b){return a.x*b.x+a.y*b.y+a.z*b.z;}
+inline V3 cross(V3 a,V3 b){return{a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x};}
+inline double length(V3 a){return std::sqrt(dot(a,a));}
+inline V3 unit(V3 a,V3 fallback={0,1,0}){double l=length(a);return l>1e-9?a/l:fallback;}
+inline V3 mix(V3 a,V3 b,double t){return a*(1-t)+b*t;}
+inline V3 rotate(V3 v,V3 axis,double a){axis=unit(axis);return v*std::cos(a)+cross(axis,v)*std::sin(a)+axis*dot(axis,v)*(1-std::cos(a));}
+inline bool finite(V3 v){return std::isfinite(v.x)&&std::isfinite(v.y)&&std::isfinite(v.z);}
+// Material properties are derived from the surveyed world; flight rendering
+// never invents a second planet or changes its collision/navigation geometry.
+struct Planet {std::string name,biome;V3 centre;double radius,seed;V3 portNormal;bool giant=false;
+ double water=.35,life=.25,temperature=289,atmosphere=1;int kind=0;uint32_t worldSeed=0;int generation=1,landform=0;double tectonic=.5;
+};
+struct Port {std::string name,description;V3 position,normal;int planet;std::string id,settlement;int body=-1;int minor=-1;};
+struct MinorObject {hyperion::MinorBody source;V3 centre;};
+std::vector<V3> transferRoute(const std::vector<Planet>& planets,V3 start,const Port& destination);
+struct RoutePose {V3 position,forward;};
+RoutePose freightPose(const std::vector<V3>& path,double progress);
+double terrain(const Planet& p,V3 normal);
+V3 terrainNormal(const Planet& p,V3 normal);
+double materialElevation(const Planet& p,V3 normal);
+enum ShipSystem {Drive,PowerCore,ShieldGenerator,WeaponMounts,Sensors,SystemCount};
+enum WeaponKind {Pulse=0,Kinetic=1,Plasma=2,Seeker=3,Resonance=4,CollisionDamage=5};
+int primaryWeapon(int slot);const char* focusName(int focus);double interceptTime(V3 offset,V3 velocity,double speed);
+struct WeaponDef {const char* name;double damage,shieldFactor,hullFactor,penetration,speed,interval,energy,heat,life;};
+const WeaponDef& weaponDef(int type);
+const char* systemName(int system);
+struct EnemyDef {const char* name;double hull,shield,speed,range,radius;int weapon;double retreat=.22,agility=1,cadence=1,reactor=1,cooling=1,standOff=0,strafe=0,aimJitter=0;bool evades=false;};
+const EnemyDef& enemyDef(int role);
+EnemyDef enemyDef(int role,const EnemyGenome&);
+struct CombatState {
+ std::array<double,SystemCount> systems{100,100,100,100,100};
+ double armour=100,energy=100,heat=0,shieldDelay=0,missileClock=0,decoyClock=0;
+ int weapon=0,rounds=300,missiles=6,decoys=6;bool overheated=false;
+ uint32_t hits=0,shots=0;
+};
+struct Input {double pitch=0,yaw=0,roll=0,throttle=0,lift=0,strafe=0;bool boost=false,fire=false,missile=false,decoy=false,precision=false;};
+struct Ship {Vessel vessel;V3 angularVelocity,thrusters,assistCapture;double boostLevel=0,assistCaptureTime=0;V3 position,velocity,previous,forward{0,0,-1},up{0,1,0};double throttle=0,fuel=100,hull=100,shield=100;bool assist=true,gear=true,cruise=false;CombatState combat;};
+// Missing weapon metadata denotes a pulse already in flight in a legacy save.
+struct Bolt {V3 position,previous,velocity;double life;bool hostile;int weapon=-1;double damage=0;std::string owner,target;int module=0;};
+struct Traffic {V3 position,previous,forward;double phase=0,health=100,fireClock=0;int kind=0;bool dead=false;double respawn=0;int home=0,faction=3;std::string routeId;int trip=-1;
+ std::vector<V3> transitPath;std::string transitKey;
+ V3 velocity;std::string id;int role=0,state=0;double shield=0,armour=100,shieldDelay=0,stateClock=0,hitFlash=0;bool positioned=false;
+ std::array<double,3> modules{100,100,100};double energy=100,heat=0,charge=0,decoyClock=0,evadeClock=0,serviceClock=0;
+ int ammunition=180,missiles=2,countermeasures=2,chargeWeapon=-1,salvos=0;bool venting=false;
+ bool managed=false,pirate=false,hostile=true,assaultReported=false,escortDuty=false;
+ std::string name,allegiance,band,reason;std::array<bool,5> enemies{};EnemyGenome genome;
+};
+inline EnemyDef enemyDef(const Traffic& t){return enemyDef(t.role,t.genome);}
+const char* enemyStateName(const Traffic&);
+struct CombatEffect {V3 position,velocity;double age=0,duration=1;int kind=0;V3 end;};
+struct Wreck {V3 position,velocity;double life=180;std::array<double,3> cargo{};std::string id;};
+struct Courier {bool active=false;std::string issuer,destination;int64_t escrow=0;double deadline=0;};
+struct Event {std::string kind;int port=-1,faction=0;std::string routeId;std::string actor,victim;
+ Event(std::string k,int p=-1,int f=0,std::string r="",std::string a="",std::string v=""):kind(std::move(k)),port(p),faction(f),routeId(std::move(r)),actor(std::move(a)),victim(std::move(v)){}
+};
+struct LandingInfo {
+ int body=-1,port=-1;V3 ground,normal,radial;
+ double altitude=0,sink=0,drift=0,tilt=0,slope=0;
+ bool available=false,safe=false,water=false;
+};
+struct Game {
+  std::vector<Planet> planets;
+  std::vector<MinorObject> minorBodies;
+  std::vector<Port> ports;
+  Ship ship;
+  std::vector<Bolt> bolts;
+  std::vector<Traffic> traffic;
+  std::vector<CombatEffect> effects;std::vector<Wreck> wrecks;
+  std::string lastAttacker;
+  std::string combatTarget;double lock=0,hitConfirm=0;int combatOrder=0,aimSystem=0;V3 hitDirection;double damageCue=0;
+  double weatherHours=-1,impactShield=0,impactHull=0;int impactSystem=-1;
+  bool strategicCombat=false,missileHeld=false,decoyHeld=false;
+  std::vector<V3> route;
+  Courier courier;
+  std::vector<Event> events;
+  std::string star,worldKey,savedTarget,savedDock,savedBerth;
+  bool valid=false,deployed=false;
+  int target=0,dockedPort=-1,lastBerth=0,deliveries=0,kills=0;
+  bool docked=true,autopilot=false;
+  double thrustFactor=1,cargoMass=0; // Cargo units; canonical hold is supplied by Hyperion.
+  V3 acceleration;double engineLoad=0;bool precisionActive=false; // Transient cockpit telemetry.
+  double time=0,noticeAge=0,fireClock=0,hitFlash=0;
+  double launchAssist=0,touchdownAge=10,liftThrust=0;
+  std::string notice="NOMA flight deck ready. Select a destination in I; J engages navigation.";
+  Game()=default;
+  void update(double dt,const Input& input={});
+  void stepHandling(double dt,const Input&);
+  double inertialMass()const;
+  V3 gravity()const;
+  double atmosphereDensity()const;
+  double thrustLimit(V3 direction,bool boost=false)const;
+  double stoppingDistance()const;
+  double manualSpeedLimit(bool precision=false)const;
+  void setAssist(bool enabled);
+  void brake();
+  void resetDynamics(){ship.angularVelocity={};ship.thrusters={};ship.boostLevel=0;ship.assistCapture={};ship.assistCaptureTime=0;acceleration={};engineLoad=0;precisionActive=false;}
+  void launch();
+  bool dock();
+  void dockAt(int port,bool preserveAttitude=false);
+  void navigate(bool resume=false);
+  void cancelNavigation();
+  void selectTarget(int index);
+  int nearestPlanet()const;
+  double altitude()const;
+  LandingInfo landing()const;
+  double speed()const{return length(ship.velocity);}
+  double targetDistance()const{return length(ports[target].position-ship.position);}
+  void message(std::string text);
+  void orient(V3 forward,V3 up);
+  void recordIds();
+  void updateMinorBodies(double hours);std::vector<Planet> navigationBodies()const;
+  double minorHit(V3,V3,double clearance=0,int* body=nullptr)const;
+  void minorContacts(V3 previous);
+  int combatTargetIndex()const;void cycleCombatTarget();bool selectWeapon(int);
+  void prepareCombat(double,Input&);void updateCombat(double,const Input&);
+  void damageShip(double,int,V3);void damageTraffic(int,double,int,V3,bool credited,int module=0,const std::string& attacker="");void chainArc(int,double);
+  bool enemiesOf(const Traffic&,const Traffic&)const;
+  bool lineOfSight(V3,V3)const;double terrainHit(V3,V3)const;bool protectedPort(V3)const;
+  void effect(V3,int,V3 velocity={},V3 end={});
+};
+}

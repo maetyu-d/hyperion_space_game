@@ -1,0 +1,29 @@
+{
+  "scope": "Address and undefined behavior checks; Apple runtime does not support leak detection.",
+  "runs": [
+    {
+      "suite": "operations",
+      "exit": 0,
+      "seconds": 2.777,
+      "output": "Operations: 1401 checks passed / seeded context, real targets, escrow conservation, partial deliveries, escort presence, deadlines, field research, persistence, frozen planning, weather and impact feedback\n"
+    },
+    {
+      "suite": "security",
+      "exit": 0,
+      "seconds": 1.883,
+      "output": "Security integration: 79 checks passed\n"
+    },
+    {
+      "suite": "helm",
+      "exit": 0,
+      "seconds": 0.982,
+      "output": "Helm: 36 checks passed / precision, pointer rates, boost spool, reversal braking, gravity allocation, atmospheric drag, capture, persistence and controller ownership\n"
+    },
+    {
+      "suite": "strategy",
+      "exit": 0,
+      "seconds": 19.719,
+      "output": "PASS: 765 strategy checks; exact helm handoff, fixed-time hold, read-only move previews, ocean/surface endpoints, blocked orders, interruptible waits, reports and held-input release\n"
+    }
+  ]
+}

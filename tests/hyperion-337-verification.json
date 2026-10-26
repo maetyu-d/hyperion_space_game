@@ -1,0 +1,54 @@
+{
+  "version": "3.37.0",
+  "name": "Hyperion",
+  "project": "/Users/user/Documents/SC tutorial/Hyperion",
+  "appMetadata": {
+    "CFBundleName": "Hyperion",
+    "CFBundleExecutable": "Hyperion",
+    "CFBundleIdentifier": "studio.hyperion.game",
+    "CFBundleShortVersionString": "3.37.0",
+    "CFBundleIconFile": "Hyperion.icns"
+  },
+  "cpuSuites": 23,
+  "sanitizerSuites": 4,
+  "sanitizerScope": "Address and undefined behavior checks; Apple runtime does not support leak detection.",
+  "brandingChecks": 19,
+  "currentCodeFilesAudited": 107,
+  "namespaces": [
+    "hyperion",
+    "hyperion::flight"
+  ],
+  "nativeChecks": [
+    "flight",
+    "strategy",
+    "interface",
+    "landing"
+  ],
+  "nativeCaptures": 46,
+  "nativeFlightAndStrategyBrandingReviewed": true,
+  "legacySaveFieldsUnchanged": true,
+  "safeAdoptionAndSourcePrecedenceTested": true,
+  "iconArtworkAndUniverseFixturesUnchanged": true,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0,
+      "seconds": 2.52
+    },
+    {
+      "check": "legacy",
+      "exit": 0,
+      "seconds": 1.41
+    },
+    {
+      "check": "dynamics",
+      "exit": 0,
+      "seconds": 1.42
+    }
+  ],
+  "installedApp": "/Users/user/Documents/SC tutorial/Hyperion/Hyperion.app",
+  "binarySHA256": "667f3ff90a8dbb98086dbacb3c2f3fc7f511b3fc6096ab810f4e2cc5b6b07794",
+  "priorReleasePreserved": true,
+  "preview": "Hyperion-preview.png",
+  "historicalAndCompatibilityNamesRetainedOnlyWhereNeeded": true
+}

@@ -1,0 +1,7 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.13013 / 0.49768
+Sun shadow storage: R32F / 1024
+Hyperion native run: 1 frames / shaders OK / 1920x1200
+Measured render rate: 15.7324 frames/s
+Sun shadow cache: 0 updates / 0 active frames
