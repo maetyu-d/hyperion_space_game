@@ -8,6 +8,14 @@ run in the native renderer.
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
 
+![Cockpit view of a cloud-covered planet with rainbow rings against spectral nebulae](docs/screenshots/orbital-flight.jpg)
+
+*Rainbow rings, cloud banks and spectral nebulae, captured in the native renderer.*
+
+![Low-altitude cockpit view of colourful procedural plants and alien creatures on a planetary surface](docs/screenshots/surface-life.jpg)
+
+*A close encounter with procedural surface life. Both images are actual Hyperion 3.55 gameplay captures.*
+
 ## Wreck expeditions in 3.55
 
 Ocean sectors now contain persistent survey tenders with real faction ownership,
