@@ -1,0 +1,27 @@
+{
+  "version": "3.60.0",
+  "binarySHA256": "52ca2417f2ebbb6b06adce16b7b61a0bfd41562773ad90f0d7c8ad0081474f0f",
+  "runs": [
+    {
+      "profile": "high",
+      "exit": 0,
+      "scenarios": 25,
+      "frames": 1625,
+      "seconds": 102.42
+    },
+    {
+      "profile": "low",
+      "exit": 0,
+      "scenarios": 25,
+      "frames": 1625,
+      "seconds": 58.11
+    },
+    {
+      "profile": "reduced",
+      "exit": 0,
+      "scenarios": 25,
+      "frames": 1625,
+      "seconds": 40.89
+    }
+  ]
+}

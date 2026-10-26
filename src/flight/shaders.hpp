@@ -366,10 +366,10 @@ inline constexpr const char* structureFragment=R"GLSL(#version 330
 in vec3 worldPosition,normal,localPosition;
 in vec2 modelUV;in vec4 tint;out vec4 finalColor;
 uniform mat4 matModel;
-uniform vec3 eye,lightDirection,accent,shadowCentre,skyRadial;
+uniform vec3 eye,lightDirection,accent,shadowCentre,skyRadial,fracturePivot;
 uniform sampler2D buildingTexture,buildingDetailTexture;
 uniform vec4 buildingDetailMean;
-uniform float time,condition,pollution,ecology,powerOn,activity[14],structureAir,materialStyle,craftScale,craftIdentity,serviceWear;
+uniform float time,condition,pollution,ecology,powerOn,activity[14],structureAir,materialStyle,craftScale,craftIdentity,serviceWear,fractureHeat;
 )GLSL" PRISM_PIGMENT_GLSL PRISM_NEAR_SUN_GLSL PRISM_ARCHITECTURE_GLSL;
 inline constexpr const char* cloudFragment=R"GLSL(#version 330
 in vec3 worldPosition,normal;

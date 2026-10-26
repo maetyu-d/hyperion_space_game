@@ -2,7 +2,7 @@
 #define PRISM_ARCHITECTURE_GLSL R"GLSL(
 float structureHash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 vec3 structureBump(vec3 N,float height,float strength){
- vec3 dx=mat3(matModel)*dFdx(localPosition),dy=mat3(matModel)*dFdy(localPosition),a=cross(dy,N),b=cross(N,dx);float det=dot(dx,a);
+ vec3 dx=mat3(matModel)*dFdx((localPosition+fracturePivot)),dy=mat3(matModel)*dFdy((localPosition+fracturePivot)),a=cross(dy,N),b=cross(N,dx);float det=dot(dx,a);
  if(abs(det)<1e-12)return N;
  return normalize(abs(det)*N-sign(det)*(dFdx(height)*a+dFdy(height)*b)*strength);
 }
@@ -16,7 +16,7 @@ vec3 structureLight(vec3 base,vec3 N,vec3 V,vec3 L,float rough,float metal){
 vec3 windowInterior(vec3 V,vec3 N,float working){
  vec2 cell=floor(modelUV*.5),uv=modelUV-cell*2.;
  vec2 du=dFdx(modelUV),dv=dFdy(modelUV);float det=du.x*dv.y-du.y*dv.x;
- vec3 px=mat3(matModel)*dFdx(localPosition),py=mat3(matModel)*dFdy(localPosition);
+ vec3 px=mat3(matModel)*dFdx((localPosition+fracturePivot)),py=mat3(matModel)*dFdy((localPosition+fracturePivot));
  if(abs(det)<1e-12)return accent*(.012+working*.08);
  vec3 tangent=(px*dv.y-py*du.y)/det,bitangent=(py*du.x-px*dv.x)/det;
  vec3 ray=vec3(-dot(V,normalize(tangent))/max(length(tangent),.05),-dot(V,normalize(bitangent))/max(length(bitangent),.05),-max(dot(V,N),.08)/2.8);
@@ -90,7 +90,7 @@ void main(){
  float working=activityIndex>=0&&activityIndex<14?clamp(activity[activityIndex],0.,1.):powerOn;
  vec3 geometryN=normalize(normal),N=geometryN,V=normalize(eye-worldPosition),L=normalize(lightDirection);
  float craft=step(.001,craftScale);
- vec3 materialP=localPosition*max(1.,craftScale),materialOffset=vec3(17.,31.,7.)*craftIdentity;
+ vec3 materialP=(localPosition+fracturePivot)*max(1.,craftScale),materialOffset=vec3(17.,31.,7.)*craftIdentity;
  vec3 dx=dFdx(materialP),dy=dFdy(materialP);float footprint=max(length(dx),length(dy));
  vec3 mapN=normalize(cross(dx,dy)),weights=pow(abs(mapN),vec3(6.));weights/=max(dot(weights,vec3(1.)),.0001);
  // Flat walls need only one projection. Omitted contributions total <0.2%;
@@ -133,7 +133,7 @@ void main(){
   float finish=macro.g-.5,grain=mix(field.r,field.b,coated);
   base*=.91+plate.w*.16+(skin-.5)*.14+finish*.075;base*=1.-seams*.20;
   vec3 oxide=materialStyle==1.?vec3(.025,.11,.08):vec3(.12,.042,.018);
-  oxide=mix(oxide,pigment(macro.a*.7+materialStyle*.13+localPosition.y*.005)*.085,.38);
+  oxide=mix(oxide,pigment(macro.a*.7+materialStyle*.13+(localPosition+fracturePivot).y*.005)*.085,.38);
   base=mix(base,oxide,corrosion*.70);
   float chips=weathering*clamp(edgeDamage*1.8+detail.b*stains*.25,0.,1.)*coated;
   vec3 substrate=mix(vec3(.065,.080,.090),vec3(.10,.11,.105),ceramic);
@@ -169,22 +169,22 @@ void main(){
   if(craft>.5){
    // Re-entry scoring follows the leading hull; engine deposits sit aft.
    // Combat loss reveals substrate in persistent, seed-anchored islands.
-   float hot=smoothstep(.35,1.20,abs(localPosition.z))*(.35+.65*(1.-smoothstep(.23,.55,localPosition.y)));
+   float hot=smoothstep(.35,1.20,abs((localPosition+fracturePivot).z))*(.35+.65*(1.-smoothstep(.23,.55,(localPosition+fracturePivot).y)));
    float soot=hot*weathering*smoothstep(.31,.69,macro.a+detail.a*.18);
    float scar=smoothstep(.62,.86,macro.r*.55+field.b*.45+edgeDamage*.25)*(1.-condition);
    base=mix(base,vec3(.009,.012,.017)+base*.18,soot*.72);
    base=mix(base,substrate*.58+pigment(craftIdentity+macro.b*.25)*.014,scar*.8);
    // Painted identification bands sit in the rough coating, below wear.
-   float bandDistance=abs(abs(localPosition.x)-.46),bandAA=max(fwidth(localPosition.x),.001);
+   float bandDistance=abs(abs((localPosition+fracturePivot).x)-.46),bandAA=max(fwidth((localPosition+fracturePivot).x),.001);
    float band=(1.-smoothstep(.055-bandAA,.055+bandAA,bandDistance))*(1.-seams)*(.75+plate.w*.25);
    base=mix(base,base*.5+accent*.065,band*(1.-soot*.8)*(1.-scar*.7)*.62);
    float thermal=hot*weathering*(1.-soot)*smoothstep(.36,.72,macro.g);
-   base+=pigment(craftIdentity+localPosition.z*.12)*thermal*.016;
+   base+=pigment(craftIdentity+(localPosition+fracturePivot).z*.12)*thermal*.016;
    rough=clamp(rough+soot*.10+scar*.06,.76,.99);metal*=1.-soot*.8;
    relief-=(soot*.003+scar*.006)*fine;
   }
   if(cargo){
-   vec3 phase=localPosition*12.56637,resolved=1.-smoothstep(vec3(.22),vec3(1.2),fwidth(phase));
+   vec3 phase=(localPosition+fracturePivot)*12.56637,resolved=1.-smoothstep(vec3(.22),vec3(1.2),fwidth(phase));
    float ribs=dot(weights,vec3(cos(phase.z)*resolved.z,cos(phase.x)*resolved.x,cos(phase.x)*resolved.x));
    relief+=ribs*.026;base*=.94+ribs*.06;rough+=.035*(1.-dot(weights,vec3(resolved.z,resolved.x,resolved.x)));
   }
@@ -210,7 +210,7 @@ void main(){
   N=structureBump(N,(field.g-.5)*.003*fine,.55);
  }
  if(group==5)base=mix(vec3(.027,.014,.008),base,ecology*(1.-pollution*.65));
- if(group==7){float louvers=thread(localPosition.y*17.+localPosition.z*.2,.22);base*=.32+louvers*.50;base*=.90+field.r*.20;occlusion=.67;}
+ if(group==7){float louvers=thread((localPosition+fracturePivot).y*17.+(localPosition+fracturePivot).z*.2,.22);base*=.32+louvers*.50;base*=.90+field.r*.20;occlusion=.67;}
  float variance=min(.20,max(dot(dFdx(N),dFdx(N)),dot(dFdy(N),dFdy(N)))*.5);
  rough=max(pow(min(1.,pow(rough,4.)+variance),.25),mix(.18,.55,smoothstep(.12,2.,footprint)));
  float sunlight=nearSunVisibility(worldPosition-shadowCentre,geometryN,L),sunHeight=dot(skyRadial,L);
@@ -219,15 +219,16 @@ void main(){
  c+=base*mix(vec3(.065,.048,.035),vec3(.12,.17,.22),skyFacing)*occlusion;
  float fresnel=pow(1.-clamp(dot(N,V),0.,1.),4.);
  if(group==1){
-  float rooms=mix(.5,structureHash(floor(localPosition*vec3(.45,.55,.45))+3.),1.-smoothstep(.4,2.,footprint));
+  float rooms=mix(.5,structureHash(floor((localPosition+fracturePivot)*vec3(.45,.55,.45))+3.),1.-smoothstep(.4,2.,footprint));
   vec3 r=reflect(-V,N),sky=mix(vec3(.018,.035,.065),vec3(.12,.18,.23),smoothstep(-.15,.18,sunHeight));
   c+=sky*(.05+fresnel*.65)*(1.-seams*.6)+accent*(.010+working*.045)*(.45+rooms*.55);
   if(windowPane)c=mix(windowInterior(V,geometryN,working),c,.12+fresnel*.78);
-  vec3 film=pigment(r.y*.22+r.z*.19+localPosition.y*.018+sin(time*.065)*.035);
+  vec3 film=pigment(r.y*.22+r.z*.19+(localPosition+fracturePivot).y*.018+sin(time*.065)*.035);
   c+=film*(fresnel*.10+.008)*condition;
- }else if(group==0)c+=pigment(fresnel*.42+localPosition.y*.009)*fresnel*.018*condition;
- if(inlay)c+=mix(accent,pigment(localPosition.y*.035+localPosition.x*.012+time*.004),.62)*(.11+.31*working);
- if(group==5)c+=pigment(localPosition.y*.05)*fresnel*ecology*.012;
+ }else if(group==0)c+=pigment(fresnel*.42+(localPosition+fracturePivot).y*.009)*fresnel*.018*condition;
+ if(inlay)c+=mix(accent,pigment((localPosition+fracturePivot).y*.035+(localPosition+fracturePivot).x*.012+time*.004),.62)*(.11+.31*working);
+ if(group==5)c+=pigment((localPosition+fracturePivot).y*.05)*fresnel*ecology*.012;
+ if(code==16)c+=mix(accent,pigment(materialP.y*.08+materialP.x*.04+time*.025),.65)*fractureHeat*(.18+fresnel*.65);
  float haze=clamp(1.-exp(-length(eye-worldPosition)*.00055*structureAir),0.,.45);
  vec3 air=mix(vec3(.010,.018,.032),vec3(.13,.21,.28),smoothstep(-.15,.18,sunHeight));
  finalColor=vec4(mix(c,air,haze),1.);

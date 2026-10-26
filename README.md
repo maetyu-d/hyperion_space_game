@@ -1,4 +1,4 @@
-# HYPERION 3.59
+# HYPERION 3.60
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,30 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Architectural destruction in 3.60
+
+Buildings now break into sections of their actual generated architecture.
+Walls, roofs, glazing and service equipment keep their faction materials and
+texture alignment; fresh cuts expose dark interiors with cooling spectral seams.
+Surface sections topple, fall and settle against the terrain. Station hulls,
+ring decks and solar wings separate and rotate in orbit, with surviving wings
+remaining attached to their own structures until damaged.
+
+Delayed electrical failures, colored sparks and mineral dust follow the moving
+pieces. Sun shadows follow the collapse. Saved ruins retain their original
+placement, faction, occupancy and fracture seed until reconstruction clears them.
+Older destroyed sites gain settled architectural ruins when visited, without
+replaying explosions. High, Low and Reduced effects share the same fragment
+motion; lighter settings reduce dust and electrical effects. Fragment meshes
+are cached with a limit of 48 nearby destroyed structures.
+
+![Fractured station decks and service towers drift apart against a psychedelic nebula](docs/screenshots/orbital-breakup.jpg)
+
+`hyperion_structural_tests` checks clipped surface conservation, sealed cuts,
+texture attributes, continuous rigid motion, gravity, orbital debris and save
+validation. The optional native `hyperion_structural_check` exercises every
+facility type, five station styles, wings, pads and loading equipment.
 
 ## Destructible universe in 3.59
 

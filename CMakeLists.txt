@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Hyperion VERSION 3.59.0 LANGUAGES C CXX)
+project(Hyperion VERSION 3.60.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -43,6 +43,11 @@ endif()
 include(CTest)
 if(BUILD_TESTING AND HYPERION_BUILD_APP)
   # Explicit native visual check; never run a windowed GPU test in CPU ctest.
+  add_executable(hyperion_structural_check EXCLUDE_FROM_ALL
+    tests/structural_fracture_native.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/world_damage_renderer.cpp
+    src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
+  target_include_directories(hyperion_structural_check PRIVATE src vendor)
+  target_link_libraries(hyperion_structural_check PRIVATE hyperion_core raylib)
   add_executable(hyperion_world_destruction_check EXCLUDE_FROM_ALL
     tests/world_destruction_native.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/world_damage_renderer.cpp
     src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
@@ -56,6 +61,10 @@ if(BUILD_TESTING AND HYPERION_BUILD_APP)
   target_link_libraries(hyperion_life_continuity_check PRIVATE hyperion_core raylib)
 endif()
 if(BUILD_TESTING)
+  add_executable(hyperion_structural_tests tests/structural_fracture.cpp)
+  target_include_directories(hyperion_structural_tests PRIVATE vendor vendor/raylib/src)
+  target_link_libraries(hyperion_structural_tests PRIVATE hyperion_core)
+  add_test(NAME structural_fracture COMMAND hyperion_structural_tests)
   add_executable(hyperion_world_destruction_tests tests/world_destruction.cpp)
   target_include_directories(hyperion_world_destruction_tests PRIVATE vendor)
   target_link_libraries(hyperion_world_destruction_tests PRIVATE hyperion_core)

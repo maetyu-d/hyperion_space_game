@@ -28,7 +28,7 @@ void Game::clearFieldContact(const Contact& contact){
 }
 void Game::syncWorldDamage(){
  auto& f=s.flight;auto& e=s.economy;bool changed=f.damageRevision!=e.damageRevision||f.damageStar!=s.currentStar;
- if(changed){f.damageRevision=e.damageRevision;f.damageStar=s.currentStar;f.worldDamage.clear();for(const auto& [id,damage]:e.worldDamage)if(damage.star==s.currentStar)f.worldDamage.emplace(id,damage);
+ if(changed){f.damageRevision=e.damageRevision;f.damageStar=s.currentStar;auto previous=std::move(f.worldDamage);f.worldDamage.clear();for(const auto& [id,damage]:e.worldDamage)if(damage.star==s.currentStar){auto copy=damage;if(copy.structure.valid){auto old=previous.find(id);copy.structure.localBorn=old!=previous.end()&&old->second.structure.born==copy.structure.born?old->second.structure.localBorn:f.time-std::max(0.,(s.hours-copy.structure.born)*55.);}f.worldDamage.emplace(id,copy);}
   for(auto& port:f.ports)port.disabled=objectIntegrity(f.worldDamage,portObjectId(port.id))<=0;
   for(auto& body:f.minorBodies)body.destroyed=objectIntegrity(f.worldDamage,"body:"+body.source.id)<=0;
  }
@@ -75,6 +75,10 @@ void Game::processWorldHit(const flight::Event& event){
  else record->integrity=hp;
  if(previous>=1&&event.actor=="NOMA"&&object.faction>0&&object.kind<=PlantObject){auto& faction=e.factions[object.faction];faction.standing=std::max(-100.,faction.standing-8);faction.warrant=std::min(int64_t(1000000),faction.warrant+100);economicEvent(e,site?site->name:s.currentStar,"NOMA attacked civilian infrastructure / 100-credit warrant issued.");}
  if(collapsed){
+  if(object.structureProfile>=0&&object.structureProfile<flight::StructureProfileCount&&(record||e.worldDamage.size()<60000)){
+   if(!record){record=&e.worldDamage[object.id];record->star=s.currentStar;record->owner=object.owner;record->kind=object.kind;record->body=object.body;record->slot=object.slot;record->position=object.position;record->normal=object.up;record->scale=object.scale;record->integrity=0;}
+   auto& shape=record->structure;shape.valid=true;shape.orbital=object.structureProfile==flight::StationCore||object.structureProfile==flight::StationWing;shape.profile=object.structureProfile;shape.variant=object.structureVariant;shape.ordinal=object.kind==FacilityObject?object.slot%24:0;shape.faction=object.structureFaction;shape.origin=object.structureOrigin;shape.right=object.right;shape.up=object.up;shape.back=object.back;shape.born=s.hours;shape.seed=flight::sceneHash(object.id+":"+std::to_string(s.hours));auto hit=event.position-shape.origin;shape.impact={flight::dot(hit,shape.right),flight::dot(hit,shape.up),flight::dot(hit,shape.back)};
+  }
   if(object.kind==PortObject&&object.owner.rfind("den:",0)==0)if(auto* band=findPirates(e,object.owner.substr(4))){band->stock={};band->truceUntil=0;if(event.actor=="NOMA"){band->grievance=std::min(100.,band->grievance+30);for(auto& captain:e.captains)if(captain.band==band->id)captain.grudge=std::min(100.,captain.grudge+25);}economicEvent(e,band->name,"Anchorage destroyed / stored supplies lost / surviving captains retain their vendetta.");}
   if(record)record->salvage=salvageFor(object);
   if(site&&object.kind==FacilityObject){int building=object.slot/24;

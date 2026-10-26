@@ -2,6 +2,8 @@
 #include "destruction.hpp"
 #include "rlgl.h"
 #include "settlement_detail.hpp"
+#include "structural_fracture.hpp"
+#include "world_objects.hpp"
 #include <cstring>
 #include <stdexcept>
 
@@ -15,7 +17,7 @@ constexpr std::array<Color,9> cargoColours{{{129,107,85,0},{125,164,191,0},{188,
 void uniform(Shader shader,const char* name,float value){int loc=GetShaderLocation(shader,name);if(loc>=0)SetShaderValue(shader,loc,&value,SHADER_UNIFORM_FLOAT);}
 void uniform(Shader shader,const char* name,V3 value){auto v=vec(value);int loc=GetShaderLocation(shader,name);if(loc>=0)SetShaderValue(shader,loc,&v,SHADER_UNIFORM_VEC3);}
 void structureState(Shader shader,const FactionStyle& style,V3 eye,V3 sun,double seconds,const SettlementView* view){
- uniform(shader,"eye",eye);uniform(shader,"lightDirection",sun);uniform(shader,"time",float(seconds));
+ uniform(shader,"fracturePivot",V3{});uniform(shader,"fractureHeat",0.f);uniform(shader,"eye",eye);uniform(shader,"lightDirection",sun);uniform(shader,"time",float(seconds));
  uniform(shader,"accent",V3{style.accent[0]/255.,style.accent[1]/255.,style.accent[2]/255.});
  uniform(shader,"materialStyle",float(style.silhouette));
  // Shared shader state must be reset before every port or craft draw.
@@ -148,6 +150,64 @@ void facility(Builder& m,const FacilitySite& site,const FactionStyle& style,int 
  if(close)architecture::closeFacility(m,site,style,faction);
  m.box({0,2,-10.96},{2.4,.24,.06},light);
 }
+void orbitalCore(Builder& m,int faction,int variant,bool far){
+ const auto& style=factionStyle(faction);Color metal=colour(style.hull),glow=colour(style.accent,96),secondary=colour(style.secondary,96);
+   // Faction silhouettes extend to their orbital bonded warehouses.
+   if(faction==1){for(int side:{-1,1})m.box({side*55.,0,0},{28,34,74},metal);m.box({0,0,0},{90,16,16},metal);}
+   else if(faction==2){m.sphere({0,0,0},{67,18,67},metal,false,20,8);m.ring({0,12,0},54,2,glow,48);}
+   else if(faction==3){for(int side:{-1,1}){m.cylinder({side*55.,-22,0},18,55,metal,6);m.cylinder({side*55.,33,0},18,16,colour(style.secondary,32),6,3);}m.box({0,0,0},{100,12,18},metal);}
+   else if(faction==4){m.cylinder({0,-30,0},38,72,metal,4,13);m.cylinder({0,42,0},13,30,colour(style.secondary,32),4,0);m.ring({0,0,0},74,2,glow,40);}
+   else{m.box({0,0,0},{58,24,55},metal);m.ring({0,0,0},80,4,metal,48);}
+   m.ring({0,-18,0},62,3.5,metal,far?24:48);m.ring({0,-12,0},64,.6,glow,far?24:48);
+   m.beam({0,-70,0},{0,70,0},2,metal);m.ring({0,70,0},18,.6,glow,32);m.ring({0,80,0},22,.3,secondary,32);
+   if(variant>>4){int design=(variant>>4)-1;
+    if(design==0||design==3){for(int side:{-1,1}){m.beam({side*70.,0,0},{side*105.,45,45},1.3,metal);m.ring({side*105.,45,45},23,1,secondary,far?12:32);}}
+    if(design==1||design==2){for(int k=0;k<3;k++){double a=k*2*pi/3;m.sphere({std::cos(a)*48,-40,std::sin(a)*48},{12,18,12},metal,false,far?6:12,6);}}
+    if(design==4)m.cylinder({0,-80,0},14,24,secondary,6,4);
+   }
+   int warehouses=variant&15;for(int i=0;i<std::min(warehouses,8);i++){double angle=i*2*pi/std::max(1,warehouses);m.box({std::cos(angle)*78,-22,std::sin(angle)*78},{17,16,22},metal);}
+   m.bevelBox({0,26,-26},{22,13,1},metal);emblem(m,faction,{0,25,-26.7},4,glow);
+   // Keep the actual docking axis open, with the deck below the existing
+   // ninety-metre berth and a separate loading gantry off to its side.
+   m.annularDeck({0,88.4,0},20,30,1.35,metal,far?24:64);m.paintArc({0,89.78,0},25,.35,0,2*pi,glow,far?24:64);
+   for(int side:{-1,1}){m.bevelBox({side*33.,96,0},{2,15,3},metal,.18);m.box({side*33.,102,0},{2.2,1.2,3.2},secondary);}
+   m.bevelBox({0,75,55},{46,2,26},metal,.5);
+   for(int side:{-1,1}){m.bevelBox({side*18.,84,55},{1.6,18,1.6},metal,.12);m.beam({side*18.,75,55},{side*18.,22,12},1.1,metal,6);}
+   m.bevelBox({0,93,55},{38,1.6,2.6},metal,.18);
+   if(!far){for(int side:{-1,1})m.box({side*25.,89.79,0},{.45,.035,14},coded({195,206,196,0},192));
+    for(int i=-2;i<=2;i++)roofUnit(m,{i*12.,13,-15},{8,3,9},metal,0);}
+}
+void stationWing(Builder& m,int faction,int side){m.box({},{68,2,36},coded({27,58,103,0},32));m.beam({-side*81.,0,0},{side*29.,0,0},1.3,colour(factionStyle(faction).hull));}
+void landingPad(Builder& m,int faction,bool far){const auto& style=factionStyle(faction);Color metal=colour(style.hull),glow=colour(style.accent,96),secondary=colour(style.secondary,96);
+   m.cylinder({0,-1.5,0},38,1.7,coded({52,65,70,0},0),far?24:64,37.4);
+   m.paintArc({0,.245,0},34.7,.22,0,2*pi,glow,far?32:80);
+   for(int i=0;i<8;i++){double begin=i*2*pi/8+.045,end=(i+1)*2*pi/8-.045;m.paintArc({0,.24,0},31.3,.30,begin,end,coded({177,190,182,0},192),far?3:10);}
+   for(int side:{-1,1})m.box({side*7.,.24,0},{.48,.035,18},coded({210,218,202,0},192));m.box({0,.24,0},{14,.035,.48},coded({210,218,202,0},192));
+   if(!far){for(int i=0;i<12;i++){double angle=i*2*pi/12;m.paintArc({0,.24,0},36.2,.72,angle,angle+.13,coded({210,169,84,0},192),3);}for(int side:{-1,1})m.bevelBox({side*39.,.55,5},{1.8,1.1,12},metal,.18);}
+}
+void loadingGantry(Builder& m,int faction,bool far){const auto& style=factionStyle(faction);Color metal=colour(style.hull),glow=colour(style.accent,96),secondary=colour(style.secondary,96);
+   m.bevelBox({0,1.2,56},{32,2,20},metal,.25);m.bevelBox({-18,13,53},{1.5,26,1.5},metal,.12);m.bevelBox({18,13,53},{1.5,26,1.5},metal,.12);m.bevelBox({0,26,53},{38,1.4,2.4},metal,.16);
+   if(!far){for(int side:{-1,1}){m.bevelBox({side*18.,1.3,53},{5,2.6,5},metal,.20);m.beam({side*18.,4,49},{side*18.,21,54},.22,metal,4);m.box({side*15.2,2.23,56},{.28,.06,17},coded({224,181,82,0},192));}
+    m.box({0,27,53},{35,.20,.32},secondary);m.box({0,4.5,45.85},{12,2.2,.12},coded({38,50,59,0},224));}
+ if(!far)for(int side:{-1,1})for(int j=0;j<5;j++)m.beam({side*18.,3.+j*4,52},{side*18.,7.+j*4,54},.10,metal,4);
+}
+void portMast(Builder& m,int faction,bool far){const auto& style=factionStyle(faction);Color metal=colour(style.hull),glow=colour(style.accent,96),secondary=colour(style.secondary,96);
+   m.box({-43,17,14},{.8,34,.8},metal);m.box({-43,25,14},{16,10,1.2},metal);emblem(m,faction,{-43,24,13.3},3.1,glow);
+}
+void portTerminal(Builder& m,int faction,bool far){const auto& style=factionStyle(faction);Color metal=colour(style.hull),glow=colour(style.accent,96),secondary=colour(style.secondary,96);
+    m.bevelBox({-17,2.8,67},{5,4.6,3.4},metal,.18);m.mappedQuad({-18.85,1.95,68.76},{-15.15,1.95,68.76},{-15.15,4.05,68.76},{-18.85,4.05,68.76},colour(style.secondary,48+13));
+}
+void structuralSource(Builder& m,const StructureRemains& f,bool low){
+ if(f.profile<14){FacilitySite site;site.kind=f.profile;site.ordinal=f.ordinal;site.occupants=f.variant;facility(m,site,factionStyle(f.faction),f.faction,false,!low);}
+ else if(f.profile==StationCore)orbitalCore(m,f.faction,f.variant,false);
+ else if(f.profile==StationWing)stationWing(m,f.faction,f.variant);
+ else if(f.profile==LandingPad)landingPad(m,f.faction,false);
+ else if(f.profile==LoadingGantry)loadingGantry(m,f.faction,false);
+ else if(f.profile==PortMast)portMast(m,f.faction,false);
+ else if(f.profile==PortTerminal)portTerminal(m,f.faction,false);
+ else if(f.profile==FreightCrate)freightContainer(m,{},coded(cargoColours[std::clamp(f.variant,0,8)],17),false);
+}
+
 }
 
 GeometryStats Renderer::architectureStats()const{
@@ -158,7 +218,7 @@ GeometryStats Renderer::architectureStats()const{
    for(int t=0;t<mesh.triangleCount;t++){V3 p[3];for(int k=0;k<3;k++){int v=mesh.indices?mesh.indices[t*3+k]:t*3+k;p[k]={mesh.vertices[v*3],mesh.vertices[v*3+1],mesh.vertices[v*3+2]};}if(length(cross(p[1]-p[0],p[2]-p[0]))<1e-8)result.degenerateTriangles++;}
   }
  };
- for(const auto& [id,asset]:portAssets){inspect(asset.close,false);result.closeTriangles+=asset.close.meshes[0].triangleCount;inspect(asset.detailed,false);inspect(asset.distant,true);if(asset.detail==2)result.closePorts++;}for(const auto& [id,model]:craftAssets)inspect(model,false);return result;
+ for(const auto& [id,asset]:portAssets){inspect(asset.close,false);result.closeTriangles+=asset.close.meshes[0].triangleCount;inspect(asset.detailed,false);inspect(asset.distant,true);if(asset.detail==2)result.closePorts++;}for(const auto& [id,model]:craftAssets)inspect(model,false);for(const auto& [id,a]:brokenStructures)for(const auto& m:a.parts)inspect(m,false);return result;
 }
 
 Renderer::FracturedHull Renderer::buildFracturedHull(const HullRemains& hull){
@@ -208,10 +268,65 @@ void Renderer::drawShipRemains(const Game& game){
   bool hasWreck=std::any_of(game.wrecks.begin(),game.wrecks.end(),[&](const auto&w){return w.id==e.actor;});if(!hasWreck)drawRemains(e.hull,e.position,e.age);
  }
 }
-void Renderer::clearPortAssets(){for(auto& [key,hull]:fracturedHulls)for(auto& part:hull.parts)if(part.meshCount)UnloadModel(part);fracturedHulls.clear();for(auto& [id,a]:portAssets)for(auto* m:{&a.close,&a.detailed,&a.distant})if(m->meshCount)UnloadModel(*m);portAssets.clear();for(auto& [key,m]:craftAssets)if(m.meshCount)UnloadModel(m);craftAssets.clear();}
+double Renderer::structureAge(const Game& game,const StructureRemains& shape)const{
+ if(shape.born<0)return 20;return std::max({0.,(presentation->hours-shape.born)*55.,shape.localBorn>=0?game.time-shape.localBorn:0.});
+}
+Renderer::BrokenStructure Renderer::buildBrokenStructure(const StructureRemains& shape){
+ Builder source;structuralSource(source,shape,false);std::vector<FractureVertex> vertices;vertices.reserve(source.vertices.size()/3);
+ for(size_t i=0;i<source.vertices.size()/3;i++){FractureVertex v;v.position={source.vertices[i*3],source.vertices[i*3+1],source.vertices[i*3+2]};v.normal={source.normals[i*3],source.normals[i*3+1],source.normals[i*3+2]};v.uv={source.uv[i*2],source.uv[i*2+1]};for(int k=0;k<4;k++)v.colour[k]=source.colours[i*4+k];vertices.push_back(v);}
+ auto fracture=fractureStructure(vertices,shape.profile,shape.seed);BrokenStructure asset;asset.sourceTriangles=fracture.sourceTriangles;asset.sourceArea=fracture.sourceArea;asset.partArea=fracture.fracturedArea;
+ for(const auto& part:fracture.parts){if(part.vertices.empty())continue;Builder m;auto pivot=part.bounds.centre();for(const auto& v:part.vertices){auto p=v.position-pivot;for(double n:{p.x,p.y,p.z})m.vertices.push_back(float(n));for(double n:{v.normal.x,v.normal.y,v.normal.z})m.normals.push_back(float(n));for(float n:v.uv)m.uv.push_back(n);for(auto n:v.colour)m.colours.push_back(n);}
+  auto model=m.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;
+  asset.parts.push_back(model);asset.bounds.push_back(part.bounds);asset.triangles+=int(part.vertices.size()/3);asset.caps+=part.capTriangles;
+ }return asset;
+}
+void Renderer::prepareStructures(const Game& game){
+ // Geometry is rebuilt only for changed damage, location or mesh quality. The
+ // per-frame path evaluates bounded analytic fragment poses without allocation.
+ if(structureRevision==game.geometryRevision&&length(structureAnchor-game.ship.position)<200&&structureLow==lowGraphics)return;
+ structureRevision=game.geometryRevision;structureAnchor=game.ship.position;structureLow=lowGraphics;structuralInstances.clear();
+ for(const auto& [id,d]:game.worldDamage)if(d.integrity<=0&&d.structure.valid&&length(d.structure.origin-game.ship.position)<3500)structuralInstances.push_back({id,d.structure,d.body});
+ for(const auto& port:game.ports)if(length(port.position-game.ship.position)<3000)for(const auto& object:portObjects(game,*presentation,port)){
+  if(object.integrity>0||object.structureProfile<0)continue;auto record=game.worldDamage.find(object.id);if(record!=game.worldDamage.end()&&record->second.structure.valid)continue;
+  StructureRemains shape;shape.valid=true;shape.profile=object.structureProfile;shape.variant=object.structureVariant;shape.ordinal=object.kind==FacilityObject?object.slot%24:0;shape.faction=object.structureFaction;shape.orbital=shape.profile==StationCore||shape.profile==StationWing;shape.origin=object.structureOrigin;shape.right=object.right;shape.up=object.up;shape.back=object.back;shape.seed=sceneHash(object.id);structuralInstances.push_back({object.id,shape,object.body});
+ }
+ std::stable_sort(structuralInstances.begin(),structuralInstances.end(),[&](const auto& a,const auto& b){return length(a.shape.origin-game.ship.position)<length(b.shape.origin-game.ship.position);});
+ // A whole nearby district can remain visibly ruined. Cap resident GPU assets;
+ // returning to a culled district reconstructs exactly the same saved pieces.
+ if(structuralInstances.size()>48)structuralInstances.resize(48);
+ for(auto it=brokenStructures.begin();it!=brokenStructures.end();){bool keep=std::any_of(structuralInstances.begin(),structuralInstances.end(),[&](const auto& s){return s.id==it->first;});if(!keep){for(auto& m:it->second.parts)UnloadModel(m);it=brokenStructures.erase(it);}else ++it;}
+ for(const auto& instance:structuralInstances){const auto& f=instance.shape;uint64_t key=f.seed;for(auto n:{f.profile,f.variant,f.ordinal,f.faction,int(lowGraphics)})key=key*1099511628211ull+uint64_t(n+1);auto it=brokenStructures.find(instance.id);
+  if(it!=brokenStructures.end()&&it->second.key!=key){for(auto& m:it->second.parts)UnloadModel(m);brokenStructures.erase(it);it=brokenStructures.end();}
+  if(it==brokenStructures.end()){auto asset=buildBrokenStructure(f);asset.key=key;brokenStructures.emplace(instance.id,std::move(asset));}
+ }
+}
+void Renderer::drawStructuralRemains(const Game& game,bool shadow){
+ if(!shadow)structuralDraws=structuralParts=0;
+ for(const auto& instance:structuralInstances){const auto& f=instance.shape;auto found=brokenStructures.find(instance.id);if(found==brokenStructures.end())continue;auto& asset=found->second;double age=structureAge(game,f);
+  if(shadow&&(f.orbital||instance.body!=groundBody||length(f.origin-game.ship.position)>480))continue;
+  if(!shadow&&dot(f.origin-game.ship.position,game.ship.forward)<-220)continue;
+  if(!shadow){structureState(structure,factionStyle(f.faction),{camera.position.x,camera.position.y,camera.position.z},sunDirection,visualTime,nullptr);uniform(structure,"fractureHeat",reduced?0.f:float(std::exp(-age*.8)*std::clamp(age/.12,0.,1.)));uniform(structure,"condition",float(.15+.7*std::exp(-age*.65)));uniform(structure,"powerOn",float(std::exp(-age*1.3)));uniform(structure,"pollution",.7f);uniform(structure,"useSunShadow",shadowActive&&shadowBody==instance.body?groundBlend:0.f);uniform(structure,"shadowCentre",instance.body>=0?game.planets[instance.body].centre:V3{});uniform(structure,"skyRadial",f.up);uniform(structure,"structureAir",!f.orbital&&instance.body>=0?float(game.planets[instance.body].atmosphere):0.f);int loc=GetShaderLocation(structure,"sunShadowMatrix");if(loc>=0)SetShaderValueMatrix(structure,loc,sunMatrix);structuralDraws++;}
+  for(int part=0;part<int(asset.parts.size());part++){auto pose=structurePose(f,asset.bounds[part],part,age);auto at=structurePoint(f,pose.centre);
+   // Follow local terrain instead of letting wide toppled sections sink through
+   // curved ground. Preserve the exact source pose at the moment of release.
+   if(!f.orbital&&instance.body>=0&&age>.3){const auto& planet=game.planets[instance.body];double lift=0;auto half=asset.bounds[part].half();for(int x:{-1,1})for(int z:{-1,1}){auto foot=structurePoint(f,fragmentPoint(pose,{x*half.x,-half.y,z*half.z}));auto radial=unit(foot-planet.centre);auto floor=planet.centre+radial*(planet.radius+terrain(planet,radial)+2.02);lift=std::max(lift,dot(floor-foot,f.up));}at+=f.up*(lift*std::clamp((age-.3)/.5,0.,1.));}
+   auto rotateBasis=[&](V3 n){return f.right*n.x+f.up*n.y+f.back*n.z;};auto r=rotateBasis(pose.right),u=rotateBasis(pose.up),b=rotateBasis(pose.back);auto& model=asset.parts[part];model.transform={float(r.x),float(u.x),float(b.x),0,float(r.y),float(u.y),float(b.y),0,float(r.z),float(u.z),float(b.z),0,0,0,0,1};
+   if(shadow){auto original=model.materials[0].shader;model.materials[0].shader=sunDepth;uniform(sunDepth,"groundPass",0.f);DrawModel(model,vec(at-game.planets[groundBody].centre),1,WHITE);model.materials[0].shader=original;}
+   else{uniform(structure,"fracturePivot",asset.bounds[part].centre());DrawModel(model,vec(at),1,WHITE);structuralParts++;}
+   if(shadow||age<.08||age>7)continue;
+   // Cold mineral dust and spectral arcs originate on the moving architecture,
+   // including delayed secondary failures after the main fireball has faded.
+   double pulse=std::exp(-std::pow((age-(.6+fractureNoise(f.seed,part+80)*2.4))/.35,2));auto tint=colour(factionStyle(f.faction).accent,255);
+   if(!reduced&&combatGlow.id&&part%(lowGraphics?3:2)==0){rlDisableDepthMask();auto dustAt=f.orbital?at:at-f.up*asset.bounds[part].half().y+f.up*(age*.35);double fade=std::sin(std::clamp(age/7.,0.,1.)*pi);DrawBillboard(camera,combatGlow,vec(dustAt),float((2+age)*std::min(5.,asset.bounds[part].half().x*.5)),Color{44,33,60,static_cast<unsigned char>(fade*62)});rlEnableDepthMask();}
+   if(pulse>.02&&part%(reduced?4:lowGraphics?2:1)==0){BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();if(combatGlow.id)DrawBillboard(camera,combatGlow,vec(at),float(1.5+asset.bounds[part].half().x*.22),Color{tint.r,tint.g,tint.b,static_cast<unsigned char>(pulse*180)});
+    int sparks=reduced?2:lowGraphics?4:7;for(int j=0;j<sparks;j++){double phase=age*3+j*2.399963,reach=(.4+pulse*2)*(1+fractureNoise(f.seed,part*9+j));auto direction=f.right*std::cos(phase)+f.back*std::sin(phase)+f.up*(f.orbital?std::sin(phase*1.7):.6);DrawLine3D(vec(at+direction*reach),vec(at+direction*(reach+.6)),Color{tint.r,tint.g,tint.b,static_cast<unsigned char>(pulse*205)});}rlEnableDepthMask();EndBlendMode();}
+  }
+ }
+}
+void Renderer::clearPortAssets(){for(auto& [id,a]:brokenStructures)for(auto& m:a.parts)UnloadModel(m);brokenStructures.clear();structuralInstances.clear();structureRevision=~uint64_t(0);for(auto& [key,hull]:fracturedHulls)for(auto& part:hull.parts)if(part.meshCount)UnloadModel(part);fracturedHulls.clear();for(auto& [id,a]:portAssets)for(auto* m:{&a.close,&a.detailed,&a.distant})if(m->meshCount)UnloadModel(*m);portAssets.clear();for(auto& [key,m]:craftAssets)if(m.meshCount)UnloadModel(m);craftAssets.clear();}
 Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* view,const Game& game){
  SettlementView empty;empty.id=port.id;const auto& s=view?*view:empty;const auto& style=factionStyle(s.faction);
- auto layout=layoutSettlement(s);PortAsset asset;asset.key=s.geometryKey();for(const auto& [id,damage]:game.worldDamage)if(damage.integrity<=0&&(id==portObjectId(port.id)||id.rfind("prop:"+port.id+":",0)==0||(damage.kind==ImpactObject&&damage.body==port.planet&&length(damage.position-port.position)<800)))asset.key^=uint64_t(sceneHash(id))*0x9e3779b97f4a7c15ull;asset.at=port.position;asset.up=port.normal;asset.radius=port.planet<0?190:layout.radius;
+ auto layout=layoutSettlement(s);PortAsset asset;asset.key=portGeometryKey(port,view,game);asset.at=port.position;asset.up=port.normal;asset.radius=port.planet<0?190:layout.radius;
  V3 n=port.normal,a=unit(cross({1,0,0},n),{0,0,1}),b=unit(cross(a,n));
  Matrix rotation{float(a.x),float(n.x),float(b.x),0,float(a.y),float(n.y),float(b.y),0,float(a.z),float(n.z),float(b.z),0,0,0,0,1};
  auto surface=[&](V3 p){Frame f;f.origin=p;
@@ -222,29 +337,22 @@ Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* v
  for(int lod=0;lod<3;lod++){bool close=lod==0,far=lod==2;Builder m;Color metal=colour(style.hull),glow=colour(style.accent,96),secondary=colour(style.secondary,96);
   if(port.planet>=0){
    if(!port.disabled){
-   m.cylinder({0,-1.5,0},38,1.7,coded({52,65,70,0},0),far?24:64,37.4);
-   m.paintArc({0,.245,0},34.7,.22,0,2*pi,glow,far?32:80);
-   for(int i=0;i<8;i++){double begin=i*2*pi/8+.045,end=(i+1)*2*pi/8-.045;m.paintArc({0,.24,0},31.3,.30,begin,end,coded({177,190,182,0},192),far?3:10);}
-   for(int side:{-1,1})m.box({side*7.,.24,0},{.48,.035,18},coded({210,218,202,0},192));m.box({0,.24,0},{14,.035,.48},coded({210,218,202,0},192));
-   if(!far){for(int i=0;i<12;i++){double angle=i*2*pi/12;m.paintArc({0,.24,0},36.2,.72,angle,angle+.13,coded({210,169,84,0},192),3);}for(int side:{-1,1})m.bevelBox({side*39.,.55,5},{1.8,1.1,12},metal,.18);}
+   landingPad(m,s.faction,far);
    }else{for(int i=0;i<8;i++)m.bevelBox({std::sin(i*3.1)*24,.5,std::cos(i*2.7)*24},{6,1.4,4},coded({37,38,44,0},0),.2);}
    // A real loading yard lies outside the player's landing circle.
    if(objectIntegrity(game.worldDamage,propObjectId(port.id,"gantry",0))>0){
-   m.bevelBox({0,1.2,56},{32,2,20},metal,.25);m.bevelBox({-18,13,53},{1.5,26,1.5},metal,.12);m.bevelBox({18,13,53},{1.5,26,1.5},metal,.12);m.bevelBox({0,26,53},{38,1.4,2.4},metal,.16);
-   if(!far){for(int side:{-1,1}){m.bevelBox({side*18.,1.3,53},{5,2.6,5},metal,.20);m.beam({side*18.,4,49},{side*18.,21,54},.22,metal,4);m.box({side*15.2,2.23,56},{.28,.06,17},coded({224,181,82,0},192));}
-    m.box({0,27,53},{35,.20,.32},secondary);m.box({0,4.5,45.85},{12,2.2,.12},coded({38,50,59,0},224));}
+   loadingGantry(m,s.faction,far);
    }
    if(objectIntegrity(game.worldDamage,propObjectId(port.id,"mast",0))>0){
-   m.box({-43,17,14},{.8,34,.8},metal);m.box({-43,25,14},{16,10,1.2},metal);emblem(m,s.faction,{-43,24,13.3},3.1,glow);
+   portMast(m,s.faction,far);
    }
    for(int i=0;i<9;i++)for(int c=0;c<std::min(far?2:8,cargoSlots(game.worldDamage,port.id,i,s.stock[i]));c++){
     if(objectIntegrity(game.worldDamage,propObjectId(port.id,"cargo",i*8+c))<=0)continue;
     V3 p{-11+(i%3)*11.,3.42+(c/2)*2.44,48+(i/3)*6.+(c%2)*2.6};freightContainer(m,p,coded(cargoColours[i],17),far!=0);
    }
    if(close){
-    for(int side:{-1,1}){for(int j=0;j<5;j++)m.beam({side*18.,3.+j*4,52},{side*18.,7.+j*4,54},.10,metal,4);}
     if(objectIntegrity(game.worldDamage,propObjectId(port.id,"terminal",0))>0){
-    m.bevelBox({-17,2.8,67},{5,4.6,3.4},metal,.18);m.mappedQuad({-18.85,1.95,68.76},{-15.15,1.95,68.76},{-15.15,4.05,68.76},{-18.85,4.05,68.76},colour(style.secondary,48+13));
+    portTerminal(m,s.faction,far);
     }
    }
    std::array<bool,14> roads{};
@@ -253,7 +361,7 @@ Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* v
      m.frame={};pavedRoad(m,surface,unit(site.position),reach,far!=0);}
     m.frame=surface(site.position);double facing=site.angle+(site.ordinal%2?pi:0);m.frame.x=unit(m.frame.x*std::cos(facing)+m.frame.z*std::sin(facing));m.frame.z=unit(cross(m.frame.x,m.frame.y));
     auto damaged=s.facilityIntegrity.find(site.kind*24+site.ordinal);double hp=damaged==s.facilityIntegrity.end()?1:damaged->second;
-    if(hp<=0){for(int i=0;i<(far?3:7);i++){double angle=i*2.399963+site.kind;V3 at{std::cos(angle)*(3+i*.7),.7+std::sin(i*4.)*.3,std::sin(angle)*(3+i*.5)};m.bevelBox(at,{3.+i*.4,1.2+(i%3)*.7,2.5},coded({39,36,48,0},site.kind+1),.16);}m.beam({-5,0,0},{-5,4.5,1},.3,coded({44,48,52,0},site.kind+1));}
+    if(hp<=0){m.cylinder({0,-.65,0},10,1.,coded({38,37,44,0},128),far?8:16);}
     else{size_t first=m.colours.size();facility(m,site,style,s.faction,far,close);if(hp<1)for(size_t c=first;c<m.colours.size();c+=4)for(int k=0;k<3;k++)m.colours[c+k]=static_cast<unsigned char>(m.colours[c+k]*(.5+.5*hp));}
    }
    m.frame={};
@@ -264,43 +372,16 @@ Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* v
      for(int side:{-1,1}){m.beam({0,4,0},{side*1.4,6.+(i%3),.5},.12,coded({89,126,88,0},160),4);m.sphere({side*1.4,6.+(i%3),.5},{1.4,2,1.5},coded({102,177,133,0},160),false,8,4);}}
     m.frame={};for(int i=0;i<10;i++)for(int side:{-1,1}){auto f=surface({side*13.,0,-45-i*7.});m.frame=f;if(objectIntegrity(game.worldDamage,propObjectId(port.id,"beacon",i*2+(side>0)))>0)m.cylinder({},.28,.65,glow,5);}m.frame={};}
   }else{
-   if(port.disabled){
-    for(int i=0;i<9;i++){double angle=i*2.399963;V3 at{std::cos(angle)*45,std::sin(i*3.7)*16,std::sin(angle)*45};m.bevelBox(at,{16,5,12},coded({32,34,43,0},0),.4);}
-    for(int side:{-1,1})if(objectIntegrity(game.worldDamage,propObjectId(port.id,"panel",side+1))>0)m.box({side*131.,0,0},{68,2,36},coded({27,58,103,0},32));
-   }else{
-   // Faction silhouettes extend to their orbital bonded warehouses.
-   if(s.faction==1){for(int side:{-1,1})m.box({side*55.,0,0},{28,34,74},metal);m.box({0,0,0},{90,16,16},metal);}
-   else if(s.faction==2){m.sphere({0,0,0},{67,18,67},metal,false,20,8);m.ring({0,12,0},54,2,glow,48);}
-   else if(s.faction==3){for(int side:{-1,1}){m.cylinder({side*55.,-22,0},18,55,metal,6);m.cylinder({side*55.,33,0},18,16,colour(style.secondary,32),6,3);}m.box({0,0,0},{100,12,18},metal);}
-   else if(s.faction==4){m.cylinder({0,-30,0},38,72,metal,4,13);m.cylinder({0,42,0},13,30,colour(style.secondary,32),4,0);m.ring({0,0,0},74,2,glow,40);}
-   else{m.box({0,0,0},{58,24,55},metal);m.ring({0,0,0},80,4,metal,48);}
-   m.ring({0,-18,0},62,3.5,metal,far?24:48);m.ring({0,-12,0},64,.6,glow,far?24:48);
-   for(int side:{-1,1}){if(objectIntegrity(game.worldDamage,propObjectId(port.id,"panel",side+1))<=0)continue;m.box({side*131.,0,0},{68,2,36},coded({27,58,103,0},32));m.beam({side*50.,0,0},{side*160.,0,0},1.3,metal);}
-   m.beam({0,-70,0},{0,70,0},2,metal);m.ring({0,70,0},18,.6,glow,32);m.ring({0,80,0},22,.3,secondary,32);
-   if(!view){uint32_t seed=game.planets.at(port.body).worldSeed;int design=int(seed%5);
-    if(design==0||design==3){for(int side:{-1,1}){m.beam({side*70.,0,0},{side*105.,45,45},1.3,metal);m.ring({side*105.,45,45},23,1,secondary,far?12:32);}}
-    if(design==1||design==2){for(int k=0;k<3;k++){double a=k*2*pi/3;m.sphere({std::cos(a)*48,-40,std::sin(a)*48},{12,18,12},metal,false,far?6:12,6);}}
-    if(design==4)m.cylinder({0,-80,0},14,24,secondary,6,4);
-   }
-   int warehouses=view?view->facilities[Warehouse]:0;for(int i=0;i<std::min(warehouses,8);i++){double angle=i*2*pi/std::max(1,warehouses);m.box({std::cos(angle)*78,-22,std::sin(angle)*78},{17,16,22},metal);}
-   m.bevelBox({0,26,-26},{22,13,1},metal);emblem(m,s.faction,{0,25,-26.7},4,glow);
-   // Keep the actual docking axis open, with the deck below the existing
-   // ninety-metre berth and a separate loading gantry off to its side.
-   m.annularDeck({0,88.4,0},20,30,1.35,metal,far?24:64);m.paintArc({0,89.78,0},25,.35,0,2*pi,glow,far?24:64);
-   for(int side:{-1,1}){m.bevelBox({side*33.,96,0},{2,15,3},metal,.18);m.box({side*33.,102,0},{2.2,1.2,3.2},secondary);}
-   m.bevelBox({0,75,55},{46,2,26},metal,.5);
-   for(int side:{-1,1}){m.bevelBox({side*18.,84,55},{1.6,18,1.6},metal,.12);m.beam({side*18.,75,55},{side*18.,22,12},1.1,metal,6);}
-   m.bevelBox({0,93,55},{38,1.6,2.6},metal,.18);
-   if(!far){for(int side:{-1,1})m.box({side*25.,89.79,0},{.45,.035,14},coded({195,206,196,0},192));
-    for(int i=-2;i<=2;i++)roofUnit(m,{i*12.,13,-15},{8,3,9},metal,0);}
+   if(port.disabled)m.box({0,-18,0},{.05,.05,.05},coded({30,30,36,0},0));
+   if(!port.disabled)orbitalCore(m,s.faction,view?std::min(8,view->facilities[Warehouse]):((int(game.planets.at(port.body).worldSeed%5)+1)<<4),far);
+   for(int side:{-1,1})if(objectIntegrity(game.worldDamage,propObjectId(port.id,"panel",side+1))>0){m.frame.origin={side*131.,0,0};stationWing(m,s.faction,side);m.frame={};}
+  }
 
-  }
-  }
   auto model=m.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;model.transform=rotation;if(close)asset.close=model;else if(far)asset.distant=model;else asset.detailed=model;
  }return asset;
 }
 void Renderer::drawSettlement(const Port& port,const SettlementView* view,const Game& game){
- SettlementView relay;relay.id=port.id;auto key=view?view->geometryKey():relay.geometryKey();for(const auto& [id,damage]:game.worldDamage)if(damage.integrity<=0&&(id==portObjectId(port.id)||id.rfind("prop:"+port.id+":",0)==0||(damage.kind==ImpactObject&&damage.body==port.planet&&length(damage.position-port.position)<800)))key^=uint64_t(sceneHash(id))*0x9e3779b97f4a7c15ull;auto it=portAssets.find(port.id);
+ auto key=portGeometryKey(port,view,game);auto it=portAssets.find(port.id);
  if(it==portAssets.end())it=portAssets.emplace(port.id,buildPort(port,view,game)).first;
  else if(it->second.key!=key||length(it->second.at-port.position)>1e-5||length(it->second.up-port.normal)>1e-8){UnloadModel(it->second.close);UnloadModel(it->second.detailed);UnloadModel(it->second.distant);it->second=buildPort(port,view,game);}
  auto& asset=it->second;double distance=length(port.position-game.ship.position),pixels=asset.radius/std::max(1.,distance)*scene.texture.height;

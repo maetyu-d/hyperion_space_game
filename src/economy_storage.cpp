@@ -91,7 +91,8 @@ Economy decodeEconomy(const J& j,Universe& u,double hour) {
     }
     const auto& history=j.at("history");array(history,2000);for (const auto& v:history) e.history.push_back({n(v,"hour",0,0,hour+.000001),t(v,"place"),t(v,"cause")});
     if (!e.docked.empty()&&!ids.count(e.docked)) throw std::runtime_error("Invalid docked settlement");
-    if(j.contains("destruction"))e.worldDamage=decodeWorldDamage(j.at("destruction"),u);
+    if(j.contains("destruction"))e.worldDamage=decodeWorldDamage(j.at("destruction"),u,hour);
+    for(const auto& [id,d]:e.worldDamage)if(d.kind==FacilityObject){auto* site=findSettlement(e,d.owner);if(!site||site->star!=d.star||site->planet!=d.body||facilityIntegrity(*site,d.slot/24,d.slot%24)>0)throw std::runtime_error("Structural ruin disagrees with facility capacity");}
     if(j.contains("ecosystems"))decodeEcosystems(e,j.at("ecosystems"),u);else for(const auto& s:e.settlements)if(!s.habitat.empty())throw std::runtime_error("Habitat reference has no ecosystem state");
     if(j.contains("security"))decodeSecurity(e,j.at("security"));
     if(j.contains("shipyard"))decodeShipyard(e,j.at("shipyard"));

@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "world_objects.hpp"
 #include "../screen_layout.hpp"
 #include "shaders.hpp"
 #include "minor_shaders.hpp"
@@ -341,11 +342,12 @@ void Renderer::drawSunShadows(const Game& g,V3 eye){
  shadowActive=false;if(reduced||groundBody<0||!groundModel.meshCount||sunScene.texture.format!=PIXELFORMAT_UNCOMPRESSED_R32||dot(groundAnchor,sunDirection)<.035)return;
  const auto& body=g.planets[groundBody];V3 localEye=eye-body.centre;uint64_t casterKey=0;std::vector<int> ports;
  for(int i=0;i<int(g.ports.size());i++){const auto& port=g.ports[i];if(port.planet!=groundBody||length(port.position-g.ship.position)>480)continue;
-  const auto* view=presentation->settlement(port.settlement);SettlementView relay;relay.id=port.id;auto key=view?view->geometryKey():relay.geometryKey();auto it=portAssets.find(port.id);
+  const auto* view=presentation->settlement(port.settlement);auto key=portGeometryKey(port,view,g);auto it=portAssets.find(port.id);
   if(it==portAssets.end())it=portAssets.emplace(port.id,buildPort(port,view,g)).first;
   else if(it->second.key!=key||length(it->second.at-port.position)>1e-5||length(it->second.up-port.normal)>1e-8){UnloadModel(it->second.close);UnloadModel(it->second.detailed);UnloadModel(it->second.distant);it->second=buildPort(port,view,g);}
   casterKey^=it->second.key+0x9e3779b97f4a7c15ULL+(casterKey<<6)+(casterKey>>2);ports.push_back(i);
  }
+ for(const auto& instance:structuralInstances)if(!instance.shape.orbital&&instance.body==groundBody){double age=structureAge(g,instance.shape);casterKey^=sceneHash(instance.id)+uint64_t(std::min(age,7.)*30)*0x9e3779b9u;}
  shadowActive=true;++shadowFrames;
  if(shadowBody==groundBody&&length(shadowAnchor-groundAnchor)<1e-8&&length(shadowEye-localEye)<4&&std::abs(shadowBlend-groundBlend)<.002&&shadowCasters==casterKey)return;
  V3 forward=-sunDirection,right=unit(cross(forward,{0,1,0})),up=unit(cross(right,forward));
@@ -359,6 +361,7 @@ void Renderer::drawSunShadows(const Game& g,V3 eye){
  rlDrawRenderBatchActive();rlDisableColorBlend();
  auto draw=[&](Model& model,V3 at,float pass){set(sunDepth,"groundPass",pass);auto original=model.materials[0].shader;model.materials[0].shader=sunDepth;DrawModel(model,vec(at),1,WHITE);model.materials[0].shader=original;};
  draw(groundModel,{},1);if(rockModel.meshCount)draw(rockModel,{},2);
+ drawStructuralRemains(g,true);
  for(int i:ports)draw(portAssets.at(g.ports[i].id).close,g.ports[i].position-body.centre,0);
  rlDrawRenderBatchActive();rlEnableColorBlend();EndMode3D();EndTextureMode();rlSetClipPlanes(1.,60000.);
  shadowBody=groundBody;shadowAnchor=groundAnchor;shadowEye=localEye;shadowBlend=groundBlend;shadowCasters=casterKey;++shadowUpdates;
@@ -427,7 +430,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  // the main framebuffer is unbound, and resolves before ships and the cockpit.
  // The cockpit has its own close projection. A one-kilometre world near
  // plane preserves substantially more precision in distant layered planets.
- prepareMinorBodies(g);drawSunShadows(g,eye);rlSetClipPlanes(1.,60000);
+ prepareMinorBodies(g);prepareStructures(g);drawSunShadows(g,eye);rlSetClipPlanes(1.,60000);
  BeginTextureMode(scene);ClearBackground(ink);
  set(sky,"resolution",Vector2{float(renderW),float(renderH)});set(sky,"forward",g.ship.forward);set(sky,"up",g.ship.up);
  set(sky,"right",unit(cross(g.ship.forward,g.ship.up)));set(sky,"radial",unit(g.ship.position-p.centre));set(sky,"lightDirection",sunDirection);

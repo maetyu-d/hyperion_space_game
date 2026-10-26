@@ -1,0 +1,103 @@
+{
+  "version": "3.60.0",
+  "binarySHA256": "9ad3fa17e776669f91cfa55b35c9e59186003dc14002f8100804d92a098c0a6f",
+  "runs": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "wreck-at-sea",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "wreck-delivered",
+      "exit": 0,
+      "seconds": 1.68
+    },
+    {
+      "check": "old-damaged-world",
+      "exit": 0,
+      "seconds": 9.54,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "old-dismantled-wreck",
+      "exit": 0,
+      "seconds": 9.61,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "structural-fragments",
+      "exit": 0,
+      "seconds": 9.48,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "fragments-in-cockpit",
+      "exit": 0,
+      "noSave": true,
+      "frames": 4
+    },
+    {
+      "check": "legacy-ruins-in-cockpit",
+      "exit": 0,
+      "noSave": true,
+      "frames": 4
+    }
+  ],
+  "frozenSaveRoundtripsExact": true,
+  "rawStructuralFixture": {
+    "renderOnlyTrafficRemoved": true,
+    "restoredTrafficCount": 11,
+    "onlyTrafficRegenerated": true,
+    "economyAndShipStateUnchanged": true
+  },
+  "oldCampaignRoundtripsExact": true,
+  "damageCampaignsAuthoritativeExact": true
+}

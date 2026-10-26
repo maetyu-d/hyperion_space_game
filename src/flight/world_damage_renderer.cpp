@@ -3,6 +3,7 @@
 namespace hyperion::flight {
 namespace {Vector3 vec(V3 p){return {float(p.x),float(p.y),float(p.z)};}double random(uint32_t seed,int n){uint32_t h=seed^uint32_t(n+1)*0x9e3779b9u;h^=h>>16;h*=0x7feb352du;h^=h>>15;return double(h>>8)/16777215.;}}
 void Renderer::drawWorldDamage(const Game& game){
+ drawStructuralRemains(game);
  int chunks=reduced?48:lowGraphics?96:180;
  for(const auto& [id,d]:game.worldDamage){if(d.integrity>0)continue;auto at=d.position;
   if(d.kind==MinorObjectKind||d.kind==ImpactObject)for(const auto& body:game.minorBodies)if("body:"+body.source.id==id||(d.kind==ImpactObject&&d.owner==body.source.id))at=body.centre+unit(d.normal)*body.source.radius;
@@ -14,6 +15,7 @@ void Renderer::drawWorldDamage(const Game& game){
    rlDisableDepthMask();rlBegin(RL_TRIANGLES);rlColor4ub(23,16,31,180);int segments=reduced?12:28;
    auto centre=point(0,0);for(int i=0;i<segments;i++){auto a=point(i*2*pi/segments,.85+.15*random(seed,i)),b=point((i+1)*2*pi/segments,.85+.15*random(seed,i+1));for(auto p:{centre,a,b,centre,b,a})rlVertex3f(float(p.x),float(p.y),float(p.z));}rlEnd();rlEnableDepthMask();continue;
   }
+  if(d.structure.valid||std::any_of(structuralInstances.begin(),structuralInstances.end(),[&id=id](const auto& s){return s.id==id;}))continue;
   if(d.kind==FacilityObject||d.kind==PortObject||d.kind==SalvageObject)continue;
   if(objectIntegrity(game.worldDamage,"wreck:world:"+id)<=0)continue;
   if(d.kind==LifeObject||d.kind==PlantObject){

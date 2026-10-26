@@ -1,0 +1,22 @@
+{
+  "version": "3.60.0",
+  "binarySHA256": "9ad3fa17e776669f91cfa55b35c9e59186003dc14002f8100804d92a098c0a6f",
+  "runs": [
+    {
+      "check": "combat",
+      "flag": "--combat-visual-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 44.92,
+      "noSave": true
+    },
+    {
+      "check": "landing",
+      "flag": "--surface-transition-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 23.76,
+      "noSave": true
+    }
+  ]
+}

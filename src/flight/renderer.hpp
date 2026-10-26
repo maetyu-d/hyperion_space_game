@@ -20,6 +20,11 @@ class Renderer {
  struct PortAsset {Model close{},detailed{},distant{};std::vector<V3> detailCentres;V3 at{},up{};uint64_t key=0;double radius=60;int detail=-1;};
  std::unordered_map<std::string,PortAsset> portAssets;std::map<std::tuple<int,int,int,int>,Model> craftAssets;
  struct FracturedHull {std::array<Model,5> parts{};std::array<V3,5> pivots{};int triangles=0;};std::map<std::pair<int,int>,FracturedHull> fracturedHulls;
+ struct BrokenStructure {std::vector<Model> parts;std::vector<FragmentBounds> bounds;uint64_t key=0;int sourceTriangles=0,triangles=0,caps=0;double sourceArea=0,partArea=0;};
+ struct StructuralInstance {std::string id;StructureRemains shape;int body=-1;};
+ std::unordered_map<std::string,BrokenStructure> brokenStructures;std::vector<StructuralInstance> structuralInstances;V3 structureAnchor{1e10,0,0};uint64_t structureRevision=~uint64_t(0);bool structureLow=false;
+ BrokenStructure buildBrokenStructure(const StructureRemains&);void prepareStructures(const Game&);void drawStructuralRemains(const Game&,bool shadow=false);double structureAge(const Game&,const StructureRemains&)const;
+ int structuralDraws=0,structuralParts=0;
  int debrisHulls=0,debrisParts=0;FracturedHull buildFracturedHull(const HullRemains&);void drawRemains(const HullRemains&,V3,double);void drawShipRemains(const Game&);
  const Scene* presentation=nullptr;Shader structure{},surfaceBake{},geologyBake{},detailBake{},planetDepth{},sunDepth{};
  std::vector<RenderTexture2D> surfaceMaps,geologyMaps;std::string bodiesKey;
@@ -40,6 +45,8 @@ class Renderer {
  void drawPlanetDepth(const Game&,const std::vector<int>&,V3);void drawAuroras(const Game&,const std::vector<int>&,V3);void drawClouds(const Game&,const std::vector<int>&,V3);
  bool auditClouds=false;CloudOcclusionStats cloudStats{},auroraStats{};void measureCloudOcclusion(const Game&,int,V3,bool emission=false);void resolveWeather(const Game&,V3,Texture2D,bool emission=false);
 public:
+ struct StructuralStats {int objects=0,parts=0,cached=0,sourceTriangles=0,triangles=0,caps=0;double sourceArea=0,partArea=0;};
+ StructuralStats structuralStats()const{StructuralStats s;s.objects=structuralDraws;s.parts=structuralParts;s.cached=int(brokenStructures.size());for(const auto& [id,a]:brokenStructures){s.sourceTriangles+=a.sourceTriangles;s.triangles+=a.triangles;s.caps+=a.caps;s.sourceArea+=a.sourceArea;s.partArea+=a.partArea;}return s;}
  struct BreakupStats {int hulls,parts,cached;};BreakupStats breakupStats()const{return {debrisHulls,debrisParts,int(fracturedHulls.size())};}
  struct QualityStats {bool low;int renderWidth,renderHeight,cloudWidth,shadowWidth,detailWidth,surfaceWidth;};
  QualityStats qualityStats()const{return {lowGraphics,scene.texture.width,scene.texture.height,cloudScene.texture.width,sunScene.texture.width,detailMap.texture.width,surfaceMaps.size()>2?surfaceMaps[2].texture.width:0};}

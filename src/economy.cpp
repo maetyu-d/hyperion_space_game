@@ -367,7 +367,7 @@ void advanceEconomy(Economy& e,Universe& u,double targetHour) {
         e.hour+=.25;advanceEcosystems(e,u,.25);
         for (auto& s:e.settlements) updateSettlement(e,u,s,.25);
         if(std::abs(e.hour/6-std::round(e.hour/6))<1e-8)for(auto& site:e.settlements)if(site.owner!=0){
-            bool rebuilt=false;for(auto it=site.facilityIntegrity.begin();it!=site.facilityIntegrity.end();++it){const auto& def=buildings[it->first/24];if(site.treasury>=def.price&&has(site.stock,def.construction)){subtract(site.stock,def.construction);site.treasury-=def.price;e.factions[site.authority].treasury+=def.price;site.facilityIntegrity.erase(it);e.damageRevision++;e.geometryRevision++;economicEvent(e,site.name,"Local crews rebuilt damaged infrastructure using warehouse supplies.");rebuilt=true;break;}}
+            bool rebuilt=false;for(auto it=site.facilityIntegrity.begin();it!=site.facilityIntegrity.end();++it){const auto& def=buildings[it->first/24];if(site.treasury>=def.price&&has(site.stock,def.construction)){subtract(site.stock,def.construction);site.treasury-=def.price;e.factions[site.authority].treasury+=def.price;e.worldDamage.erase(facilityObjectId(site.id,it->first/24,it->first%24));site.facilityIntegrity.erase(it);e.damageRevision++;e.geometryRevision++;economicEvent(e,site.name,"Local crews rebuilt damaged infrastructure using warehouse supplies.");rebuilt=true;break;}}
             if(!rebuilt)for(auto it=e.worldDamage.begin();it!=e.worldDamage.end();++it){const auto& d=it->second;if(d.owner!=site.id||d.integrity>=1||(d.kind!=PortObject&&d.kind!=PanelObject))continue;bool core=d.kind==PortObject;Stock cost=stock({{Alloy,core?32.:8.},{Components,core?12.:3.}});int price=core?800:120;if(site.treasury>=price&&has(site.stock,cost)){subtract(site.stock,cost);site.treasury-=price;e.factions[site.authority].treasury+=price;e.worldDamage.erase(it);e.damageRevision++;e.geometryRevision++;economicEvent(e,site.name,"Local crews reconstructed port equipment; physical supplies and treasury funded the work.");break;}}
         }
         // Runoff travels between nearby sites instead of remaining a private penalty.
@@ -433,7 +433,7 @@ bool construct(Economy& e,Settlement& s,int building,Stock& ship,std::string& me
     int restore=-1;for(const auto& [slot,hp]:s.facilityIntegrity)if(slot/24==building&&hp<1){restore=slot;break;}
     if (s.built[building]>=24&&restore<0) {message="Local construction limit reached";return false;}
     if (e.credits<def.price||!has(ship,def.construction)) {message="Construction needs "+std::to_string(def.price)+" credits; missing "+deficits(ship,def.construction);return false;}
-    subtract(ship,def.construction);e.credits-=def.price;e.factions[s.authority].treasury+=def.price;if(restore>=0)s.facilityIntegrity.erase(restore);else s.built[building]++;e.damageRevision++;e.geometryRevision++;
+    subtract(ship,def.construction);e.credits-=def.price;e.factions[s.authority].treasury+=def.price;if(restore>=0){s.facilityIntegrity.erase(restore);e.worldDamage.erase(facilityObjectId(s.id,restore/24,restore%24));}else s.built[building]++;e.damageRevision++;e.geometryRevision++;
     economicEvent(e,s.name,std::string(def.name)+" commissioned. "+def.purpose);message=std::string(def.name)+" constructed";return true;
 }
 bool rebuildInfrastructure(Economy& e,Settlement& site,Stock& cargo,std::string& message){
