@@ -70,7 +70,13 @@ struct Traffic {V3 position,previous,forward;double phase=0,health=100,fireClock
 };
 inline EnemyDef enemyDef(const Traffic& t){return enemyDef(t.role,t.genome);}
 const char* enemyStateName(const Traffic&);
-struct CombatEffect {V3 position,velocity;double age=0,duration=1;int kind=0;V3 end;};
+enum CombatEffectKind {ShieldImpact=0,HullImpact=1,ShipExplosion=2,DecoyBurst=3,ChainDischarge=4,MuzzleFlash=5,ShieldBreak=6};
+struct CombatEffect {V3 position,velocity;double age=0,duration=1;int kind=0;V3 end;V3 normal{0,0,1};int weapon=Pulse;double strength=1,size=1;};
+// Presentation only: never serialized and never used by aiming or damage rules.
+struct CombatFeedback {
+ double recoil=0,impact=0,shieldBreak=0;int weapon=Pulse,confirmation=ShieldImpact;
+ std::array<uint32_t,5> shots{};uint32_t shieldHits=0,hullHits=0,breaks=0,destructions=0;
+};
 struct Wreck {V3 position,velocity;double life=180;std::array<double,3> cargo{};std::string id;};
 struct Courier {bool active=false;std::string issuer,destination;int64_t escrow=0;double deadline=0;};
 struct Event {std::string kind;int port=-1,faction=0;std::string routeId;std::string actor,victim;
@@ -88,7 +94,7 @@ struct Game {
   Ship ship;
   std::vector<Bolt> bolts;
   std::vector<Traffic> traffic;
-  std::vector<CombatEffect> effects;std::vector<Wreck> wrecks;
+  std::vector<CombatEffect> effects;std::vector<Wreck> wrecks;CombatFeedback feedback;
   std::string lastAttacker;
   std::string combatTarget;double lock=0,hitConfirm=0;int combatOrder=0,aimSystem=0;V3 hitDirection;double damageCue=0;
   double weatherHours=-1,impactShield=0,impactHull=0;int impactSystem=-1;
@@ -139,6 +145,6 @@ struct Game {
   void damageShip(double,int,V3);void damageTraffic(int,double,int,V3,bool credited,int module=0,const std::string& attacker="");void chainArc(int,double);
   bool enemiesOf(const Traffic&,const Traffic&)const;
   bool lineOfSight(V3,V3)const;double terrainHit(V3,V3)const;bool protectedPort(V3)const;
-  void effect(V3,int,V3 velocity={},V3 end={});
+  void effect(V3,int,V3 velocity={},V3 end={},V3 normal={0,0,1},int weapon=Pulse,double strength=1,double size=1);
 };
 }

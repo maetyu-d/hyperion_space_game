@@ -17,7 +17,7 @@
 
 namespace hyperion::flight {
 namespace {
-constexpr Color ink{7,12,22,255},paper{224,239,235,255},mint{164,255,206,255},pink{255,104,192,255},cyan{91,221,255,255};
+constexpr Color ink{7,12,22,255},mint{164,255,206,255},cyan{91,221,255,255};
 void texture(Shader s,const char* name,Texture2D value){int l=GetShaderLocation(s,name);if(l>=0)SetShaderValueTexture(s,l,value);}
 Color alpha(Color c,float a){c.a=static_cast<unsigned char>(std::clamp(a,0.f,1.f)*255);return c;}
 Vector3 vec(V3 v){return{float(v.x),float(v.y),float(v.z)};}
@@ -242,7 +242,7 @@ bool Renderer::exportShadow(const std::string& path)const{
  std::printf("Sun shadow depth: %.6f .. %.6f\n",lo,hi);bool result=ExportImage(preview,path.c_str());UnloadImage(preview);UnloadImage(image);return result;
 }
 void Renderer::shutdown(){
- clearLife();clearMinorBodies();
+ clearLife();clearMinorBodies();if(combatGlow.id){UnloadTexture(combatGlow);combatGlow={};}
  std::printf("Sun shadow cache: %u updates / %u active frames\n",shadowUpdates,shadowFrames);
  if(sunScene.id){UnloadRenderTexture(sunScene);sunScene={};}
  if(detailMap.id){UnloadRenderTexture(detailMap);detailMap={};}
@@ -483,32 +483,8 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  }
  drawLife(sceneView);
  for(const auto&t:g.traffic)if(!t.dead&&length(t.position-g.ship.position)<6500&&dot(t.position-g.ship.position,g.ship.forward)>-80)drawFactionCraft(t,sceneView);
- // Trails keep each weapon readable in the same spectral palette as the sky.
- for(const auto& b:g.bolts){
-  if(b.weapon==Resonance){auto direction=unit(b.velocity),a=unit(cross(direction,g.ship.up),{1,0,0}),up=unit(cross(a,direction));double trail=std::min(42.,length(b.velocity)*.035);Color colours[]={cyan,Color{205,128,255,255},mint};
-   BeginBlendMode(BLEND_ADDITIVE);for(int strand=0;strand<3;strand++)for(int k=0;k<10;k++){auto point=[&](int i){double t=i/10.,angle=t*2*pi+strand*2*pi/3+g.time*15;return b.position-direction*(trail*t)+(a*std::cos(angle)+up*std::sin(angle))*(.45+.3*t);};tube(point(k),point(k+1),.15f,alpha(colours[strand],float(1-k*.065)));}EndBlendMode();continue;
-  }
-  Color c=b.weapon==1?Color{255,207,123,255}:b.weapon==2?Color{220,126,255,255}:b.weapon==3?Color{255,154,103,255}:cyan;if(b.hostile){c=Color{255,101,161,255};for(const auto& owner:g.traffic)if(owner.id==b.owner&&owner.managed&&!owner.pirate&&!owner.hostile){const auto& accent=factionStyle(owner.faction).accent;c={accent[0],accent[1],accent[2],255};break;}}
-  V3 end=b.position-unit(b.velocity)*std::min(b.weapon==3?55.:38.,length(b.velocity)*.035);
-  BeginBlendMode(BLEND_ADDITIVE);tube(b.position,end,b.weapon==2?.65f:.22f,alpha(c,.6f));tube(b.position,end,b.weapon==1?.055f:.09f,paper);
-  if(b.weapon>=2){DrawSphereEx(vec(b.position),b.weapon==2?.9f:.55f,5,8,alpha(c,.85f));if(b.weapon==3)tube(end,end-unit(b.velocity)*9,.4f,alpha(c,.3f));}EndBlendMode();
- }
+ drawCombat(g);
  auto facing=unit(cross(g.ship.forward,g.ship.up)),vertical=g.ship.up;
- BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();
- for(const auto& e:g.effects){if(length(e.position-g.ship.position)>3000)continue;double t=e.age/e.duration,fade=1-t;
-  if(e.kind==4){auto direction=unit(e.end-e.position),a=unit(cross(direction,g.ship.forward),facing),up=unit(cross(a,direction),vertical);Color colours[]={cyan,Color{211,128,255,255},mint};
-   for(int strand=0;strand<3;strand++)for(int k=0;k<16;k++){auto point=[&](int i){double u=i/16.,angle=u*4*pi+strand*2*pi/3+e.age*23;return mix(e.position,e.end,u)+(a*std::cos(angle)+up*std::sin(angle))*(std::sin(u*pi)*1.2);};tube(point(k),point(k+1),.16f,alpha(colours[strand],float(fade)));}continue;
-  }
-  if(e.kind==5){DrawSphereEx(vec(e.position),float(.035+.055*fade),4,6,alpha(cyan,float(fade*.6)));for(int k=0;k<4;k++){auto direction=facing*std::cos(k*pi/2)+vertical*std::sin(k*pi/2);line(e.position,e.position+direction*.18,alpha(mint,float(fade)));}continue;}
-Color c=e.kind==0?cyan:e.kind==1?Color{255,190,117,255}:e.kind==2?pink:mint;
-  double radius=e.kind==2?3+30*t:e.kind==3?2+20*t:2+8*t;
-  ring(e.position,facing,vertical,radius,alpha(c,float(fade*.8)),32,float(.16+fade*.35));
-  if(e.kind==0){auto normal=unit(e.position-g.ship.position,g.ship.forward),a=unit(cross(normal,vertical),facing),b=unit(cross(a,normal));ring(e.position,a,b,radius*.65,alpha(Color{205,145,255,255},float(fade*.55)),24,float(.1+fade*.2));}
-  if(e.kind==1&&t<.5)ring(e.position,facing,vertical,radius*.45,alpha(Color{255,228,160,255},float((.5-t)*.7)),16,.2f);
-  if(e.kind==2&&t<.45)DrawSphereEx(vec(e.position),float(2+8*t),8,12,alpha(Color{255,211,156,255},float((.45-t)*1.8)));
-  int sparks=e.kind==2?16:e.kind==3?10:6;for(int i=0;i<sparks;i++){double a=i*2*pi/sparks+e.position.x;auto direction=unit(facing*std::cos(a)+vertical*std::sin(a)+g.ship.forward*(.35*std::sin(i*2.3)));auto at=e.position+direction*(radius*(.8+std::sin(i*3.)*.2));line(at,at-direction*(e.kind==2?3:1.2),alpha(c,float(fade*.8)));}
- }
- rlEnableDepthMask();EndBlendMode();
  for(const auto& wreck:g.wrecks)if(length(wreck.position-g.ship.position)<1700){
   for(int i=0;i<6;i++){auto at=wreck.position+V3{std::sin(i*3.7)*4,std::cos(i*2.1)*2,std::cos(i*3.7)*4};DrawCubeV(vec(at),{float(.7+i*.1),.6f,1.1f},i%2?Color{60,73,78,255}:Color{87,62,91,255});}
   ring(wreck.position,facing,vertical,6,alpha(mint,.35f),24);
@@ -539,6 +515,10 @@ Color c=e.kind==0?cyan:e.kind==1?Color{255,190,117,255}:e.kind==2?pink:mint;
  for(const auto& body:g.minorBodies){auto offset=body.centre-g.ship.position;double along=dot(offset,sunDirection);if(along>0&&length(offset-sunDirection*along)<body.source.radius)sunVisibility=0;}
  set(post,"sunPosition",Vector2{sunScreen.x/renderW,1-sunScreen.y/renderH});set(post,"sunVisibility",sunVisibility);
  set(post,"texel",Vector2{1.f/renderW,1.f/renderH});set(post,"hit",float(g.hitFlash));set(post,"effects",reduced?.12f:1.f);
+ auto shipRight=unit(cross(g.ship.forward,g.ship.up));
+ set(post,"impactColour",g.impactHull>.01?V3{.55,.075,.12}:V3{.075,.38,.60});
+ set(post,"impactDirection",Vector2{float(dot(g.hitDirection,shipRight)),float(dot(g.hitDirection,g.ship.up))});
+ set(post,"shieldBreak",float(g.feedback.shieldBreak));
  BeginTextureMode(composite);ClearBackground(ink);BeginShaderMode(post);texture(post,"bloomTexture",bloom[1].texture);
  DrawTexturePro(scene.texture,{0,0,float(renderW),-float(renderH)},{0,0,float(renderW),float(renderH)},{0,0},0,WHITE);EndShaderMode();EndTextureMode();
  elapsed(5);
@@ -574,7 +554,14 @@ void Renderer::rebuildCockpit(int width,int height,bool docked,int kind){
 void Renderer::drawCockpit(const Game& g){
  Camera3D cabin{{0,0,0},{0,0,-1},{0,1,0},70,CAMERA_PERSPECTIVE};rlSetClipPlanes(.025,6.);BeginMode3D(cabin);
  auto right=unit(cross(g.ship.forward,g.ship.up));V3 localLight{dot(sunDirection,right),dot(sunDirection,g.ship.up),-dot(sunDirection,g.ship.forward)};
- set(cockpitShader,"lightDirection",localLight);set(cockpitShader,"time",float(visualTime));DrawModel(cockpitModel,{0,0,0},1,WHITE);EndMode3D();rlSetClipPlanes(1.,60000.);
+ set(cockpitShader,"lightDirection",localLight);set(cockpitShader,"time",float(visualTime));
+ const V3 colours[]={{.16,.67,1.},{1.,.48,.10},{.65,.20,1.},{1.,.24,.13},{.22,1.,.62}};
+ double strength=reduced?.12:1.;auto combatLight=colours[std::clamp(g.feedback.weapon,0,4)]*(g.feedback.recoil*strength);
+ combatLight+=(g.impactHull>.01?V3{1.,.10,.18}:V3{.10,.55,1.})*(g.feedback.impact*strength);
+ set(cockpitShader,"combatLight",combatLight);
+ // Only the cabin moves: the world camera, reticle and projectile aim remain aligned.
+ Vector3 kick{};if(!reduced)kick={float(std::sin(g.time*71)*g.feedback.impact*.003),float(-g.feedback.recoil*.004+std::sin(g.time*59)*g.feedback.impact*.004),float(g.feedback.recoil*.025)};
+ DrawModel(cockpitModel,kick,1,WHITE);EndMode3D();rlSetClipPlanes(1.,60000.);
 }
 void Renderer::present(float width,float height){
  if(composite.id)DrawTexturePro(composite.texture,{0,0,float(composite.texture.width),-float(composite.texture.height)},{0,0,width,height},{0,0},0,WHITE);

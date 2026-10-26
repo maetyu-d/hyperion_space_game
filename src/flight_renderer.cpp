@@ -181,7 +181,7 @@ void Renderer::flightHUD(){
    const std::string warning=inbound?"SEEKER INBOUND / Y COUNTERMEASURE":c.overheated?"MOUNTS COOLING":std::string(hyperion::flight::systemName(worst))+" DAMAGED / PORT REPAIR";
    tag(warning,{24,deckY-36,std::min(420.f,compact?edge-48:navWidth-12),27},pink);
   }
-  if(f.damageCue>0&&!compact){
+  if(f.damageCue>0){
    const auto shipRight=hyperion::flight::unit(hyperion::flight::cross(f.ship.forward,f.ship.up));
    Vector2 direction{float(hyperion::flight::dot(f.hitDirection,shipRight)),float(-hyperion::flight::dot(f.hitDirection,f.ship.up))};
    const float length=std::hypot(direction.x,direction.y);
@@ -191,11 +191,12 @@ void Renderer::flightHUD(){
    DrawLineEx({at.x+across.x-direction.x*7,at.y+across.y-direction.y*7},at,2,tint);
    DrawLineEx(at,{at.x-across.x-direction.x*7,at.y-across.y-direction.y*7},2,tint);
    const std::string impact=f.impactHull>.01?"HULL IMPACT / "+std::string(f.impactSystem>=0?hyperion::flight::systemName(f.impactSystem):"PLATING"):"SHIELD ABSORBED / "+n(f.impactShield,1);
-   tag(impact,{cx-145,std::min(cy+110,deckY-69),290,27},f.impactHull>.01?pink:ice);
+   if(!compact)tag(impact,{cx-145,std::min(cy+110,deckY-69),290,27},f.impactHull>.01?pink:ice);
   }
-  if(f.hitConfirm>0&&!compact)for(int side:{-1,1}){
-   DrawLineEx({cx+side*22,cy-22},{cx+side*16,cy-16},2,mint);
-   DrawLineEx({cx+side*22,cy+22},{cx+side*16,cy+16},2,mint);
+  if(f.hitConfirm>0){
+   Color tint=f.feedback.confirmation==hyperion::flight::ShipExplosion?mint:f.feedback.confirmation==hyperion::flight::ShieldBreak?Color{203,119,255,255}:f.feedback.confirmation==hyperion::flight::HullImpact?Color{255,181,86,255}:ice;
+   float pulse=float(std::min(1.,f.hitConfirm*8)),outer=19+4*pulse,inner=15+2*pulse;tint.a=static_cast<unsigned char>(230*pulse);
+   for(int side:{-1,1}){DrawLineEx({cx+side*outer,cy-outer},{cx+side*inner,cy-inner},1.7f,tint);DrawLineEx({cx+side*outer,cy+outer},{cx+side*inner,cy+inner},1.7f,tint);}
   }
   if(!compact&&speed<=15)for(const auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)>0){button("Collect salvage",{24,deckY-73,150,30},"salvage");break;}
  }

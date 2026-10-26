@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Hyperion VERSION 3.56.0 LANGUAGES C CXX)
+project(Hyperion VERSION 3.57.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -17,7 +17,7 @@ if(HYPERION_BUILD_APP)
   set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
   add_subdirectory(vendor/raylib EXCLUDE_FROM_ALL)
   if(APPLE)
-    add_executable(Hyperion MACOSX_BUNDLE src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
+    add_executable(Hyperion MACOSX_BUNDLE src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
     set_target_properties(Hyperion PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Hyperion"
       MACOSX_BUNDLE_GUI_IDENTIFIER "studio.hyperion.game"
       MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
@@ -28,7 +28,7 @@ if(HYPERION_BUILD_APP)
       COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/assets/Hyperion.icns"
         "${CMAKE_CURRENT_BINARY_DIR}/Hyperion.app/Contents/Resources/Hyperion.icns")
   else()
-    add_executable(Hyperion src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
+    add_executable(Hyperion src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
   endif()
   target_link_libraries(Hyperion PRIVATE hyperion_core raylib)
   target_include_directories(Hyperion PRIVATE vendor)
@@ -44,13 +44,16 @@ include(CTest)
 if(BUILD_TESTING AND HYPERION_BUILD_APP)
   # Explicit native visual check; never run a windowed GPU test in CPU ctest.
   add_executable(hyperion_life_continuity_check EXCLUDE_FROM_ALL
-    tests/life_continuity_native.cpp src/flight/renderer.cpp
+    tests/life_continuity_native.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp
     src/flight/minor_renderer.cpp src/flight/settlements.cpp
     src/flight/terrain.cpp src/flight/life.cpp)
   target_include_directories(hyperion_life_continuity_check PRIVATE src vendor)
   target_link_libraries(hyperion_life_continuity_check PRIVATE hyperion_core raylib)
 endif()
 if(BUILD_TESTING)
+  add_executable(hyperion_audio_tests tests/audio_synthesis.cpp)
+  target_include_directories(hyperion_audio_tests PRIVATE src)
+  add_test(NAME combat_audio_signals COMMAND hyperion_audio_tests)
   add_executable(hyperion_wreck_tests tests/ocean_expeditions.cpp)
   target_include_directories(hyperion_wreck_tests PRIVATE vendor)
   target_link_libraries(hyperion_wreck_tests PRIVATE hyperion_core)

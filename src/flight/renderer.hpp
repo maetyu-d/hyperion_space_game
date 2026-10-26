@@ -10,12 +10,12 @@ namespace hyperion::flight {
 struct GeometryStats {int models=0,closeTriangles=0,closePorts=0,detailedTriangles=0,distantTriangles=0,degenerateTriangles=0,invalidVertices=0,invalidNormals=0;};
 struct CloudOcclusionStats {int testedPixels=0,leakingPixels=0;float maxLeakAlpha=0,maxCloudAlpha=0;};
 class Renderer {
- int minorDrawn=0;Texture2D cometGlow{};Shader minorShader{},minorBake{};std::unordered_map<std::string,Model> minorModels;
+ Texture2D combatGlow{};int minorDrawn=0;Texture2D cometGlow{};Shader minorShader{},minorBake{};std::unordered_map<std::string,Model> minorModels;
  struct MinorField {RenderTexture2D base{},detail{};float blend=0;};std::unordered_map<std::string,MinorField> minorFields;
  RenderTexture2D bakeMinorField(const MinorBody&,int);void prepareMinorBodies(const Game&);
  void clearMinorBodies();void drawMinorBodies(const Game&,bool depth=false);void drawCometTails(const Game&);
  Shader lifeShader{};std::array<Model,24> lifeModels{};std::array<int,15> lifeUniforms{};int lifeDrawn=0;LifeVisibilityBudget lifeBudget;
- void drawLife(const Scene&);void clearLife();
+ void drawCombat(const Game&);void drawLife(const Scene&);void clearLife();
  bool profiling=false;std::array<double,6> timings{};
  struct PortAsset {Model close{},detailed{},distant{};std::vector<V3> detailCentres;V3 at{},up{};uint64_t key=0;double radius=60;int detail=-1;};
  std::unordered_map<std::string,PortAsset> portAssets;std::map<std::tuple<int,int,int,int>,Model> craftAssets;

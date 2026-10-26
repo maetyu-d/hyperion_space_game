@@ -302,7 +302,6 @@ void Renderer::drawFactionCraft(const Traffic& traffic,const Scene& sceneView){
   for(int side:{-1,1}){auto muzzle=traffic.position+f*size*.95+right*(side*size*.48);DrawSphereEx(vec(muzzle),float(.3+traffic.charge*1.4),6,8,c);DrawLine3D(vec(muzzle),vec(muzzle-f*(2+traffic.charge*size)),c);}
   rlEnableDepthMask();EndBlendMode();
  }
- if(traffic.hitFlash>0&&traffic.shield>0){Color c{137,238,255,static_cast<unsigned char>(std::min(180.,traffic.hitFlash*230))};DrawSphereWires(vec(traffic.position),float(size*1.65),6,12,c);}
  if(traffic.health<(traffic.kind==1?enemyDef(traffic).hull:100.)*.3&&length(traffic.position-V3{camera.position.x,camera.position.y,camera.position.z})<900){
   for(int i=0;i<4;i++){auto at=traffic.position-f*(size*(1.1+i*.8))+up*(std::sin(sceneView.seconds*3+i)*size*.15);DrawSphereEx(vec(at),float(size*(.1+i*.08)),4,6,Color{39,30,53,static_cast<unsigned char>(170-i*30)});}}
 

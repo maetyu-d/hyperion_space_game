@@ -1,0 +1,496 @@
+{
+  "version": "3.57.0",
+  "binarySHA256": "06de1d0776893e420b47f611e15d19f21236e85710312b2a230d0b3574cbae7d",
+  "previousReleaseSHA256": "d14bff13b20b7ec05b963064d10dfb13c192821efdbe51bf82b4c8cf98c45c04",
+  "cpuSuitesPassed": 35,
+  "combatChecksPassed": 78,
+  "nativeFeedbackScenarios": 33,
+  "nativeFeedbackFrames": 1980,
+  "fullCombatScenarios": 16,
+  "fullCombatFrames": 1440,
+  "installedChecks": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.54
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.61
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.62
+    },
+    {
+      "check": "wreck-at-sea",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "wreck-delivered",
+      "exit": 0,
+      "seconds": 1.63
+    }
+  ],
+  "frozenSaveRoundtripsExact": true,
+  "feedbackProfiles": {
+    "high": [
+      {
+        "breaks": 0,
+        "destructions": 0,
+        "effectMask": 33,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.38,
+        "reduced": false,
+        "scene": 0,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.24,
+        "reduced": false,
+        "scene": 1,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 1.0,
+        "reduced": false,
+        "scene": 2,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.5,
+        "reduced": false,
+        "scene": 3,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.75,
+        "reduced": false,
+        "scene": 4,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 67,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 5,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 67,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 6,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 0,
+        "destructions": 0,
+        "effectMask": 2,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 7,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 0,
+        "destructions": 1,
+        "effectMask": 6,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 8,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 0,
+        "hull": 91.17397151515152,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 9,
+        "shield": 0.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 0,
+        "hull": 77.66599272727274,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 10,
+        "shield": 0.0,
+        "worldClockFrozen": true
+      }
+    ],
+    "low": [
+      {
+        "breaks": 0,
+        "destructions": 0,
+        "effectMask": 33,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.38,
+        "reduced": false,
+        "scene": 0,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.24,
+        "reduced": false,
+        "scene": 1,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 1.0,
+        "reduced": false,
+        "scene": 2,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.5,
+        "reduced": false,
+        "scene": 3,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.75,
+        "reduced": false,
+        "scene": 4,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 67,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 5,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 67,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 6,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 0,
+        "destructions": 0,
+        "effectMask": 2,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 7,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 0,
+        "destructions": 1,
+        "effectMask": 6,
+        "hull": 100.0,
+        "lowGraphics": true,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 8,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 0,
+        "hull": 91.17397151515152,
+        "lowGraphics": true,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 9,
+        "shield": 0.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 0,
+        "hull": 77.66599272727274,
+        "lowGraphics": true,
+        "maxRecoil": 0.0,
+        "reduced": false,
+        "scene": 10,
+        "shield": 0.0,
+        "worldClockFrozen": true
+      }
+    ],
+    "reduced": [
+      {
+        "breaks": 0,
+        "destructions": 0,
+        "effectMask": 33,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.38,
+        "reduced": true,
+        "scene": 0,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.24,
+        "reduced": true,
+        "scene": 1,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 1.0,
+        "reduced": true,
+        "scene": 2,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.5,
+        "reduced": true,
+        "scene": 3,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 99,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.75,
+        "reduced": true,
+        "scene": 4,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 67,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": true,
+        "scene": 5,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 67,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": true,
+        "scene": 6,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 0,
+        "destructions": 0,
+        "effectMask": 2,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": true,
+        "scene": 7,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 0,
+        "destructions": 1,
+        "effectMask": 6,
+        "hull": 100.0,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": true,
+        "scene": 8,
+        "shield": 100.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 0,
+        "hull": 91.17397151515152,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": true,
+        "scene": 9,
+        "shield": 0.0,
+        "worldClockFrozen": true
+      },
+      {
+        "breaks": 1,
+        "destructions": 0,
+        "effectMask": 0,
+        "hull": 77.66599272727274,
+        "lowGraphics": false,
+        "maxRecoil": 0.0,
+        "reduced": true,
+        "scene": 10,
+        "shield": 0.0,
+        "worldClockFrozen": true
+      }
+    ]
+  },
+  "presentationBudgets": {
+    "effectPool": 128,
+    "highSparks": 720,
+    "lowSparks": 360,
+    "reducedSparks": 120,
+    "soundKinds": 15,
+    "sharedBufferVoicesPerSound": 4
+  },
+  "aimingCameraUnchanged": true,
+  "saveSchemaUnchanged": true,
+  "sourceSHA256": {
+    "CMakeLists.txt": "bf3c3bc2cb75ebe38f9dce6e3de2626fc19e6c6f3293ba70ef7f78b217239f2d",
+    "README.md": "c965cb39d3d4efb7003a12a4ca74edd75c169d3ca1511fd581a96c531c1a7747",
+    "docs/screenshots/combat-feedback.jpg": "9d63d2477c76fb2d3f9be9c25a60af36ab1f4e1f65a3e5fd584e5d4184927b85",
+    "src/audio.cpp": "d10ac154ab7b03a2899f3038085dd2a080064e9c6d61c6cf867289c346715e8a",
+    "src/audio.hpp": "bff0f521ee36dbf80a2b97ccde4739e414d5f949ae4745d7aeef54cda81dc136",
+    "src/audio_synthesis.hpp": "20a594ce0555fd8bcde08f6921a8431862d2404c4480803f922370febdecb9e0",
+    "src/flight/combat.cpp": "ea9cab302aaa21756cd7ed98691198b79d52f1530e4641ceae1e41ee65ec8d21",
+    "src/flight/combat_renderer.cpp": "ac5e916ee5df8cb0907569721f530a4387b0a406d7ec78eaca65e93c0106674e",
+    "src/flight/game.hpp": "efe5580186c3d5ae0c9905b9157b05dc2a8f20424d3b57c1bd2484960b43404a",
+    "src/flight/renderer.cpp": "499a318601061f3657b9e0e8f97113267387d9545a5f7a2f0e4252b9871d1b7d",
+    "src/flight/renderer.hpp": "b68f828cc14c32ccb1e03b65335c8a2ec915a826f5d8893c5078c1659698b9d6",
+    "src/flight/settlements.cpp": "225114ac550d65778541782eac8e63d178c90909c7cd4d1635d33edc59c9c778",
+    "src/flight/shaders.hpp": "0d6b58f82305dda83199cd7201997c34ca420f98b35af5b6d3891d0b75e5f19b",
+    "src/flight_renderer.cpp": "2682d5a93242d06563729ce7d4357f4c50fa8f1d46bee572508b8d935236516f",
+    "src/main.cpp": "a8202444417f8e0699000374fe83e36443aeb1a4b6cd9a6ee3a9a41d6555a9e5",
+    "tests/audio_synthesis.cpp": "b287949b831a1efd77c561e8c468fae2d12b8e79c3257d060bd8d5279791477f",
+    "tests/combat.cpp": "35de35a6cf044a7a386f93a6b7b620e0db8b0b5ec0e860200f91fa7007af5dcd"
+  }
+}

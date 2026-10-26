@@ -45,6 +45,23 @@ int main(){try{
   f=arena();f.planets[0].centre={0,0,-600};f.planets[0].radius=100;moving.position=moving.previous={0,0,-1000};f.traffic.push_back(moving);f.bolts.push_back(bolt({}, {0,0,-24000}));f.update(.05);require(f.bolts.empty()&&f.traffic[0].health==100,"terrain takes the first hit and protects a target behind the planet");
   f=arena();auto t=enemy({0,0,-40});t.health=1;t.shield=0;f.traffic.push_back(t);f.damageTraffic(0,100,1,t.position,true);f.damageTraffic(0,100,1,t.position,true);require(f.kills==1&&f.events.size()==1&&f.wrecks.size()==1,"destruction emits one bounty and one salvage wreck");
  }
+ // Feedback follows actual shield and hull outcomes, including partial penetration.
+ {using namespace hyperion::flight;auto f=arena();auto t=enemy({0,0,-60});t.shield=2;f.traffic.push_back(t);
+  f.damageTraffic(0,20,Pulse,{0,0,-52},true);
+  auto count=[&](int kind){return std::count_if(f.effects.begin(),f.effects.end(),[&](const auto&e){return e.kind==kind;});};
+  require(count(ShieldImpact)==1&&count(HullImpact)==1&&count(ShieldBreak)==1,"a penetrating shield break displays both damage layers");
+  require(f.feedback.breaks==1&&f.feedback.hullHits==1&&f.feedback.confirmation==ShieldBreak,"break confirmation follows real damage");
+  f.damageTraffic(0,1,Kinetic,{0,0,-52},true);require(count(ShieldBreak)==1,"depleted shields cannot repeatedly break");
+  require(f.effects[0].normal.z>.99&&f.effects[0].weapon==Pulse,"impact plane and weapon identity survive effect creation");
+  f.damageTraffic(0,10000,Seeker,{0,0,-52},true);require(count(ShipExplosion)==1&&f.feedback.destructions==1&&f.feedback.confirmation==ShipExplosion,"destruction supersedes hit feedback once");
+  f.damageTraffic(0,10000,Seeker,{},true);require(f.feedback.destructions==1,"dead ships cannot replay the destruction cue");
+  f=arena();f.ship.shield=2;f.damageShip(20,Pulse,{0,0,-20});require(f.feedback.breaks==1&&f.feedback.shieldBreak>0&&f.feedback.impact>0,"player shield failure creates directional feedback");
+  f=arena();Input input;input.fire=true;auto forward=f.ship.forward;auto velocity=f.ship.velocity;f.updateCombat(0,input);
+  require(f.feedback.shots[Pulse]==1&&f.feedback.recoil>0,"successful shot emits recoil and sound sequence");
+  require(length(f.ship.forward-forward)==0&&length(f.ship.velocity-velocity)==0,"presentation recoil never changes aim or momentum");
+  input.fire=false;for(int i=0;i<60;i++)f.prepareCombat(.05,input);require(f.feedback.recoil<1e-12&&f.effects.empty(),"feedback decays fully on simulation time");
+  f=arena();f.ship.combat.energy=0;input.fire=true;f.updateCombat(0,input);require(f.feedback.shots[Pulse]==0&&f.effects.empty(),"rejected firing creates no phantom feedback");
+ }
  // Enemy roles, safety buffers, retreat, offscreen reinforcements and bounded effects.
  {auto f=arena();for(int role=0;role<3;role++){auto t=enemy({double(role*60),0,-200},role);t.fireClock=0;f.traffic.push_back(t);}for(int i=0;i<100;i++)f.update(.05);bool fired=false;for(auto& b:f.bolts)fired|=b.hostile;require(fired||f.ship.shield<100,"enemy wing actively attacks outside port protection");require(hyperion::flight::enemyDef(1).speed>hyperion::flight::enemyDef(0).speed&&hyperion::flight::enemyDef(2).hull>hyperion::flight::enemyDef(0).hull,"interceptor and marauder have distinct tactical capabilities");
   f=arena();auto t=enemy({0,0,-200});t.health=10;f.traffic.push_back(t);f.update(.05);require(f.traffic[0].state==4,"crippled raider retreats");

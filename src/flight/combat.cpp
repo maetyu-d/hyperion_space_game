@@ -55,30 +55,43 @@ void Game::cycleCombatTarget(){
  combatTarget.clear();lock=0;message("No hostile contacts in sensor range.");
 }
 bool Game::selectWeapon(int type){if(type<0||type>4||type==Seeker)return false;ship.combat.weapon=type;fireClock=std::max(fireClock,.12);message(std::string("Weapon / ")+weaponDef(type).name);return true;}
-void Game::effect(V3 at,int kind,V3 velocity,V3 end){if(effects.size()>=128)effects.erase(effects.begin());effects.push_back({at,velocity,0,kind==2?2.6:kind==3?1.8:kind==4?.32:kind==5?.085:.6,kind,end});}
+void Game::effect(V3 at,int kind,V3 velocity,V3 end,V3 normal,int weapon,double strength,double size){
+ // Preserve major impacts when rapid fire fills the bounded effect pool.
+ if(effects.size()>=128){auto minor=std::find_if(effects.begin(),effects.end(),[](const auto& e){return e.kind==MuzzleFlash||e.kind==HullImpact;});if(minor!=effects.end())effects.erase(minor);else effects.erase(effects.begin());}
+ effects.push_back({at,velocity,0,kind==ShipExplosion?2.6:kind==DecoyBurst?1.8:kind==ChainDischarge?.32:kind==MuzzleFlash?.12:kind==ShieldBreak?.85:kind==HullImpact?.8:.55,kind,end,unit(normal,{0,0,1}),std::clamp(weapon,0,4),std::clamp(strength,.25,2.),std::clamp(size,.25,20.)});
+}
 void Game::damageShip(double amount,int weapon,V3 from){
  if(weapon==CollisionDamage)lastAttacker.clear();
  if(docked||amount<=0||!std::isfinite(amount))return;auto& c=ship.combat;const auto& w=weaponDef(std::max(0,weapon));
  if(weapon==Resonance)c.energy=std::max(0.,c.energy-amount*.65);hitDirection=unit(from-ship.position,ship.forward);damageCue=.85;
- impactShield=impactHull=0;impactSystem=-1;
+ double priorShield=ship.shield;impactShield=impactHull=0;impactSystem=-1;
  double shieldFactor=weapon<0?1:w.shieldFactor,hullFactor=weapon<0||weapon==CollisionDamage?1:w.hullFactor;
  if(weapon!=CollisionDamage){double absorbed=std::min(ship.shield,amount*shieldFactor);ship.shield-=absorbed;impactShield=absorbed;amount-=absorbed/shieldFactor;}
  double raw=amount*hullFactor,plating=weapon<0?0:raw*.38*c.armour/100*(1-(weapon==CollisionDamage?.1:w.penetration));
- impactHull=raw-plating;double hullScale=100/hullCapacity(ship.vessel);c.armour=std::max(0.,c.armour-plating*.6*hullScale);ship.hull-=(raw-plating)*hullScale;c.shieldDelay=weapon==Resonance?6:4.5;hitFlash=std::min(1.,.2+raw*.025);
+ impactHull=raw-plating;double hullScale=100/hullCapacity(ship.vessel);c.armour=std::max(0.,c.armour-plating*.6*hullScale);ship.hull-=(raw-plating)*hullScale;c.shieldDelay=weapon==Resonance?6:4.5;hitFlash=std::min(.8,.08+impactShield*.004+impactHull*.018);
+ feedback.impact=std::min(1.,feedback.impact+.12+impactHull*.022+impactShield*.003);
+ if(impactHull>0)feedback.hullHits++;else if(impactShield>0)feedback.shieldHits++;
+ if(priorShield>0&&ship.shield<=0&&weapon!=CollisionDamage){feedback.shieldBreak=.85;feedback.breaks++;}
  if(raw>0){int module;double front=dot(unit(from-ship.position),ship.forward);if(front>.25)module=(c.hits%2)?Sensors:WeaponMounts;else if(front<-.25)module=(c.hits%2)?PowerCore:Drive;else module=ShieldGenerator;c.hits++;
   impactSystem=module;c.systems[module]=std::max(0.,c.systems[module]-(raw-plating)*.9*hullScale);}
 }
 void Game::damageTraffic(int index,double amount,int weapon,V3 at,bool credited,int module,const std::string& attacker){
  if(index<0||index>=int(traffic.size())||traffic[index].dead||amount<=0||!std::isfinite(amount))return;auto& t=traffic[index];const auto& w=weaponDef(std::max(0,weapon));
  if(weapon==Resonance)t.energy=std::max(0.,t.energy-amount*.65);
- double sf=weapon<0?1:w.shieldFactor,hf=weapon<0?1:w.hullFactor,absorbed=std::min(t.shield,amount*sf);t.shield-=absorbed;amount-=absorbed/sf;
+ double priorShield=t.shield;double sf=weapon<0?1:w.shieldFactor,hf=weapon<0?1:w.hullFactor,absorbed=std::min(t.shield,amount*sf);t.shield-=absorbed;amount-=absorbed/sf;
  double raw=amount*hf,plate=weapon<0?0:raw*.32*t.armour/100*(1-w.penetration);t.armour=std::max(0.,t.armour-plate*.6);double hullDamage=std::max(0.,raw-plate);t.health-=hullDamage*(module>0?.82:1.);t.shieldDelay=weapon==Resonance?6:5;t.hitFlash=.6;
  if(t.kind==1&&hullDamage>0){int system=module>0?std::clamp(module-1,0,2):dot(unit(at-t.position),t.forward)<-.25?0:1;auto& condition=t.modules[system];condition=std::max(0.,condition-hullDamage*(module>0?1.5:.32));}
  if(credited&&t.kind!=1&&!t.assaultReported){events.push_back({"civilianAssault",t.home,t.faction,t.routeId,"NOMA",t.id});t.assaultReported=true;}
  if(credited&&t.managed&&!t.assaultReported){events.push_back({t.hostile?"skirmish":"aggression",t.home,t.faction,"","NOMA",t.id});t.assaultReported=true;t.hostile=true;}
- effect(at,absorbed>0?0:1,t.velocity*.1);if(credited)hitConfirm=.18;
+ auto normal=unit(at-t.position,-t.forward);double strength=std::clamp((absorbed+hullDamage)/28.,.35,1.8);
+ if(absorbed>0)effect(at,ShieldImpact,t.velocity*.75,{},normal,weapon,strength);
+ if(hullDamage>0)effect(at,HullImpact,t.velocity*.65,{},normal,weapon,strength);
+ bool broken=priorShield>0&&t.shield<=0;
+ if(broken)effect(t.position,ShieldBreak,t.velocity*.8,{},normal,weapon,strength,t.kind==1?enemyDef(t).radius:9);
+ if(credited){hitConfirm=broken?.3:.2;feedback.confirmation=broken?ShieldBreak:hullDamage>0?HullImpact:ShieldImpact;if(hullDamage>0)feedback.hullHits++;else feedback.shieldHits++;if(broken)feedback.breaks++;}
  if(t.health>0)return;
- t.dead=true;t.respawn=t.kind==2?1e6:240;effect(t.position,2,t.velocity*.12);
+ t.dead=true;t.respawn=t.kind==2?1e6:240;effect(t.position,ShipExplosion,t.velocity*.3,{},normal,weapon,1,t.kind==1?enemyDef(t).radius:9);
+ if(credited){feedback.destructions++;feedback.confirmation=ShipExplosion;hitConfirm=.45;}
  if(t.kind==1){if(t.managed){events.push_back({"shipLoss",t.home,t.faction,"",credited?"NOMA":attacker,t.id});if(credited){kills++;message("Ship destroyed / political consequences reported / salvage nearby.");}}
   else if(credited){kills++;events.push_back({"bounty",t.home,t.faction,""});message("Hostile destroyed / bounty reported / salvage available nearby.");}
   if(wrecks.size()>=48)wrecks.erase(wrecks.begin());wrecks.push_back({t.position,t.velocity*.08,180,t.managed?std::array<double,3>{2.+t.role*.5,.5,.5}:std::array<double,3>{4.+t.role*2,1.+t.role,2.},t.id});
@@ -97,6 +110,7 @@ void Game::prepareCombat(double dt,Input& input){
  auto& c=ship.combat;c.shieldDelay=std::max(0.,c.shieldDelay-dt);c.missileClock=std::max(0.,c.missileClock-dt);c.decoyClock=std::max(0.,c.decoyClock-dt);
  c.energy=std::min(100.,c.energy+dt*(5+9*c.systems[PowerCore]/100)*reactorFactor(ship.vessel));c.heat=std::max(0.,c.heat-dt*13*(1+.1*ship.vessel.fitted[WeaponCapacitors]));if(c.overheated&&c.heat<42)c.overheated=false;
  double shieldMax=shieldCapacity(ship.vessel)*c.systems[ShieldGenerator]/100;ship.shield=std::min(ship.shield,shieldMax);if(c.shieldDelay<=0)ship.shield=std::min(shieldMax,ship.shield+dt*1.8*c.systems[ShieldGenerator]/100*shieldCapacity(ship.vessel)/100);
+ feedback.recoil*=std::exp(-dt*19);feedback.impact*=std::exp(-dt*9);feedback.shieldBreak=std::max(0.,feedback.shieldBreak-dt);
  damageCue=std::max(0.,damageCue-dt);hitConfirm=std::max(0.,hitConfirm-dt);for(auto& e:effects){e.age+=dt;e.position+=e.velocity*dt;}effects.erase(std::remove_if(effects.begin(),effects.end(),[](const auto& e){return e.age>=e.duration;}),effects.end());
  for(auto& w:wrecks){w.life-=dt;w.position+=w.velocity*dt;w.velocity=w.velocity*std::exp(-dt*.2);}wrecks.erase(std::remove_if(wrecks.begin(),wrecks.end(),[](const auto& w){return w.life<=0;}),wrecks.end());
  for(int i=0;i<int(traffic.size());i++){auto& t=traffic[i];if(t.id.empty())t.id="local:"+std::to_string(t.home)+":"+std::to_string(t.kind)+":"+std::to_string(t.role)+":"+std::to_string(i);}
@@ -110,7 +124,9 @@ void Game::updateCombat(double dt,const Input& input){
  auto& c=ship.combat;bool weaponsClear=!docked&&!protectedPort(ship.position);
  auto shoot=[&](int type){const auto& w=weaponDef(type);Bolt b;auto right=unit(cross(ship.forward,ship.up));b.position=b.previous=ship.position+ship.forward*6+ship.up*1.5+right*((c.shots%2?1:-1)*1.2);b.velocity=ship.forward*w.speed+ship.velocity*(type==Seeker?.3:1.);b.life=w.life;b.hostile=false;b.weapon=type;b.damage=w.damage*(.35+.65*c.systems[WeaponMounts]/100)*weaponFactor(ship.vessel);b.owner="NOMA";
   if(type==Seeker)b.target=combatTarget;else if(aimSystem>0&&lock>=.85){b.target=combatTarget;b.module=aimSystem;}
-  bolts.push_back(b);c.shots++;effect(b.position,5,ship.velocity);c.energy-=w.energy;c.heat=std::min(100.,c.heat+w.heat);if(c.heat>=100)c.overheated=true;};
+  bolts.push_back(b);c.shots++;feedback.shots[type]++;feedback.weapon=type;
+  const double kick[]={.38,.24,1.,.75,.5};feedback.recoil=std::min(1.3,feedback.recoil+kick[type]);
+  effect(b.position,MuzzleFlash,ship.velocity,{},ship.forward,type,type==Plasma?1.5:1);c.energy-=w.energy;c.heat=std::min(100.,c.heat+w.heat);if(c.heat>=100)c.overheated=true;};
  if(weaponsClear&&input.fire&&fireClock<=0&&!c.overheated&&c.systems[WeaponMounts]>5){const auto& w=weaponDef(c.weapon);if(c.energy>=w.energy&&(c.weapon!=1||c.rounds>0)&&bolts.size()<768){shoot(c.weapon);fireClock=w.interval;if(c.weapon==1)c.rounds--;}}
  bool missilePressed=input.missile&&!missileHeld,decoyPressed=input.decoy&&!decoyHeld;missileHeld=input.missile;decoyHeld=input.decoy;
  if(missilePressed&&!docked){if(weaponsClear&&bolts.size()<768&&c.missiles>0&&lock>=1&&c.missileClock<=0&&c.energy>=weaponDef(3).energy&&!c.overheated&&c.systems[WeaponMounts]>5){shoot(3);c.missiles--;c.missileClock=1.4;lock=0;message("Seeker away.");}else message(weaponsClear?"Seeker requires target lock, ammunition, charge and cooled mounts.":"Port approach / clear the 150 km protection buffer before firing.");}
@@ -176,7 +192,7 @@ void Game::updateCombat(double dt,const Input& input){
      double muzzleSpeed=weapon==Seeker?300:w.speed*.8;double solution=interceptTime(victim-t.position,victimVelocity,muzzleSpeed);auto direction=unit(victim+victimVelocity*std::min(2.,solution)-t.position);
      if(weapon!=Seeker&&type.aimJitter>0){auto axis=unit(cross(direction,home.normal),{1,0,0});double a=t.phase+t.salvos*2.3999632297;direction=unit(direction+axis*(std::sin(a)*type.aimJitter)+unit(cross(axis,direction))*(std::cos(a)*type.aimJitter));}
      Bolt b;b.position=b.previous=t.position+direction*(type.radius+2);b.velocity=direction*muzzleSpeed;b.life=w.life;b.hostile=true;b.weapon=weapon;b.damage=w.damage*.65*(.3+.7*t.modules[1]/100);b.owner=t.id;if(weapon==Seeker)b.target=victimId;
-     bolts.push_back(b);t.energy-=w.energy*.8;t.heat=std::min(100.,t.heat+w.heat*.8);if(t.heat>=85)t.venting=true;
+     bolts.push_back(b);effect(b.position,MuzzleFlash,t.velocity,{},direction,weapon,1,type.radius*.12);t.energy-=w.energy*.8;t.heat=std::min(100.,t.heat+w.heat*.8);if(t.heat>=85)t.venting=true;
      if(weapon==Kinetic)t.ammunition--;if(weapon==Seeker)t.missiles--;t.salvos=std::min(1000000000,t.salvos+1);t.charge=0;t.chargeWeapon=-1;
      t.fireClock=(weapon==Seeker?4.5:t.role==1?(t.salvos%3==0?1.25:.16):t.role==2?1.55:t.role==3?.8:1.05)*type.cadence;
     }
@@ -192,7 +208,7 @@ void Game::updateCombat(double dt,const Input& input){
   if(b.hostile&&(!shooter||shooter->hostile)&&!docked){double h=sphereHit(b.previous-ship.previous,b.position-mix(ship.previous,ship.position,fraction),{},3);if(h<nearest){nearest=h;hit=-2;}}
   for(int i=0;i<int(traffic.size());i++){auto& t=traffic[i];if(t.dead||t.id==b.owner||(b.hostile&&(shooter?!enemiesOf(*shooter,t):t.kind!=2)))continue;double radius=t.kind==1?enemyDef(t).radius:t.kind==2?9:5;
    double h=sphereHit(b.previous-(dt>0?t.previous:t.position),b.position-mix(dt>0?t.previous:t.position,t.position,fraction),{},radius);if(h<nearest){nearest=h;hit=i;}}
-  if(std::isfinite(nearest)){auto at=mix(b.previous,b.position,nearest);double damage=b.damage>0?b.damage:(b.hostile?12:34);if(hit==-2){lastAttacker=b.owner;damageShip(damage,b.weapon,b.previous);}else if(hit>=0){damageTraffic(hit,damage,b.weapon,at,!b.hostile,b.target==traffic[hit].id?b.module:0,b.owner);if(b.weapon==Resonance&&!b.hostile)chainArc(hit,damage);}else effect(at,1);b.life=0;}
+  if(std::isfinite(nearest)){auto at=mix(b.previous,b.position,nearest);double damage=b.damage>0?b.damage:(b.hostile?12:34);if(hit==-2){lastAttacker=b.owner;damageShip(damage,b.weapon,b.previous);}else if(hit>=0){damageTraffic(hit,damage,b.weapon,at,!b.hostile,b.target==traffic[hit].id?b.module:0,b.owner);if(b.weapon==Resonance&&!b.hostile)chainArc(hit,damage);}else effect(at,HullImpact,{}, {},-unit(b.velocity),b.weapon,std::clamp(damage/28.,.35,1.8));b.life=0;}
  }
  for(auto& t:traffic)if(t.kind==2)t.previous=t.position;
  bolts.erase(std::remove_if(bolts.begin(),bolts.end(),[](const auto& b){return b.life<=0;}),bolts.end());

@@ -1,4 +1,4 @@
-# HYPERION 3.56
+# HYPERION 3.57
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,31 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Combat feedback in 3.57
+
+Weapons have distinct muzzle flares, spectral trails, brief cockpit illumination
+and restrained cabin recoil. Shield hits spread across the contact plane; a
+shield break scatters prismatic fragments. Penetrating hits show armour sparks
+as well as the shield ripple. Destruction unfolds through a short hot core,
+expanding spectral shock fronts, cooling fire, debris and smoke.
+
+The minimal HUD briefly confirms shield hits in cyan, hull hits in amber,
+shield breaks in violet and destruction in mint. Incoming damage stays
+directional at the canopy edge. The aiming camera remains steady. Reduced
+effects removes cabin kick and reduces flashes and particles; Low graphics
+also lowers the effect detail. Existing weapon balance, damage, loot, faction
+consequences and save formats are unchanged.
+
+Sound (**F10**) adds layered energy pulses, percussive kinetic fire, bass-heavy
+plasma, seeker exhaust, harmonic resonance and separate shield, hull and break
+sounds. Independent sound playheads preserve rapid-fire tails. Sound remains
+optional. `--combat-feedback-check --captures DIRECTORY` runs eleven disposable
+native scenes, including a silent audio playback and lifetime check.
+
+![Spectral shock rings, glowing fire and debris after an enemy ship is destroyed](docs/screenshots/combat-feedback.jpg)
+
+*An enemy ship breaks apart in the native combat renderer.*
 
 ## Graphics in 3.56
 

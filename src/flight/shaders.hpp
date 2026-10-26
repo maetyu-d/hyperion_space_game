@@ -596,6 +596,7 @@ out vec4 finalColor;
 uniform sampler2D texture0,bloomTexture;
 uniform vec2 texel;
 uniform float hit,effects,sunVisibility,lowGraphics;uniform vec2 sunPosition;
+uniform vec3 impactColour;uniform vec2 impactDirection;uniform float shieldBreak;
 float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
 void main(){
  vec2 uv=fragTexCoord;vec3 c=texture(texture0,uv).rgb;
@@ -622,7 +623,13 @@ void main(){
  float streak=exp(-abs(sun.y)*950.)*exp(-abs(sun.x)*3.5);
  vec2 ghost=uv-(.5-(sunPosition-.5)*.38);float halo=exp(-abs(length(ghost)-.13)*190.);
  c+=vec3(.30,.18,.065)*(streak*.09+halo*.018)*sunVisibility*effects;
- c*=1.-.10*dot(v,v);c+=vec3(.30,.012,.035)*hit*dot(v,v)*effects;
+ c*=1.-.10*dot(v,v);
+ float rim=smoothstep(.60,1.25,length(v));
+ float side=.24+.76*max(0.,dot(normalize(v+vec2(.0001)),normalize(impactDirection+vec2(.0001))));
+ c+=impactColour*hit*rim*side*.65*effects;
+ // The break pulse lives at the canopy edge; the centre and HUD stay clear.
+ float fracture=pow(.5+.5*sin(atan(v.y,v.x)*21.+length(v)*12.),10.);
+ c+=vec3(.15,.28,.50)*shieldBreak*rim*fracture*.22*effects;
  // Linear HDR is preserved until the final exposure and ACES display transform.
  c=max(c*1.30,vec3(0.));
  float peak=max(c.r,max(c.g,c.b)),mappedPeak=(peak*(2.51*peak+.03))/(peak*(2.43*peak+.59)+.14);
@@ -638,7 +645,7 @@ in vec3 worldPosition,normal,localPosition;
 in vec2 modelUV;
 in vec4 tint;
 out vec4 finalColor;
-uniform vec3 lightDirection;
+uniform vec3 lightDirection,combatLight;
 uniform float time;
 uniform sampler2D noiseTexture;
 float noise(vec3 p){vec3 cell=floor(p),f=fract(p);f=f*f*(3.-2.*f);vec2 rg=textureLod(noiseTexture,(cell.xy+vec2(37.,17.)*cell.z+f.xy+.5)/256.,0.).rg;return mix(rg.r,rg.g,f.z);}
@@ -656,6 +663,7 @@ void main(){
  c+=vec3(.48,.66,.73)*sheen*.65+vec3(.055,.14,.18)*fresnel;
  c+=base*vec3(.10,.25,.23)*max(0.,-N.y);
  c+=pigment(nv*.65+localPosition.y*.13+.04*sin(time*.017))*fresnel*.055;
+ c+=combatLight*(.024+fresnel*.09+max(0.,N.y)*.018);
  finalColor=vec4(c,1.);
 })GLSL";
 
