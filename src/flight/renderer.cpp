@@ -483,12 +483,9 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  }
  drawLife(sceneView);
  for(const auto&t:g.traffic)if(!t.dead&&length(t.position-g.ship.position)<6500&&dot(t.position-g.ship.position,g.ship.forward)>-80)drawFactionCraft(t,sceneView);
- drawCombat(g);
+ drawShipRemains(g);drawCombat(g);
  auto facing=unit(cross(g.ship.forward,g.ship.up)),vertical=g.ship.up;
- for(const auto& wreck:g.wrecks)if(length(wreck.position-g.ship.position)<1700){
-  for(int i=0;i<6;i++){auto at=wreck.position+V3{std::sin(i*3.7)*4,std::cos(i*2.1)*2,std::cos(i*3.7)*4};DrawCubeV(vec(at),{float(.7+i*.1),.6f,1.1f},i%2?Color{60,73,78,255}:Color{87,62,91,255});}
-  ring(wreck.position,facing,vertical,6,alpha(mint,.35f),24);
- }
+ for(const auto& wreck:g.wrecks)if(length(wreck.position-g.ship.position)<1700)ring(wreck.position,facing,vertical,6,alpha(mint,.25f),24);
  // A bounded, seeded discharge follows the same storm front as the helm.
  if(!reduced&&altitude<160&&localWeather.lightning>.025){
   auto n=unit(g.ship.position-p.centre),east=unit(cross({0,1,0},n),{1,0,0}),side=unit(cross(n,east));

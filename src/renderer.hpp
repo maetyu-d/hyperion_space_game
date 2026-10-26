@@ -58,6 +58,7 @@ class Renderer {
  void flightDirector(const hyperion::flight::LandingInfo&,double);void flightHUD();void flightPanel(float,float&,float);void combatPanel(float,float&,float);
  void overlay();void panel();void modal();void notification();void menus();void heading(const std::string&,float,float);void row(const std::string&,const std::string&,float,float&,float);
 public:
+ hyperion::flight::Renderer::BreakupStats flightBreakupStats()const{return flightGraphics.breakupStats();}
  hyperion::flight::Renderer::QualityStats flightQualityStats()const{return flightGraphics.qualityStats();}
  void hideWildlifeForAudit(bool hidden){auditHideWildlife=hidden;}
  int flightMinorDetailFields()const{return flightGraphics.minorDetailFields();}

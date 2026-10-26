@@ -1,7 +1,9 @@
 #include "renderer.hpp"
+#include "destruction.hpp"
 #include "rlgl.h"
 #include "settlement_detail.hpp"
 #include <cstring>
+#include <stdexcept>
 
 namespace hyperion::flight {
 namespace {
@@ -159,7 +161,54 @@ GeometryStats Renderer::architectureStats()const{
  for(const auto& [id,asset]:portAssets){inspect(asset.close,false);result.closeTriangles+=asset.close.meshes[0].triangleCount;inspect(asset.detailed,false);inspect(asset.distant,true);if(asset.detail==2)result.closePorts++;}for(const auto& [id,model]:craftAssets)inspect(model,false);return result;
 }
 
-void Renderer::clearPortAssets(){for(auto& [id,a]:portAssets)for(auto* m:{&a.close,&a.detailed,&a.distant})if(m->meshCount)UnloadModel(*m);portAssets.clear();for(auto& [key,m]:craftAssets)if(m.meshCount)UnloadModel(m);craftAssets.clear();}
+Renderer::FracturedHull Renderer::buildFracturedHull(const HullRemains& hull){
+ auto source=buildCraft(hull.faction,hull.model,0,0);const auto& mesh=source.meshes[0];FracturedHull result;
+ std::array<Builder,5> builders;std::array<int,5> counts{};
+ auto vertex=[&](int i){return V3{mesh.vertices[i*3],mesh.vertices[i*3+1],mesh.vertices[i*3+2]};};
+ for(int triangle=0;triangle<mesh.triangleCount;triangle++){
+  int indices[3];for(int k=0;k<3;k++)indices[k]=mesh.indices?mesh.indices[triangle*3+k]:triangle*3+k;
+  auto centre=(vertex(indices[0])+vertex(indices[1])+vertex(indices[2]))/3.;int part=hullFragment(centre);auto& b=builders[part];
+  for(int index:indices){auto p=vertex(index);result.pivots[part]+=p;counts[part]++;for(double v:{p.x,p.y,p.z})b.vertices.push_back(float(v));
+   for(int k=0;k<3;k++)b.normals.push_back(mesh.normals[index*3+k]);for(int k=0;k<2;k++)b.uv.push_back(mesh.texcoords[index*2+k]);for(int k=0;k<4;k++)b.colours.push_back(mesh.colors[index*4+k]);}
+ }
+ for(int part=0;part<5;part++)if(counts[part]){
+  auto& b=builders[part];result.pivots[part]=result.pivots[part]/counts[part];
+  for(size_t i=0;i<b.vertices.size();i+=3){b.vertices[i]-=float(result.pivots[part].x);b.vertices[i+1]-=float(result.pivots[part].y);b.vertices[i+2]-=float(result.pivots[part].z);}
+  auto model=b.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;result.triangles+=model.meshes[0].triangleCount;result.parts[part]=model;
+ }
+ if(result.triangles!=mesh.triangleCount)throw std::runtime_error("Fractured hull lost geometry");UnloadModel(source);return result;
+}
+void Renderer::drawRemains(const HullRemains& hull,V3 at,double age){
+ auto key=std::make_pair(hull.faction,hull.model);auto it=fracturedHulls.find(key);
+ if(it==fracturedHulls.end()){
+  // At most twelve nearby wrecks are drawn, with a bounded cache across battles.
+  if(fracturedHulls.size()>=24){auto first=fracturedHulls.begin();for(auto& part:first->second.parts)if(part.meshCount)UnloadModel(part);fracturedHulls.erase(first);}
+  it=fracturedHulls.emplace(key,buildFracturedHull(hull)).first;
+ }
+ structureState(structure,factionStyle(hull.faction),{camera.position.x,camera.position.y,camera.position.z},sunDirection,visualTime,nullptr);
+ uniform(structure,"condition",.08f);uniform(structure,"powerOn",float(std::exp(-age*3)*.3));uniform(structure,"craftScale",float(hull.size));uniform(structure,"craftIdentity",float(hull.seed%65521)/65521.f);uniform(structure,"serviceWear",.9f);uniform(structure,"useSunShadow",0.f);uniform(structure,"structureAir",0.f);uniform(structure,"skyRadial",V3{0,1,0});
+ std::array<float,14> disabled{};int activityLoc=GetShaderLocation(structure,"activity[0]");if(activityLoc>=0)SetShaderValueV(structure,activityLoc,disabled.data(),SHADER_UNIFORM_FLOAT,14);
+ auto base=debrisPose(hull,0,0);debrisHulls++;
+ for(int part=0;part<5;part++){auto& model=it->second.parts[part];if(!model.meshCount)continue;auto pose=debrisPose(hull,part,age);
+  auto r=pose.right,u=pose.up,b=pose.back;model.transform={float(r.x),float(u.x),float(b.x),0,float(r.y),float(u.y),float(b.y),0,float(r.z),float(u.z),float(b.z),0,0,0,0,1};
+  auto centre=at+debrisPoint(base,it->second.pivots[part])*hull.size+pose.offset;DrawModel(model,vec(centre),float(hull.size),WHITE);debrisParts++;
+ }
+}
+void Renderer::drawShipRemains(const Game& game){
+ debrisHulls=debrisParts=0;std::vector<const Wreck*> near;
+ for(const auto& wreck:game.wrecks)if(length(wreck.position-game.ship.position)<1700&&dot(wreck.position-game.ship.position,game.ship.forward)>-50)near.push_back(&wreck);
+ std::stable_sort(near.begin(),near.end(),[&](auto a,auto b){return length(a->position-game.ship.position)<length(b->position-game.ship.position);});
+ for(size_t i=0;i<std::min(size_t(12),near.size());i++){
+  const auto& wreck=*near[i];auto hull=wreck.hull;
+  if(!hull.valid){auto actor=std::find_if(game.traffic.begin(),game.traffic.end(),[&](const auto&t){return t.id==wreck.id;});if(actor!=game.traffic.end())hull=hullRemains(*actor);else{uint32_t seed=2166136261u;for(unsigned char c:wreck.id)seed=(seed^c)*16777619u;hull={true,int(seed%5),3+int(seed%4),seed,8,{0,0,-1}};}}
+  drawRemains(hull,wreck.position,std::max(0.,180-wreck.life));
+ }
+ // Civilian losses may have no salvage entry, but still retain their own hull.
+ for(const auto& e:game.effects)if(e.kind==ShipExplosion&&e.hull.valid&&debrisHulls<12&&length(e.position-game.ship.position)<1700&&dot(e.position-game.ship.position,game.ship.forward)>-50){
+  bool hasWreck=std::any_of(game.wrecks.begin(),game.wrecks.end(),[&](const auto&w){return w.id==e.actor;});if(!hasWreck)drawRemains(e.hull,e.position,e.age);
+ }
+}
+void Renderer::clearPortAssets(){for(auto& [key,hull]:fracturedHulls)for(auto& part:hull.parts)if(part.meshCount)UnloadModel(part);fracturedHulls.clear();for(auto& [id,a]:portAssets)for(auto* m:{&a.close,&a.detailed,&a.distant})if(m->meshCount)UnloadModel(*m);portAssets.clear();for(auto& [key,m]:craftAssets)if(m.meshCount)UnloadModel(m);craftAssets.clear();}
 Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* view,const Game& game){
  SettlementView empty;empty.id=port.id;const auto& s=view?*view:empty;const auto& style=factionStyle(s.faction);
  auto layout=layoutSettlement(s);PortAsset asset;asset.key=s.geometryKey();asset.at=port.position;asset.up=port.normal;asset.radius=port.planet<0?190:layout.radius;
@@ -288,7 +337,7 @@ Model Renderer::buildCraft(int faction,int kind,int pods,int good){
 }
 void Renderer::drawFactionCraft(const Traffic& traffic,const Scene& sceneView){
  auto* shipment=sceneView.shipment(traffic.routeId);int pods=shipment?std::clamp(int(std::ceil(shipment->amount/5.)),1,8):0,good=shipment?shipment->good:0;
- int modelKind=traffic.kind==1?3+std::clamp(traffic.role,0,3):traffic.kind;if(traffic.managed&&!traffic.pirate&&traffic.kind==1)modelKind+=10;modelKind+=hullVariant(traffic.genome)*32;auto key=std::make_tuple(traffic.faction,modelKind,pods,good);auto it=craftAssets.find(key);if(it==craftAssets.end())it=craftAssets.emplace(key,buildCraft(traffic.faction,modelKind,pods,good)).first;
+ int modelKind=craftModel(traffic);auto key=std::make_tuple(traffic.faction,modelKind,pods,good);auto it=craftAssets.find(key);if(it==craftAssets.end())it=craftAssets.emplace(key,buildCraft(traffic.faction,modelKind,pods,good)).first;
  auto f=unit(traffic.forward,{0,0,-1}),right=unit(cross(f,{0,1,0}),{1,0,0}),up=unit(cross(right,f));double size=traffic.kind==2?11:traffic.kind==1?enemyDef(traffic).radius:5;
  Matrix rotation{float(right.x),float(up.x),float(-f.x),0,float(right.y),float(up.y),float(-f.y),0,float(right.z),float(up.z),float(-f.z),0,0,0,0,1};it->second.transform=rotation;
  structureState(structure,factionStyle(traffic.faction),{camera.position.x,camera.position.y,camera.position.z},sunDirection,sceneView.seconds,nullptr);uniform(structure,"condition",float(std::clamp(traffic.health/(traffic.kind==1?enemyDef(traffic).hull:100.),.08,1.)));
@@ -302,8 +351,7 @@ void Renderer::drawFactionCraft(const Traffic& traffic,const Scene& sceneView){
   for(int side:{-1,1}){auto muzzle=traffic.position+f*size*.95+right*(side*size*.48);DrawSphereEx(vec(muzzle),float(.3+traffic.charge*1.4),6,8,c);DrawLine3D(vec(muzzle),vec(muzzle-f*(2+traffic.charge*size)),c);}
   rlEnableDepthMask();EndBlendMode();
  }
- if(traffic.health<(traffic.kind==1?enemyDef(traffic).hull:100.)*.3&&length(traffic.position-V3{camera.position.x,camera.position.y,camera.position.z})<900){
-  for(int i=0;i<4;i++){auto at=traffic.position-f*(size*(1.1+i*.8))+up*(std::sin(sceneView.seconds*3+i)*size*.15);DrawSphereEx(vec(at),float(size*(.1+i*.08)),4,6,Color{39,30,53,static_cast<unsigned char>(170-i*30)});}}
+
 
  if(length(traffic.position-V3{camera.position.x,camera.position.y,camera.position.z})<2200){Color c=colour(factionStyle(traffic.faction).accent);c.a=180;
   for(int side:{-1,1}){auto engine=traffic.position+right*(side*size*.44)-f*size*1.16;DrawLine3D(vec(engine),vec(engine-f*(size*(.65+.08*std::sin(sceneView.seconds*7+traffic.phase)))),c);}}

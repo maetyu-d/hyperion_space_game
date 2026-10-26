@@ -1,4 +1,4 @@
-# HYPERION 3.57
+# HYPERION 3.58
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,30 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Ship destruction in 3.58
+
+Destroyed ships now separate into pieces of their **actual procedural hull**.
+Wings, nose, engine sections and core retain faction materials and hull variants,
+tumble around their own centres and remain as the salvage wreck. Existing saved
+wrecks recover their appearance from the associated vessel where available.
+Salvage contents, rewards and faction consequences retain their existing rules.
+
+Explosions combine rippling rainbow shock fronts in space, curling fire
+filaments, staggered engine and reactor bursts, cooling embers and softer smoke.
+The weapon and vessel seed influence the colour and fire pattern. Damaged ships
+vent smoke and energy before destruction. Optional sound adds layered secondary
+failures beneath the initial blast. Reduced effects and Low graphics retain the
+same sequence with fewer filaments, plumes and shock-wave layers.
+
+`--destruction-check --captures DIRECTORY` checks seven disposable scenes:
+five faction hulls, six simultaneous losses, and an older restored wreck.
+Fracture construction checks that every source triangle is retained. Visual
+wreck metadata is reconstructed without changing the campaign save format.
+
+![The original hull separates into tumbling fragments amid rainbow shock fronts and spectral fire](docs/screenshots/ship-destruction.jpg)
+
+*The ship’s own hull becomes its wreck, captured in the native renderer.*
 
 ## Combat feedback in 3.57
 

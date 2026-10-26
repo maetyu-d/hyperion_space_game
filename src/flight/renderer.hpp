@@ -19,6 +19,8 @@ class Renderer {
  bool profiling=false;std::array<double,6> timings{};
  struct PortAsset {Model close{},detailed{},distant{};std::vector<V3> detailCentres;V3 at{},up{};uint64_t key=0;double radius=60;int detail=-1;};
  std::unordered_map<std::string,PortAsset> portAssets;std::map<std::tuple<int,int,int,int>,Model> craftAssets;
+ struct FracturedHull {std::array<Model,5> parts{};std::array<V3,5> pivots{};int triangles=0;};std::map<std::pair<int,int>,FracturedHull> fracturedHulls;
+ int debrisHulls=0,debrisParts=0;FracturedHull buildFracturedHull(const HullRemains&);void drawRemains(const HullRemains&,V3,double);void drawShipRemains(const Game&);
  const Scene* presentation=nullptr;Shader structure{},surfaceBake{},geologyBake{},detailBake{},planetDepth{},sunDepth{};
  std::vector<RenderTexture2D> surfaceMaps,geologyMaps;std::string bodiesKey;
  Shader sky{},world{},groundShader{},atmo{},cloud{},cloudResolve{},ringShader{},aurora{},blur{},post{},cockpitShader{};
@@ -38,6 +40,7 @@ class Renderer {
  void drawPlanetDepth(const Game&,const std::vector<int>&,V3);void drawAuroras(const Game&,const std::vector<int>&,V3);void drawClouds(const Game&,const std::vector<int>&,V3);
  bool auditClouds=false;CloudOcclusionStats cloudStats{},auroraStats{};void measureCloudOcclusion(const Game&,int,V3,bool emission=false);void resolveWeather(const Game&,V3,Texture2D,bool emission=false);
 public:
+ struct BreakupStats {int hulls,parts,cached;};BreakupStats breakupStats()const{return {debrisHulls,debrisParts,int(fracturedHulls.size())};}
  struct QualityStats {bool low;int renderWidth,renderHeight,cloudWidth,shadowWidth,detailWidth,surfaceWidth;};
  QualityStats qualityStats()const{return {lowGraphics,scene.texture.width,scene.texture.height,cloudScene.texture.width,sunScene.texture.width,detailMap.texture.width,surfaceMaps.size()>2?surfaceMaps[2].texture.width:0};}
  int visibleMinorBodies()const{return minorDrawn;}

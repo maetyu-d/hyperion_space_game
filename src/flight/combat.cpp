@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "destruction.hpp"
 #include <limits>
 namespace hyperion::flight {
 namespace {
@@ -58,7 +59,7 @@ bool Game::selectWeapon(int type){if(type<0||type>4||type==Seeker)return false;s
 void Game::effect(V3 at,int kind,V3 velocity,V3 end,V3 normal,int weapon,double strength,double size){
  // Preserve major impacts when rapid fire fills the bounded effect pool.
  if(effects.size()>=128){auto minor=std::find_if(effects.begin(),effects.end(),[](const auto& e){return e.kind==MuzzleFlash||e.kind==HullImpact;});if(minor!=effects.end())effects.erase(minor);else effects.erase(effects.begin());}
- effects.push_back({at,velocity,0,kind==ShipExplosion?2.6:kind==DecoyBurst?1.8:kind==ChainDischarge?.32:kind==MuzzleFlash?.12:kind==ShieldBreak?.85:kind==HullImpact?.8:.55,kind,end,unit(normal,{0,0,1}),std::clamp(weapon,0,4),std::clamp(strength,.25,2.),std::clamp(size,.25,20.)});
+ effects.push_back({at,velocity,0,kind==ShipExplosion?4.2:kind==DecoyBurst?1.8:kind==ChainDischarge?.32:kind==MuzzleFlash?.12:kind==ShieldBreak?.85:kind==HullImpact?.8:.55,kind,end,unit(normal,{0,0,1}),std::clamp(weapon,0,4),std::clamp(strength,.25,2.),std::clamp(size,.25,20.)});
 }
 void Game::damageShip(double amount,int weapon,V3 from){
  if(weapon==CollisionDamage)lastAttacker.clear();
@@ -90,11 +91,12 @@ void Game::damageTraffic(int index,double amount,int weapon,V3 at,bool credited,
  if(broken)effect(t.position,ShieldBreak,t.velocity*.8,{},normal,weapon,strength,t.kind==1?enemyDef(t).radius:9);
  if(credited){hitConfirm=broken?.3:.2;feedback.confirmation=broken?ShieldBreak:hullDamage>0?HullImpact:ShieldImpact;if(hullDamage>0)feedback.hullHits++;else feedback.shieldHits++;if(broken)feedback.breaks++;}
  if(t.health>0)return;
- t.dead=true;t.respawn=t.kind==2?1e6:240;effect(t.position,ShipExplosion,t.velocity*.3,{},normal,weapon,1,t.kind==1?enemyDef(t).radius:9);
+ t.dead=true;t.respawn=t.kind==2?1e6:240;effect(t.position,ShipExplosion,t.velocity*.08,{},normal,weapon,1,t.kind==1?enemyDef(t).radius:9);
+ effects.back().hull=hullRemains(t);effects.back().actor=t.id;
  if(credited){feedback.destructions++;feedback.confirmation=ShipExplosion;hitConfirm=.45;}
  if(t.kind==1){if(t.managed){events.push_back({"shipLoss",t.home,t.faction,"",credited?"NOMA":attacker,t.id});if(credited){kills++;message("Ship destroyed / political consequences reported / salvage nearby.");}}
   else if(credited){kills++;events.push_back({"bounty",t.home,t.faction,""});message("Hostile destroyed / bounty reported / salvage available nearby.");}
-  if(wrecks.size()>=48)wrecks.erase(wrecks.begin());wrecks.push_back({t.position,t.velocity*.08,180,t.managed?std::array<double,3>{2.+t.role*.5,.5,.5}:std::array<double,3>{4.+t.role*2,1.+t.role,2.},t.id});
+  if(wrecks.size()>=48)wrecks.erase(wrecks.begin());wrecks.push_back({t.position,t.velocity*.08,180,t.managed?std::array<double,3>{2.+t.role*.5,.5,.5}:std::array<double,3>{4.+t.role*2,1.+t.role,2.},t.id});wrecks.back().hull=hullRemains(t);
  }else if(credited){events.push_back({"civilian",t.home,t.faction,""});message("Civilian destroyed / authority notified.");}
  if(!t.routeId.empty())events.push_back({"freightLoss",t.home,t.faction,t.routeId,credited?"NOMA":attacker,t.id});
 }
@@ -111,7 +113,7 @@ void Game::prepareCombat(double dt,Input& input){
  c.energy=std::min(100.,c.energy+dt*(5+9*c.systems[PowerCore]/100)*reactorFactor(ship.vessel));c.heat=std::max(0.,c.heat-dt*13*(1+.1*ship.vessel.fitted[WeaponCapacitors]));if(c.overheated&&c.heat<42)c.overheated=false;
  double shieldMax=shieldCapacity(ship.vessel)*c.systems[ShieldGenerator]/100;ship.shield=std::min(ship.shield,shieldMax);if(c.shieldDelay<=0)ship.shield=std::min(shieldMax,ship.shield+dt*1.8*c.systems[ShieldGenerator]/100*shieldCapacity(ship.vessel)/100);
  feedback.recoil*=std::exp(-dt*19);feedback.impact*=std::exp(-dt*9);feedback.shieldBreak=std::max(0.,feedback.shieldBreak-dt);
- damageCue=std::max(0.,damageCue-dt);hitConfirm=std::max(0.,hitConfirm-dt);for(auto& e:effects){e.age+=dt;e.position+=e.velocity*dt;}effects.erase(std::remove_if(effects.begin(),effects.end(),[](const auto& e){return e.age>=e.duration;}),effects.end());
+ damageCue=std::max(0.,damageCue-dt);hitConfirm=std::max(0.,hitConfirm-dt);for(auto& e:effects){e.age+=dt;e.position+=e.velocity*dt;if(e.kind==ShipExplosion)e.velocity=e.velocity*std::exp(-dt*.2);}effects.erase(std::remove_if(effects.begin(),effects.end(),[](const auto& e){return e.age>=e.duration;}),effects.end());
  for(auto& w:wrecks){w.life-=dt;w.position+=w.velocity*dt;w.velocity=w.velocity*std::exp(-dt*.2);}wrecks.erase(std::remove_if(wrecks.begin(),wrecks.end(),[](const auto& w){return w.life<=0;}),wrecks.end());
  for(int i=0;i<int(traffic.size());i++){auto& t=traffic[i];if(t.id.empty())t.id="local:"+std::to_string(t.home)+":"+std::to_string(t.kind)+":"+std::to_string(t.role)+":"+std::to_string(i);}
  if(combatTargetIndex()<0&&!docked){combatTarget.clear();double best=.45;for(auto& t:traffic)if(t.kind==1&&t.hostile&&!t.dead&&length(t.position-ship.position)<1800){double score=dot(unit(t.position-ship.position),ship.forward);if(score>best){best=score;combatTarget=t.id;}}}

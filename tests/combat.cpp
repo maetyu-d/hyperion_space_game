@@ -67,7 +67,7 @@ int main(){try{
   f=arena();auto t=enemy({0,0,-200});t.health=10;f.traffic.push_back(t);f.update(.05);require(f.traffic[0].state==4,"crippled raider retreats");
   f=arena();t=enemy({0,0,-200});t.fireClock=0;f.traffic.push_back(t);f.ports[0].position={};f.ports[0].settlement="staffed";f.update(.05);require(f.bolts.empty()&&f.traffic[0].state==0,"staffed port buffer suppresses pirate aggression");
   f=arena();t=enemy({0,0,-2100});t.dead=true;t.respawn=0;f.traffic.push_back(t);f.ports[0].position={0,0,-1700};f.update(.05);require(f.traffic[0].dead,"reinforcements cannot visibly appear at a nearby home port");
-  for(int i=0;i<300;i++)f.effect({},2);require(f.effects.size()==128,"combat effects have a hard population bound");for(int i=0;i<60;i++)f.update(.05);require(f.effects.empty(),"transient effects expire on simulation time");
+  for(int i=0;i<300;i++)f.effect({},2);require(f.effects.size()==128,"combat effects have a hard population bound");for(int i=0;i<100;i++)f.update(.05);require(f.effects.empty(),"transient effects expire on simulation time");
  }
  // Port rearming and repair conserve warehouse stock and money. Salvage depletes one wreck.
  {hyperion::Game g;g.enterFlight();auto& f=g.s.flight;auto& p=g.s.economy.settlements.front();int berth=g.flightPort(p.id,true);f.dockAt(berth);g.processFlightEvents();p.owner=0;f.worldKey.clear();g.ensureFlight();f.dockAt(g.flightPort(p.id,true));g.processFlightEvents();

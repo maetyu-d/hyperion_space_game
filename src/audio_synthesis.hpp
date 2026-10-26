@@ -7,7 +7,7 @@ namespace hyperion {
 // Shared by the audio device and offline signal checks. No recorded assets.
 inline std::vector<float> synthesizeSound(int kind){
  constexpr unsigned rate=44100;constexpr double tau=6.283185307179586;
- const double duration=kind==10?1.6:kind==5?.22:kind>=4?.75:1.;
+ const double duration=kind==10?2.2:kind==5?.22:kind>=4?.75:1.;
  unsigned count=unsigned(rate*duration);std::vector<float> samples(count);
  double phase=0,bodyPhase=0,filteredNoise=0;uint32_t noise=0x91ac+uint32_t(kind)*7919;
  for(unsigned i=0;i<count;i++){
@@ -23,7 +23,10 @@ inline std::vector<float> synthesizeSound(int kind){
   else if(kind==6)signal=(std::sin(phase+.9*std::sin(phase*.503))*.54+std::sin(bodyPhase)*.32+filteredNoise*.6)*std::exp(-t*7);
   else if(kind==7)signal=(filteredNoise*1.4+std::sin(phase)*.2+std::sin(bodyPhase)*.24)*std::exp(-t*9);
   else if(kind==9)signal=(std::sin(phase)*.5+grit*.26)*std::exp(-t*16);
-  else if(kind==10)signal=(filteredNoise*1.5+std::sin(phase)*.18+std::sin(bodyPhase)*.3)*std::exp(-t*4)+grit*.55*std::exp(-t*50);
+  else if(kind==10){
+   signal=(filteredNoise*1.5+std::sin(phase)*.18+std::sin(bodyPhase)*.3)*std::exp(-t*3.4)+grit*.55*std::exp(-t*50);
+   for(int burst=0;burst<4;burst++){double age=t-(.24+burst*.2);if(age>0)signal+=(filteredNoise*.8+std::sin(bodyPhase*(1.3+burst*.31))*.15)*std::min(1.,age/.006)*std::exp(-age*(9+burst));}
+  }
   else if(kind==11)signal=(std::sin(phase)*.45+std::sin(phase*1.501)*.22+std::sin(phase*2.003)*.12)*(1+.12*std::sin(t*93))*std::exp(-t*12);
   else if(kind==12)signal=(std::sin(phase)*.40+std::sin(phase*1.414)*.17)*std::exp(-t*22)+filteredNoise*.6*std::exp(-t*30);
   else if(kind==14)signal=grit*.5*std::exp(-t*27)+(std::sin(phase)*.28+std::sin(phase*1.618)*.22)*std::exp(-t*7);
