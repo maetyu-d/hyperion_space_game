@@ -1,6 +1,7 @@
 #pragma once
 #include "game.hpp"
 #include "scene.hpp"
+#include "life_visibility.hpp"
 #include "raylib.h"
 #include <unordered_map>
 #include <map>
@@ -13,7 +14,7 @@ class Renderer {
  struct MinorField {RenderTexture2D base{},detail{};float blend=0;};std::unordered_map<std::string,MinorField> minorFields;
  RenderTexture2D bakeMinorField(const MinorBody&,int);void prepareMinorBodies(const Game&);
  void clearMinorBodies();void drawMinorBodies(const Game&,bool depth=false);void drawCometTails(const Game&);
- Shader lifeShader{};std::array<Model,24> lifeModels{};std::array<int,13> lifeUniforms{};int lifeDrawn=0;
+ Shader lifeShader{};std::array<Model,24> lifeModels{};std::array<int,15> lifeUniforms{};int lifeDrawn=0;LifeVisibilityBudget lifeBudget;
  void drawLife(const Scene&);void clearLife();
  bool profiling=false;std::array<double,6> timings{};
  struct PortAsset {Model close{},detailed{},distant{};std::vector<V3> detailCentres;V3 at{},up{};uint64_t key=0;double radius=60;int detail=-1;};
@@ -30,13 +31,15 @@ class Renderer {
  void drawSunShadows(const Game&,V3);
  void updateGround(const Game&,int);void drawGroundEffects(const Game&);
  std::string worldKey;int cockpitWidth=0,cockpitHeight=0,cockpitKind=-1;bool cockpitDocked=false,hdr=false;
- bool reduced=false,showCockpit=true;double visualTime=0,speed=0,fixedVisualTime=-1;V3 sunDirection{.6,.7,-.4};
+ bool reduced=false,lowGraphics=false,showCockpit=true;double visualTime=0,speed=0,fixedVisualTime=-1;V3 sunDirection{.6,.7,-.4};
  void drawRings(const Planet&,double);
  void clearPortAssets();PortAsset buildPort(const Port&,const SettlementView*,const Game&);void drawSettlement(const Port&,const SettlementView*,const Game&);void drawPortActivity(const Port&,const Scene&);Model buildCraft(int,int,int,int);void drawFactionCraft(const Traffic&,const Scene&);
  void rebuild(const Game&);void rebuildCockpit(int,int,bool,int);void drawCockpit(const Game&);void drawMotion(const Game&);
  void drawPlanetDepth(const Game&,const std::vector<int>&,V3);void drawAuroras(const Game&,const std::vector<int>&,V3);void drawClouds(const Game&,const std::vector<int>&,V3);
  bool auditClouds=false;CloudOcclusionStats cloudStats{},auroraStats{};void measureCloudOcclusion(const Game&,int,V3,bool emission=false);void resolveWeather(const Game&,V3,Texture2D,bool emission=false);
 public:
+ struct QualityStats {bool low;int renderWidth,renderHeight,cloudWidth,shadowWidth,detailWidth,surfaceWidth;};
+ QualityStats qualityStats()const{return {lowGraphics,scene.texture.width,scene.texture.height,cloudScene.texture.width,sunScene.texture.width,detailMap.texture.width,surfaceMaps.size()>2?surfaceMaps[2].texture.width:0};}
  int visibleMinorBodies()const{return minorDrawn;}
  int minorDetailFields()const;int minorMaterialWidth(const Game&,int body)const;
  bool exportMinorMaterial(const Game&,int body,const std::string&)const;
@@ -51,7 +54,7 @@ public:
  bool exportMaterial(int body,const std::string& path)const;
  bool exportDetail(const std::string& path)const;
  bool exportShadow(const std::string& path)const;
- bool init();void shutdown();void prepare(const Game&,const Scene&,bool reducedEffects=false,bool cockpitVisible=true);void present(float width,float height);
+ bool init();void shutdown();void prepare(const Game&,const Scene&,bool reducedEffects=false,bool cockpitVisible=true,bool lowGraphicsMode=false);void present(float width,float height);
  Vector2 project(V3 p,float width,float height)const;
 };
 }

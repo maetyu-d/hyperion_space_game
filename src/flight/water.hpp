@@ -39,9 +39,17 @@ LiquidSurface liquidSurface(vec3 n,vec3 dx,vec3 dy,float elevation,float sea,flo
 }
 vec3 liquidReflection(vec3 N,vec3 V,vec3 radial,vec3 L,vec3 flowingColour,float daylight){
  vec3 r=reflect(-V,N);float horizon=exp(-abs(dot(r,radial))*3.8);
+ if(lowGraphics>.5){
  vec3 air=mix(vec3(.018,.045,.10),vec3(.12,.21,.26),horizon);
  air+=vec3(.30,.105,.035)*pow(max(dot(r,L),0.),8.)*.35;
  vec3 spectral=flowingColour*.25+pigment(seed*.031+r.z*.22+r.y*.17)*.018;
  return mix(vec3(.008,.014,.035)+spectral,air*daylight+spectral*.15,clamp(atmosphere,0.,1.));
+ }else{
+ float dusk=1.-smoothstep(.02,.40,abs(dot(radial,L)));
+ vec3 air=mix(vec3(.025,.075,.19),mix(vec3(.29,.46,.55),vec3(.66,.19,.095),dusk),horizon);
+ air+=vec3(.85,.38,.14)*pow(max(dot(r,L),0.),14.)*(.14+dusk*.24);
+ vec3 spectral=flowingColour*.25+pigment(seed*.031+r.z*.22+r.y*.17)*(.018+horizon*.012);
+ return mix(vec3(.008,.014,.035)+spectral,air*daylight+spectral*.15,clamp(atmosphere,0.,1.));
+ }
 }
 )GLSL"

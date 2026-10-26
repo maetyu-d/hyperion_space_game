@@ -1,6 +1,7 @@
 #include "flight_scene.hpp"
 #include "game.hpp"
 #include "wildlife.hpp"
+#include "flight/life_visibility.hpp"
 
 namespace hyperion {
 hyperion::flight::Scene flightScene(const Game& game){
@@ -22,9 +23,10 @@ hyperion::flight::Scene flightScene(const Game& game){
   v.progress=clamp(1-r.remaining/std::max(.1,r.duration),0.,1.);v.holding=r.remaining<=1e-8;v.loading=v.progress<.05;v.unloading=v.progress>.95&&!v.holding;v.status=r.status;
   result.shipments.push_back(std::move(v));
  }
- if(!game.s.flight.planets.empty()&&game.s.flight.altitude()<240){
-  int body=game.s.flight.nearestPlanet();const auto& world=game.s.flight.planets[body];auto& universe=const_cast<Universe&>(game.universe);auto planet=universe.planet(game.s.currentStar,body);LifeView view;view.centre=game.surfacePosition(game.s.flight.ship.position-world.centre);view.observer=view.centre;view.alert=clamp((90-game.s.flight.altitude())/80.,0.,1.);view.radius=210;view.hours=game.s.hours;view.limit=150;
+ if(!game.s.flight.planets.empty()&&game.s.flight.altitude()<420){
+  int body=game.s.flight.nearestPlanet();const auto& world=game.s.flight.planets[body];auto& universe=const_cast<Universe&>(game.universe);auto planet=universe.planet(game.s.currentStar,body);LifeView view;view.centre=game.surfacePosition(game.s.flight.ship.position-world.centre);view.observer=view.centre;view.alert=clamp((90-game.s.flight.altitude())/80.,0.,1.);view.radius=hyperion::flight::lifeCandidateRadius;view.hours=game.s.hours;view.limit=hyperion::flight::lifeCandidateLimit;
   for(const auto& agent:visibleLife(game.s.economy,game.universe,planet,view)){
+   double coverage=hyperion::flight::lifeChartCoverage(distance(agent.position,view.centre));if(coverage<=.001)continue;
    auto n=game.surfaceNormal(agent.position);hyperion::flight::V3 at=world.centre+n*(world.radius+hyperion::flight::terrain(world,n)+2.12);
    // Use the real settlement layout to keep bodies out of pads and structures.
    for(const auto& port:game.s.flight.ports)if(port.planet==body&&!port.settlement.empty()&&hyperion::flight::length(at-port.position)<260){auto* settlement=result.settlement(port.settlement);if(!settlement)continue;auto layout=hyperion::flight::layoutSettlement(*settlement);auto east=hyperion::flight::unit(hyperion::flight::cross({1,0,0},port.normal),{0,0,1}),north=hyperion::flight::unit(hyperion::flight::cross(east,port.normal));
@@ -32,6 +34,7 @@ hyperion::flight::Scene flightScene(const Game& game){
     for(int pass=0;pass<3;pass++){avoid(port.position,48+agent.size);for(const auto& site:layout.facilities)avoid(port.position+east*site.position.x+north*site.position.z,15+agent.size);}
    }
    auto east=hyperion::flight::unit(hyperion::flight::cross({0,1,0},n),{1,0,0}),north=hyperion::flight::unit(hyperion::flight::cross(n,east));auto bio=phenotype(agent.contact);hyperion::flight::OrganismView v;v.id=agent.id;v.position=at;v.up=hyperion::flight::terrainNormal(world,n);v.forward=hyperion::flight::unit(east*std::cos(agent.heading)+north*std::sin(agent.heading));v.size=agent.size*(agent.flora?1.8:1.4);v.hue=bio.hue;v.phase=agent.phase;v.gait=bio.gait;v.activity=agent.activity;v.plan=bio.plan;v.behaviour=agent.behaviour;v.guild=agent.guild;v.flora=agent.flora;v.marine=agent.marine;
+   v.visibility=coverage;
    v.genes=double(agent.contact.n%65521)/65521.;v.shape={.78+.065*bio.limbs,.82+.06*(agent.contact.n%7),.80+.05*bio.segments};v.resting=agent.behaviour==Resting;v.feeding=agent.behaviour==Grazing||agent.behaviour==GardenForaging||agent.behaviour==Filtering||agent.behaviour==Recycling;auto foodNormal=game.surfaceNormal(agent.food);v.food=world.centre+foodNormal*(world.radius+hyperion::flight::terrain(world,foodNormal)+2.5);if(agent.marine&&!agent.flora)v.position+=n*(.65+std::sin(game.s.hours*55+agent.phase)*.24);result.organisms.push_back(v);
   }
  }

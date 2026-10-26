@@ -24,7 +24,7 @@ struct ShipmentView {
  std::string id,from,to,status;int faction=0,good=0,trip=0;double amount=0,progress=0;
  bool holding=false,loading=false,unloading=false;
 };
-struct OrganismView {std::string id;V3 position,forward,up,food,shape{1,1,1};double size=1,hue=0,phase=0,gait=1,activity=0,genes=0;int plan=0,behaviour=0,guild=0;bool flora=false,marine=false,feeding=false,resting=false;};
+struct OrganismView {std::string id;V3 position,forward,up,food,shape{1,1,1};double size=1,hue=0,phase=0,gait=1,activity=0,genes=0,visibility=1;int plan=0,behaviour=0,guild=0;bool flora=false,marine=false,feeding=false,resting=false;};
 struct Scene {
  double hours=0,seconds=0;std::vector<OrganismView> organisms;std::vector<SettlementView> settlements;std::vector<ShipmentView> shipments;
  const SettlementView* settlement(const std::string& id)const;

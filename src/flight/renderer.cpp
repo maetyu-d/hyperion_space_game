@@ -174,13 +174,13 @@ bool Renderer::init(){
  SetShaderValue(structure,detailMeanLoc,detailMean.data(),SHADER_UNIFORM_VEC4);
  std::printf("Building detail mean: %.5f / %.5f / %.5f / %.5f\n",detailMean[0],detailMean[1],detailMean[2],detailMean[3]);
  // These channels are material data, including alpha, so bake without blending.
- detailMap=LoadRenderTexture(1024,1024);if(!detailMap.id)return false;
+ int detailSize=lowGraphics?1024:2048;detailMap=LoadRenderTexture(detailSize,detailSize);if(!detailMap.id)return false;
  BeginTextureMode(detailMap);ClearBackground(BLANK);set(detailBake,"resolution",Vector2{float(detailMap.texture.width),float(detailMap.texture.height)});rlDrawRenderBatchActive();rlDisableColorBlend();
  BeginShaderMode(detailBake);texture(detailBake,"noiseTexture",noiseTexture);DrawRectangle(0,0,detailMap.texture.width,detailMap.texture.height,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
  GenTextureMipmaps(&detailMap.texture);SetTextureFilter(detailMap.texture,TEXTURE_FILTER_TRILINEAR);SetTextureWrap(detailMap.texture,TEXTURE_WRAP_REPEAT);
- sunScene=linearTarget(1024,1024,PIXELFORMAT_UNCOMPRESSED_R32);
+ int shadowSize=lowGraphics?1024:2048;sunScene=linearTarget(shadowSize,shadowSize,PIXELFORMAT_UNCOMPRESSED_R32);
  SetTextureFilter(sunScene.texture,TEXTURE_FILTER_POINT);SetTextureWrap(sunScene.texture,TEXTURE_WRAP_CLAMP);
- std::printf("Sun shadow storage: %s / 1024\n",sunScene.texture.format==PIXELFORMAT_UNCOMPRESSED_R32?"R32F":"disabled fallback");
+ std::printf("Sun shadow storage: %s / %d\n",sunScene.texture.format==PIXELFORMAT_UNCOMPRESSED_R32?"R32F":"disabled fallback",shadowSize);
  return noiseTexture.id!=0;
 }
 void Renderer::rebuild(const Game& g){
@@ -191,12 +191,12 @@ void Renderer::rebuild(const Game& g){
  for(const auto&p:g.planets){
   // Static geographic fields are baked once per world. Moving silk, waves,
   // cloud advection and the lighting remain live in their original shaders.
-  int mapWidth=p.giant?1024:2048,mapHeight=mapWidth/2;auto data=linearTarget(mapWidth,mapHeight);BeginTextureMode(data);ClearBackground(BLANK);set(surfaceBake,"resolution",Vector2{float(mapWidth),float(mapHeight)});set(surfaceBake,"seed",float(p.seed));set(surfaceBake,"kind",float(p.kind));set(surfaceBake,"water",float(p.water));set(surfaceBake,"generation",float(p.generation));set(surfaceBake,"worldParams",Vector4{float(p.worldSeed&65535),float(p.worldSeed>>16),float(p.landform),float(p.tectonic)});
+  int mapWidth=lowGraphics?(p.giant?1024:2048):(p.giant?1536:3072),mapHeight=mapWidth/2;auto data=linearTarget(mapWidth,mapHeight);BeginTextureMode(data);ClearBackground(BLANK);set(surfaceBake,"resolution",Vector2{float(mapWidth),float(mapHeight)});set(surfaceBake,"seed",float(p.seed));set(surfaceBake,"kind",float(p.kind));set(surfaceBake,"water",float(p.water));set(surfaceBake,"generation",float(p.generation));set(surfaceBake,"worldParams",Vector4{float(p.worldSeed&65535),float(p.worldSeed>>16),float(p.landform),float(p.tectonic)});
   rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(surfaceBake);texture(surfaceBake,"noiseTexture",noiseTexture);DrawRectangle(0,0,mapWidth,mapHeight,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
   GenTextureMipmaps(&data.texture);SetTextureFilter(data.texture,TEXTURE_FILTER_TRILINEAR);SetTextureWrap(data.texture,TEXTURE_WRAP_REPEAT);surfaceMaps.push_back(data);
   // The extra material field is small and mipmapped. Geological loops run
   // once here rather than in every flight fragment, including on distant worlds.
-  int geologyWidth=p.giant?1024:1536,geologyHeight=geologyWidth/2;auto geology=linearTarget(geologyWidth,geologyHeight);
+  int geologyWidth=lowGraphics?(p.giant?1024:1536):(p.giant?1536:2048),geologyHeight=geologyWidth/2;auto geology=linearTarget(geologyWidth,geologyHeight);
   if(geology.id){
    BeginTextureMode(geology);ClearBackground(BLANK);set(geologyBake,"resolution",Vector2{float(geologyWidth),float(geologyHeight)});
    set(geologyBake,"seed",float(p.seed));set(geologyBake,"kind",float(p.kind));set(geologyBake,"water",float(p.water));set(geologyBake,"life",float(p.life));set(geologyBake,"atmosphere",float(p.atmosphere));set(geologyBake,"temperature",float(p.temperature));
@@ -295,7 +295,7 @@ void Renderer::drawClouds(const Game& g,const std::vector<int>& visible,V3 eye){
   set(cloud,"centre",body.centre);set(cloud,"eye",eye);set(cloud,"lightDirection",sunDirection);
   set(cloud,"weatherHours",float(presentation?presentation->hours:g.time/55));set(cloud,"weatherSeed",float(body.worldSeed%8191)*.013f);
   set(cloud,"time",float(visualTime));set(cloud,"seed",float(body.seed));set(cloud,"water",float(body.water));set(cloud,"kind",float(body.kind));
-  set(cloud,"ringed",i==2||body.giant?1.f:0.f);set(cloud,"radius",float(body.radius));set(cloud,"atmosphere",float(body.atmosphere));set(cloud,"sampleCount",reduced?10.f:16.f);
+  set(cloud,"ringed",i==2||body.giant?1.f:0.f);set(cloud,"radius",float(body.radius));set(cloud,"atmosphere",float(body.atmosphere));set(cloud,"sampleCount",reduced?10.f:lowGraphics?16.f:24.f);
   set(cloud,"resolution",Vector2{float(cloudScene.texture.width),float(cloudScene.texture.height)});
   set(cloud,"useSurface",surfaceMaps[i].texture.format==PIXELFORMAT_UNCOMPRESSED_R16G16B16A16?1.f:0.f);
   clouds[i].materials[0].maps[MATERIAL_MAP_METALNESS].texture=opaqueDepth;DrawModel(clouds[i],vec(body.centre),1,WHITE);
@@ -349,7 +349,7 @@ void Renderer::drawSunShadows(const Game& g,V3 eye){
  shadowActive=true;++shadowFrames;
  if(shadowBody==groundBody&&length(shadowAnchor-groundAnchor)<1e-8&&length(shadowEye-localEye)<4&&std::abs(shadowBlend-groundBlend)<.002&&shadowCasters==casterKey)return;
  V3 forward=-sunDirection,right=unit(cross(forward,{0,1,0})),up=unit(cross(right,forward));
- V3 target=groundAnchor*(body.radius+terrain(body,groundAnchor)+2);constexpr double span=340,texel=span/1024.;
+ V3 target=groundAnchor*(body.radius+terrain(body,groundAnchor)+2);constexpr double span=340;double texel=span/std::max(1,sunScene.texture.width);
  // Snap in the light's fixed axes, so recentering the ground patch does not
  // slide the shadow texels over the world.
  target+=right*(std::round(dot(target,right)/texel)*texel-dot(target,right));target+=up*(std::round(dot(target,up)/texel)*texel-dot(target,up));
@@ -377,14 +377,17 @@ void Renderer::drawMotion(const Game& g){
  }
  rlEnableDepthMask();EndBlendMode();
 }
-void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible){
+void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,bool lowGraphicsMode){
  if(g.planets.empty()||g.ports.empty())return;
+ if(lowGraphics!=lowGraphicsMode){shutdown();lowGraphics=lowGraphicsMode;worldKey.clear();bodiesKey.clear();cockpitWidth=cockpitHeight=0;groundBody=shadowBody=-1;if(!init())throw std::runtime_error("Graphics quality initialization failed");}
+ for(auto shader:{sky,world,groundShader,cloud,post})set(shader,"lowGraphics",lowGraphics?1.f:0.f);
  presentation=&sceneView;reduced=reducedEffects;showCockpit=cockpitVisible;speed=g.speed();visualTime=fixedVisualTime>=0?fixedVisualTime:GetTime();
  if(worldKey!=g.worldKey){std::string key=g.star;for(const auto& p:g.planets)key+='|'+p.name+std::to_string(p.seed)+std::to_string(p.radius);
   if(key!=bodiesKey){rebuild(g);bodiesKey=key;}else{worldKey=g.worldKey;groundBody=-1;}
  }
- int renderH=std::min(reduced?810:1080,GetRenderHeight()),renderW=int(double(GetRenderWidth())*renderH/GetRenderHeight());
- if(scene.texture.width!=renderW||scene.texture.height!=renderH){
+ int renderH=std::min(reduced?810:lowGraphics?1080:1440,GetRenderHeight()),renderW=int(double(GetRenderWidth())*renderH/GetRenderHeight());
+ const int cloudDivisor=(reduced||lowGraphics)?3:2;
+ if(scene.texture.width!=renderW||scene.texture.height!=renderH||cloudScene.texture.width!=std::max(1,renderW/cloudDivisor)){
  for(auto* target:{&scene,&composite,&opaqueScene,&auroraScene,&cloudScene,&bloom[0],&bloom[1]})if(target->id)UnloadRenderTexture(*target);
   scene=linearTarget(renderW,renderH);composite=linearTarget(renderW,renderH);opaqueScene=linearTarget(renderW,renderH,PIXELFORMAT_UNCOMPRESSED_R32);
   if(!scene.id||!composite.id)throw std::runtime_error("Flight weather depth target could not be allocated");
@@ -392,13 +395,13 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
   opaqueDepth=opaqueScene.texture;SetTextureFilter(opaqueDepth,TEXTURE_FILTER_POINT);SetTextureWrap(opaqueDepth,TEXTURE_WRAP_CLAMP);
   std::printf("Weather depth: R32F / matched terrain / %dx%d\n",renderW,renderH);
   auroraScene=linearTarget(std::max(1,renderW/2),std::max(1,renderH/2));
-  cloudScene=linearTarget(std::max(1,renderW/3),std::max(1,renderH/3));
+  cloudScene=linearTarget(std::max(1,renderW/cloudDivisor),std::max(1,renderH/cloudDivisor));
   for(auto& target:bloom)target=linearTarget(std::max(1,renderW/3),std::max(1,renderH/3));
   hdr=scene.texture.format==PIXELFORMAT_UNCOMPRESSED_R16G16B16A16;
 #if defined(__APPLE__)
   GLint depthBits=0;glBindRenderbuffer(GL_RENDERBUFFER,scene.depth.id);glGetRenderbufferParameteriv(GL_RENDERBUFFER,GL_RENDERBUFFER_DEPTH_SIZE,&depthBits);glBindRenderbuffer(GL_RENDERBUFFER,0);std::printf("Flight depth buffer: %d bits\n",int(depthBits));
 #endif
-  std::printf("Flight renderer: %s / spectral silk / auroras / 3D cockpit / %dx%d\n",hdr?"HDR16F":"LDR fallback",renderW,renderH);
+  std::printf("Flight renderer: %s / %s graphics / spectral silk / auroras / 3D cockpit / %dx%d\n",hdr?"HDR16F":"LDR fallback",lowGraphics?"LOW":"HIGH",renderW,renderH);
   for(auto* target:{&scene,&composite,&auroraScene,&cloudScene,&bloom[0],&bloom[1]})SetTextureFilter(target->texture,TEXTURE_FILTER_BILINEAR);
  }
  // The ship position is its landing-gear origin; the pilot sits above the pad.

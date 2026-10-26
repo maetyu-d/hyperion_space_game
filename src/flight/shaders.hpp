@@ -32,7 +32,7 @@ in vec2 fragTexCoord;
 out vec4 finalColor;
 uniform vec2 resolution;
 uniform vec3 forward,up,right,radial,lightDirection;
-uniform float time,air,seed,altitude,storm,lightning;
+uniform float time,air,seed,altitude,storm,lightning,lowGraphics;
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 uniform sampler2D noiseTexture;
 float noise(vec3 p){vec3 cell=floor(p),f=fract(p);f=f*f*(3.-2.*f);vec2 uv=cell.xy+vec2(37.,17.)*cell.z+f.xy;vec2 rg=textureLod(noiseTexture,(uv+.5)/256.,0.).rg;return mix(rg.r,rg.g,f.z);}
@@ -62,8 +62,9 @@ void main(){
  float wisps=dust(q*1.7),band=exp(-pow((d.y*.75+d.x*.31+d.z*.12+.09+sin(d.z*3.)*.1)*3.8,2.));
  float cloud=pow(max(0.,wisps-.23),2.1)*band;
  vec3 c=vec3(.004,.007,.016);
- c+=mix(vec3(.018,.12,.18),vec3(.20,.032,.14),smoothstep(.38,.68,dust(q+19.)))*cloud*5.4;
- float darkLane=smoothstep(.39,.62,noise(q*3.1+3.));c*=1.-darkLane*band*.68;
+ float farMist=dust(q+19.),nearDust=noise(q*3.1+3.);
+ c+=mix(vec3(.018,.12,.18),vec3(.20,.032,.14),smoothstep(.38,.68,farMist))*cloud*5.4;
+ float darkLane=smoothstep(.39,.62,nearDust);c*=1.-darkLane*band*.68;
  float illuminatedEdge=smoothstep(.46,.66,wisps)*(1.-smoothstep(.55,.80,darkLane))*band;
  c+=mix(vec3(.015,.055,.09),pigment(seed*.031+d.y*.23+d.z*.18)*.055,.55)*illuminatedEdge;
  // Fine spectral fibres remain as an accent through the quiet nebular volume.
@@ -71,12 +72,34 @@ void main(){
  float fibre=1.-smoothstep(.015,max(.016,fwidth(phase*23.)),abs(sin(phase*23.)));
  c+=pigment(phase*.18+seed*.031)*fibre*cloud*.65;
  c+=silk(d,fract(seed*.0371),time)*(cloud*2.55+band*.065);
+ if(lowGraphics<.5){
+ // Nested, direction-anchored volumes give the silk a dark foreground and
+ // luminous depth. No screen-space noise or camera-relative star motion.
+ // Reuse the existing gas and dust samples: layering costs no extra noise
+ // lookups at full framebuffer resolution.
+ float cavity=smoothstep(.44,.72,nearDust)*band;
+ float emission=smoothstep(.34,.76,farMist)*band;
+ vec3 gasColour=mix(vec3(.025,.13,.22),pigment(seed*.031+farMist*.48+d.z*.12)*.28,.65);
+ c*=exp(-cavity*1.65);
+ c+=gasColour*emission*(.18+wisps*.72)*(1.-cavity*.55);
+ float rim=smoothstep(.38,.57,nearDust)*(1.-smoothstep(.57,.72,nearDust))*emission;
+ c+=pigment(seed*.031+farMist*.36+.12)*rim*.095;
+ }
  c+=vec3(.09,.12,.20)*pow(band,2.)*wisps*.035;
  c+=(stars(d,115.,1.)+stars(d,245.,11.)*.40)*exp(-air*10.*smoothstep(-.12,.18,dot(radial,lightDirection)));
  float horizon=dot(d,radial),sun=max(0.,dot(d,lightDirection));
- vec3 aerial=mix(vec3(.11,.22,.34),vec3(.018,.06,.13),smoothstep(-.1,.8,horizon));
+ float sunElevation=dot(radial,lightDirection);
+ float dusk=1.-smoothstep(.02,.40,abs(sunElevation));
+ vec3 zenith=mix(vec3(.025,.075,.19),vec3(.08,.035,.14),dusk*.5);
+ vec3 horizonColour=mix(vec3(.29,.46,.55),vec3(.66,.19,.095),dusk);
+ vec3 aerial=mix(horizonColour,zenith,smoothstep(-.12,.72,horizon));
+ aerial+=vec3(.85,.38,.14)*pow(sun,14.)*(.14+dusk*.24);
+ aerial+=pigment(seed*.031+horizon*.16)*exp(-abs(horizon)*11.)*.024;
+ if(lowGraphics>.5){
+ aerial=mix(vec3(.11,.22,.34),vec3(.018,.06,.13),smoothstep(-.1,.8,horizon));
  aerial+=vec3(.65,.26,.10)*pow(sun,8.)*.35;
  aerial+=vec3(.16,.27,.38)*exp(-abs(horizon)*8.);
+ }
  aerial*=mix(.035,1.,smoothstep(-.12,.18,dot(radial,lightDirection)));
  aerial*=1.-storm*.38;
  c=mix(c,aerial+c*.012,air);
@@ -121,7 +144,7 @@ in vec2 modelUV;
 in vec4 tint;
 out vec4 finalColor;
 uniform vec3 centre,eye,lightDirection;
-uniform float time,seed,metal,water,life,kind,atmosphere,radius,temperature,ringed;
+uniform float time,seed,metal,water,life,kind,atmosphere,radius,temperature,ringed,lowGraphics;
 uniform vec3 patchNormal;uniform float patchCos,groundPass;
 uniform vec3 gearPosition;uniform float groundClearance;
 uniform sampler2D noiseTexture,surfaceTexture,geologyTexture;uniform float useSurface,useGeology;
@@ -263,8 +286,21 @@ void main(){
  roughness=max(pow(min(1.,pow(roughness,4.)+variance),.25),mix(.13,.52,smoothstep(.002,.025,pixelAngle)));
  vec3 c=brdf(albedo,N,V,L,roughness,0.)*shadow*cavity;
  float skyFacing=clamp(dot(N,n)*.5+.5,0.,1.);
+ float airAmount=clamp(atmosphere,0.,1.),sunElevation=dot(n,L);
+ float dusk=1.-smoothstep(.03,.36,abs(sunElevation));
+ if(lowGraphics>.5){
  vec3 skyTint=vec3(.045,.075,.105)*(1.+clamp(atmosphere,0.,1.)*.22)+pigment(seed*.031+n.z*.18)*clamp(atmosphere,0.,1.)*.008;
  c+=albedo*mix(vec3(.044,.033,.026),skyTint,skyFacing)*cavity;
+ }else{
+ vec3 skyTint=mix(vec3(.025,.044,.075),vec3(.07,.13,.22),airAmount)*(.25+.75*day);
+ skyTint+=pigment(seed*.031+n.z*.18)*airAmount*(.012+dusk*.015)*day;
+ vec3 groundBounce=mix(vec3(.035,.022,.016),albedo*.11,airAmount)*(.2+.8*day);
+ c+=albedo*mix(groundBounce,skyTint,skyFacing)*cavity;
+ // Broad diffuse retroreflection reveals dusty relief without turning rock
+ // into polished metal. Its footprint is already filtered by nearDetail.
+ float backscatter=pow(clamp(dot(V,L),0.,1.),4.);
+ c+=albedo*land*nearDetail*backscatter*.055*day*shadow*cavity;
+ }
  c+=sheenColour*fresnel*nearDetail*land;
  c+=microGlow*nearDetail*land+pigment(seed*.031+fresnel*.4)*microVein*nearDetail*land*(.018+fresnel*.16);
  if(nearDetail>.005&&groundClearance<40.){vec3 foot=worldPosition-gearPosition;foot-=n*dot(foot,n);float r=3.2+max(0.,groundClearance)*.22;float contactShadow=exp(-dot(foot,foot)/(r*r))*(1.-smoothstep(1.,38.,groundClearance));c*=1.-contactShadow*.35;}
@@ -284,9 +320,15 @@ void main(){
  c+=mix(vec3(.015,.28,.23),pigment(elevation*4.+seed*.031),.6)*life*(1.-day)*(shore*.35+currents*(1.-land)*.042);
  if(kind>2.5&&kind<3.5){float lavaFootprint=max(length(dFdx(q*12.)),length(dFdy(q*12.)));float lava=mix(.028,pow(max(0.,1.-abs(noise(q*12.)-.5)*18.),5.),1.-smoothstep(.35,1.4,lavaFootprint))*smoothstep(.48,.64,elevation);float rift=(1.-smoothstep(.31,.41,geo.a))*smoothstep(.43,.61,elevation);c+=mix(vec3(2.3,.16,.009),pigment(seed*.031+.1)*1.3,.18)*(lava+rift*.16);}
  float eyeHeight=length(eye-centre)-radius;
+ if(lowGraphics>.5){
  float haze=(1.-exp(-length(eye-worldPosition)*.0024*clamp(atmosphere,0.,1.4)))*(1.-smoothstep(60.,200.,eyeHeight));
  vec3 airColour=mix(vec3(.012,.022,.045),vec3(.16,.25,.34),day)+vec3(.12,.055,.025)*pow(1.-abs(dot(n,L)),7.)*day;
- c=mix(c,airColour,clamp(haze,0.,.64));finalColor=vec4(c,1.);
+ c=mix(c,airColour,clamp(haze,0.,.64));finalColor=vec4(c,1.); }else{
+ float airPath=length(eye-worldPosition)*.0020*clamp(atmosphere,0.,1.4)*(1.-smoothstep(60.,200.,eyeHeight));
+ vec3 transmission=exp(-vec3(.72,1.05,1.55)*airPath);
+ vec3 airColour=mix(vec3(.006,.012,.03),mix(vec3(.19,.32,.46),vec3(.52,.19,.12),dusk*.65),day);
+ airColour+=pigment(seed*.031+n.z*.18)*dusk*day*.018;
+ c=c*transmission+airColour*(1.-transmission);finalColor=vec4(c,1.); }
 })GLSL";
 inline constexpr const char* dustFragment=R"GLSL(#version 330
 in vec2 fragTexCoord;in vec4 fragColor;out vec4 finalColor;
@@ -332,6 +374,7 @@ uniform float time,condition,pollution,ecology,powerOn,activity[14],structureAir
 inline constexpr const char* cloudFragment=R"GLSL(#version 330
 in vec3 worldPosition,normal;
 out vec4 finalColor;
+uniform float lowGraphics;
 uniform vec3 centre,eye,lightDirection;
 uniform float time,seed,water,kind,radius,atmosphere,sampleCount,ringed,weatherHours,weatherSeed;
 uniform vec3 viewForward;
@@ -372,7 +415,7 @@ void main(){
  // Palette endpoints are constant along the ray; interpolate their sheen
  // rather than evaluating three cosines and powers at every volume step.
  vec3 opalLow=pigment(seed*.031+mu*.15),opalMid=pigment(seed*.031+mu*.15+.18),opalHigh=pigment(seed*.031+mu*.15+.36);
- for(int i=0;i<16;i++){
+ for(int i=0;i<24;i++){
   if(float(i)>=count||transmission<.012)break;
   float along=(float(i)+.45+jitter*.10)*stepSize,t=along<first?start+along:bStart+along-first;
   vec3 p=o+d*t,n=normalize(p);float height=length(p)-radius,h=(height-22.)/18.;
@@ -402,9 +445,19 @@ void main(){
   float top=clamp((40.-height)/18.,0.,1.);
   float lightBillow=resolved>.005?mix(.5,noise(q+L*.65),resolved):.5;float gradient=clamp(.5+(billow-lightBillow)*2.4,0.,1.);
   float selfShadow=exp(-cover*top*1.2/sunHeight)*(.22+.78*gradient);
+  // Powder scattering brightens the thin banks, while dense cores retain
+  // their shadow. This reuses the existing density field and light sample.
+  float powder=1.-exp(-density*stepSize*.28);
+  float silver=pow(1.-clamp(density,0.,1.),2.)*forward;
   vec3 ambient=mix(vec3(.014,.025,.048),vec3(.21,.29,.40),day)*(.58+.42*clamp(h,0.,1.))*(.72+billow*.5);
   vec3 sunColour=mix(vec3(1.12,.29,.12),vec3(1.05,.96,.82),smoothstep(.02,.45,sun));
-  vec3 colour=ambient+sunColour*day*selfShadow*ringLight*(.65+max(0.,sun)*.8+forward*2.2);
+  vec3 colour;
+  if(lowGraphics>.5){
+  colour=ambient+sunColour*day*selfShadow*ringLight*(.65+max(0.,sun)*.8+forward*2.2);
+  }else{
+  colour=ambient+sunColour*day*selfShadow*ringLight*(.60+max(0.,sun)*.8+forward*1.7+powder*.34);
+  colour+=sunColour*day*ringLight*silver*.19*(.3+.7*selfShadow);
+  }
   colour*=1.-storm*.22;
   float discharge=dischargePulse;
   colour+=opalHigh*discharge*.28;
@@ -542,7 +595,7 @@ in vec2 fragTexCoord;
 out vec4 finalColor;
 uniform sampler2D texture0,bloomTexture;
 uniform vec2 texel;
-uniform float hit,effects,sunVisibility;uniform vec2 sunPosition;
+uniform float hit,effects,sunVisibility,lowGraphics;uniform vec2 sunPosition;
 float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
 void main(){
  vec2 uv=fragTexCoord;vec3 c=texture(texture0,uv).rgb;
@@ -555,6 +608,14 @@ void main(){
   edge=clamp(edge/(min(abs(edge.x),abs(edge.y))+max(.012,(luma(a)+luma(b)+luma(d)+luma(e))*.03125)),-4.,4.)*texel;
   vec3 filtered=(texture(texture0,uv+edge*.167).rgb+texture(texture0,uv-edge*.167).rgb)*.5;
   c=mix(c,filtered,.68);
+ }
+ if(lowGraphics<.5){
+ // Recover broad material contrast from the taps already used for AA.
+ // Skip silhouettes and tiny highlights so sharpening cannot make stars,
+ // mineral glints or the horizon sparkle. The HUD is drawn afterwards.
+ vec3 neighbourhood=(a+b+d+e)*.25;
+ float clarity=(1.-smoothstep(.12,.32,(hi-lo)/max(hi,.02)))*smoothstep(.015,.08,luma(c));
+ c=max(vec3(0.),c+(c-neighbourhood)*clarity*.24);
  }
  c+=texture(bloomTexture,uv).rgb*mix(.14,.38,effects);
  vec2 v=(uv-.5)*2.;vec2 sun=uv-sunPosition;

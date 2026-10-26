@@ -1,0 +1,115 @@
+{
+  "kind": "Initial Graphics Lab quality experiment, before life-streaming follow-up",
+  "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0",
+  "installedBinarySHA256": "d297b3d976ef572d9f5cd73e9a610fa283978cc79755be7d12cabc23bcd7dcb2",
+  "sourceSHA256": {
+    "src/flight/renderer.cpp": "39c3791aade76c47ac73279fc19631b80efb34ad899bf92f0b91abf50d61fdf6",
+    "src/flight/shaders.hpp": "b1918f5df0b5d2102ab015e3d160e4f5716cb8dfd70fecefd7d93f62d35da390",
+    "src/flight/life_shaders.hpp": "675100fc39a8a78c3201bd60008b6b5b58016a0d12bda0e50a6be8d4935f6991",
+    "src/flight/water.hpp": "21ce0eeb8e8bdc4a57fab6500ae107156870b9eb5a02db2c77563d092e3ea4f8"
+  },
+  "cpuSuitesPassed": 34,
+  "cpuScope": "Completed before the final render-quality settings change; gameplay/core sources unchanged since that run.",
+  "nativeChecks": [
+    {
+      "check": "final-orbit",
+      "exit": 0,
+      "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0"
+    },
+    {
+      "check": "water",
+      "exit": 0,
+      "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0"
+    },
+    {
+      "check": "clouds-final",
+      "exit": 0,
+      "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0"
+    },
+    {
+      "check": "reduced-small",
+      "exit": 0,
+      "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0"
+    }
+  ],
+  "cloudScenes": 12,
+  "cloudTerrainPixelsTested": 1562701,
+  "cloudLeaks": 0,
+  "auroraLeaks": 0,
+  "benchmarks": [
+    {
+      "fps": 49.8600288827181,
+      "meanMs": 20.05614562222222,
+      "measuredFrames": 180,
+      "outputHeight": 1200,
+      "outputWidth": 1920,
+      "p50Ms": 19.835,
+      "p95Ms": 21.956,
+      "p99Ms": 22.641958,
+      "reducedEffects": false,
+      "scene": 0,
+      "vsync": false,
+      "warmupFrames": 60,
+      "wildlifeBaseline": false,
+      "wildlifeBodies": 0,
+      "build": "before",
+      "binarySHA256": "d297b3d976ef572d9f5cd73e9a610fa283978cc79755be7d12cabc23bcd7dcb2"
+    },
+    {
+      "fps": 35.289105971262,
+      "meanMs": 28.337357166666642,
+      "measuredFrames": 180,
+      "outputHeight": 1200,
+      "outputWidth": 1920,
+      "p50Ms": 26.938542,
+      "p95Ms": 32.460417,
+      "p99Ms": 51.973292,
+      "reducedEffects": false,
+      "scene": 0,
+      "vsync": false,
+      "warmupFrames": 60,
+      "wildlifeBaseline": false,
+      "wildlifeBodies": 0,
+      "build": "after",
+      "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0"
+    },
+    {
+      "fps": 28.558733702054045,
+      "meanMs": 35.015558127777794,
+      "measuredFrames": 180,
+      "outputHeight": 1200,
+      "outputWidth": 1920,
+      "p50Ms": 32.911125,
+      "p95Ms": 51.851709,
+      "p99Ms": 80.666916,
+      "reducedEffects": false,
+      "scene": 23,
+      "vsync": false,
+      "warmupFrames": 60,
+      "wildlifeBaseline": false,
+      "wildlifeBodies": 91,
+      "build": "before",
+      "binarySHA256": "d297b3d976ef572d9f5cd73e9a610fa283978cc79755be7d12cabc23bcd7dcb2"
+    },
+    {
+      "fps": 30.213536054410557,
+      "meanMs": 33.09774791666666,
+      "measuredFrames": 180,
+      "outputHeight": 1200,
+      "outputWidth": 1920,
+      "p50Ms": 30.153083,
+      "p95Ms": 46.6085,
+      "p99Ms": 68.276916,
+      "reducedEffects": false,
+      "scene": 23,
+      "vsync": false,
+      "warmupFrames": 60,
+      "wildlifeBaseline": false,
+      "wildlifeBodies": 91,
+      "build": "after",
+      "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0"
+    }
+  ],
+  "benchmarkScope": "One sequential 60-warmup/180-measured-frame sample per scene and build, no vsync, identical 1920x1200 Retina output. Installed internal scene 1728x1080; lab 1920x1200. Timing is illustrative, not a minimum-FPS guarantee.",
+  "followUpRecord": "tests/life-continuity-verification.json"
+}

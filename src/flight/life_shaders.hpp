@@ -16,10 +16,16 @@ void main(){vec3 p=vertexPosition;float t=clock*gait+phase,part=vertexColor.b*12
  localPos=p;p*=shape;worldPos=(matModel*vec4(p,1)).xyz;vec3 n=vertexNormal/shape;if(rooted<.5)n.y/=1.-resting*.18;normal=normalize((matNormal*vec4(n,0)).xyz);material=vertexColor;gl_Position=mvp*vec4(p,1);}
 )GLSL";
 inline constexpr const char* lifeFragment=R"GLSL(#version 330
-in vec3 localPos,worldPos,normal;in vec4 material;uniform vec3 sun,eye;uniform float pigment,phase,genes,clock,rooted;
+in vec3 localPos,worldPos,normal;in vec4 material;uniform vec3 sun,eye;uniform float pigment,phase,genes,clock,rooted;uniform vec2 coverageRange;uniform float lowGraphics;
 out vec4 finalColor;
 vec3 palette(float h){return .11+.89*(.5+.5*cos(6.283185*(h+vec3(0.,.67,.34))));}
-void main(){vec3 n=normalize(normal);if(!gl_FrontFacing)n=-n;vec3 view=normalize(eye-worldPos),light=normalize(sun),p=localPos;
+void main(){
+ // Fixed ordered coverage keeps opaque depth and needs no temporal noise.
+ // The two LODs occupy complementary intervals, so they never double-blend.
+ const float bayer[16]=float[16](0.,8.,2.,10.,12.,4.,14.,6.,3.,11.,1.,9.,15.,7.,13.,5.);
+ ivec2 pixel=ivec2(gl_FragCoord.xy);float coverage=(bayer[(pixel.y%4)*4+pixel.x%4]+.5)/16.;
+ if(coverage<coverageRange.x||coverage>=coverageRange.y)discard;
+ vec3 n=normalize(normal);if(!gl_FrontFacing)n=-n;vec3 view=normalize(eye-worldPos),light=normalize(sun),p=localPos;
  float role=material.r,shell=1.-smoothstep(.025,.09,abs(role-.47)),membrane=1.-smoothstep(.03,.1,abs(role-.667));
  float frequency=11.+genes*8.,bands=sin(p.z*frequency+sin(p.x*8.+genes*19.)*1.1),cells=sin(p.x*16.+p.z*5.)*cos(p.z*13.-p.y*7.);float rings=sin(length(p.xz)*23.+p.y*9.);
  float pattern=floor(genes*4.),signal=pattern<1.?cells:pattern<2.?bands:pattern<3.?sin(p.x*12.+sin(p.y*8.)+p.z*13.):rings;
@@ -29,7 +35,14 @@ void main(){vec3 n=normalize(normal);if(!gl_FrontFacing)n=-n;vec3 view=normalize
  float tone=.5+.5*sin(p.y*3.+p.z*1.5+genes*11.);vec3 base=mix(palette(pigment),palette(pigment+.19),tone*.58);base*=mix(.44,.85,mark);base=mix(base,base*vec3(.76,.9,1.08),shell*.3);
  float micro=sin(p.x*43.+p.z*19.)*cos(p.y*29.-p.z*17.);base*=1.+micro*.06*(1.-smoothstep(.2,1.,footprint*37.));
  float diffuse=max(0.,dot(n,light)),rim=pow(1.-abs(dot(n,view)),3.),back=max(0.,dot(-n,light));float pulse=.84+.16*sin(clock*.16+phase+p.z*2.);
- vec3 colour=base*(.38+.72*diffuse)+palette(pigment+.3)*(vein*.13*pulse+rim*(.055+membrane*.13));colour+=base*membrane*back*.33;
+ vec3 colour;
+ if(lowGraphics>.5){colour=base*(.38+.72*diffuse)+palette(pigment+.3)*(vein*.13*pulse+rim*(.055+membrane*.13));colour+=base*membrane*back*.33;}else{
+ float wrapped=clamp((dot(n,light)+.35)/1.35,0.,1.);
+ vec3 skyBounce=mix(vec3(.10,.075,.11),vec3(.20,.29,.36),clamp(n.y*.5+.5,0.,1.));
+ colour=base*(skyBounce+.88*diffuse)+palette(pigment+.3)*(vein*.13*pulse+rim*(.055+membrane*.13));
+ colour+=base*(membrane*.43+rooted*.08)*wrapped*(1.-diffuse);
+ colour+=palette(pigment+.12)*base*membrane*back*.27;
+ }
  if(role>.79&&role<.9)colour=mix(base*.5,palette(pigment+.28)*.9,.64+.12*pulse);
  if(role>.9&&role<.98)colour=mix(vec3(.7,.9,.82),palette(pigment+.18),.3)*(.62+.35*diffuse);
  if(role>.985)colour=vec3(.006,.012,.018)+vec3(.025)*diffuse;

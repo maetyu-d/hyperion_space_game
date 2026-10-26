@@ -1,4 +1,4 @@
-# HYPERION 3.55
+# HYPERION 3.56
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,17 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Graphics in 3.56
+
+The Graphics Lab upgrade is now the full game's default **High** graphics mode:
+sharper planet materials, denser clouds, larger shadow and detail maps, richer
+atmospheric lighting and spectral nebulae. **Settings → Graphics: Low** restores
+the previous lighting, cloud sampling, texture sizes and 1080p scene limit.
+Both modes keep the smoother life streaming and blended anatomy transitions.
+Your graphics choice is remembered separately from your expedition save and can
+be changed while playing. `--graphics high|low` selects a mode for one launch.
+The existing reduced-effects option remains independent.
 
 ![Cockpit view of a cloud-covered planet with rainbow rings against spectral nebulae](docs/screenshots/orbital-flight.jpg)
 
@@ -18,7 +29,7 @@ Cockpit flight runs in real time; every other gameplay mode is turn based.
 
 ![Turn-based system map with procedural planets, orbital paths and Orders and Resolve controls](docs/screenshots/turn-based-system.jpg)
 
-*Plan exploration and resolve orders in the turn-based system view. All three images are actual Hyperion 3.55 gameplay captures.*
+*Plan exploration and resolve orders in the turn-based system view. All three images are actual Hyperion gameplay captures.*
 
 ## Wreck expeditions in 3.55
 

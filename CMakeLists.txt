@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(Hyperion VERSION 3.55.0 LANGUAGES C CXX)
+project(Hyperion VERSION 3.56.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -41,6 +41,15 @@ if(HYPERION_BUILD_APP)
   install(TARGETS Hyperion BUNDLE DESTINATION . RUNTIME DESTINATION bin)
 endif()
 include(CTest)
+if(BUILD_TESTING AND HYPERION_BUILD_APP)
+  # Explicit native visual check; never run a windowed GPU test in CPU ctest.
+  add_executable(hyperion_life_continuity_check EXCLUDE_FROM_ALL
+    tests/life_continuity_native.cpp src/flight/renderer.cpp
+    src/flight/minor_renderer.cpp src/flight/settlements.cpp
+    src/flight/terrain.cpp src/flight/life.cpp)
+  target_include_directories(hyperion_life_continuity_check PRIVATE src vendor)
+  target_link_libraries(hyperion_life_continuity_check PRIVATE hyperion_core raylib)
+endif()
 if(BUILD_TESTING)
   add_executable(hyperion_wreck_tests tests/ocean_expeditions.cpp)
   target_include_directories(hyperion_wreck_tests PRIVATE vendor)

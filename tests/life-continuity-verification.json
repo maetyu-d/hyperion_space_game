@@ -1,0 +1,89 @@
+{
+  "kind": "Graphics Lab life streaming continuity follow-up",
+  "binarySHA256": "4705d4754210216a30d245f52f4046ad4eddbe1da03b7a7a6e634b5f80e33e11",
+  "installedReleaseSHA256": "d297b3d976ef572d9f5cd73e9a610fa283978cc79755be7d12cabc23bcd7dcb2",
+  "sources": {
+    "CMakeLists.txt": "c5a4717193d63a85b2a84d2028e4edb907d5296a1f06a4c6eb402cb043e2511b",
+    "src/flight/life_visibility.hpp": "23ea13646e1becf6737332c3bef881140092a3f553eca91f2c5f3af9a8fb9784",
+    "src/flight/life.cpp": "92f88545729de24e19a6cf77f689ae9c9de779cb05815cc7888de7ba64882056",
+    "src/flight/life_shaders.hpp": "19910911faf192df7393e23b2392677813ae7ce98fcf91a7344dfd9d0c3b5e21",
+    "src/flight/renderer.cpp": "88ebeecef652f967bd80c72041150b7d965c6ecfedf7e127a52f9cabab61717a",
+    "src/flight/renderer.hpp": "cf1510ccadad6a1897ec266829741933c0b76e780173e1edee4ce9b7b6026e01",
+    "src/flight/scene.hpp": "0d465f20c0f575949761de885cbee61ff2bfb02ce26397fe79bf1c769d7d4eeb",
+    "src/flight_scene.cpp": "60b9e27b287b2f61a3d016fe26db4599582db8f7c1867333151a67fc878c6930",
+    "tests/life_graphics.cpp": "2b6032e96eb0cfc9d5d95136f8129a2e066c43ba728ff580df019813099c017b",
+    "tests/wildlife.cpp": "e54e5c707fb0bc82a81576ca8c191e4b24b8466abd392e553ddc9d1c068fe3ff",
+    "tests/life_continuity_native.cpp": "c6e0a9eef34a95e033a45ea5e3ac0aea20c6ec4b7cfd849b7d0a47eafbc7ff24"
+  },
+  "cpuSuitesPassed": 34,
+  "nativeChecks": [
+    {
+      "check": "approach",
+      "exit": 0,
+      "binarySHA256": "33089456cb47ae8c9df6a265a0b89f1c35fec492635568a9cb52cae59c2095b2"
+    },
+    {
+      "check": "before-surface",
+      "exit": 0,
+      "binarySHA256": "521687ec211e5c3782000a8805367aeb80596616ef7ab923b1f67980a22d1ac0"
+    },
+    {
+      "check": "after-surface",
+      "exit": 0,
+      "binarySHA256": "4705d4754210216a30d245f52f4046ad4eddbe1da03b7a7a6e634b5f80e33e11"
+    },
+    {
+      "check": "wildlife-reduced",
+      "exit": 0,
+      "binarySHA256": "4705d4754210216a30d245f52f4046ad4eddbe1da03b7a7a6e634b5f80e33e11"
+    }
+  ],
+  "approach": {
+    "economyAndClockUnchanged": true,
+    "maxCoverageStep": 0.046822567173802065,
+    "maxDetailStep": 0.052906529896536214,
+    "target": "L1:HOME#2:-7:-8:1:S",
+    "visibleFrames": 354
+  },
+  "nativeApproachFrames": 480,
+  "maxCandidates": 527,
+  "maxDrawn": 255,
+  "reducedEffectsScenes": 8,
+  "reducedEffectsCaptures": 16,
+  "surfaceBenchmarks": {
+    "before": {
+      "fps": 29.329827275762383,
+      "meanMs": 34.09498428333334,
+      "measuredFrames": 180,
+      "outputHeight": 1200,
+      "outputWidth": 1920,
+      "p50Ms": 32.403917,
+      "p95Ms": 43.604,
+      "p99Ms": 50.522458,
+      "reducedEffects": false,
+      "scene": 23,
+      "vsync": false,
+      "warmupFrames": 60,
+      "wildlifeBaseline": false,
+      "wildlifeBodies": 91
+    },
+    "after": {
+      "fps": 23.748023841179418,
+      "meanMs": 42.108766888888894,
+      "measuredFrames": 180,
+      "outputHeight": 1200,
+      "outputWidth": 1920,
+      "p50Ms": 40.722458,
+      "p95Ms": 54.648791,
+      "p99Ms": 68.533917,
+      "reducedEffects": false,
+      "scene": 23,
+      "vsync": false,
+      "warmupFrames": 60,
+      "wildlifeBaseline": false,
+      "wildlifeBodies": 253
+    }
+  },
+  "benchmarkCaptureNote": "The timing reports completed on the initial runs. An after-surface screenshot and some reduced-effects captures hit low disk space; captures were compressed and all reduced-effects captures plus the final surface preview were retaken and verified. Timing was not rerun.",
+  "timingScope": "One 60-warmup/180-measured-frame full-effects surface sample per build, identical 1920x1200 output; not a minimum FPS guarantee."
+}
