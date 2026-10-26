@@ -62,6 +62,7 @@ void Renderer::oceanOperations(float x,float& y,float width){
   wrapped("Listening resolves life, vents and signals at shorter range. Active pings also find mineral deposits, but nearby fauna evade the sub for a few turns. Neither method takes samples. Study leaves populations intact; C takes actual biomass or finite minerals.",x,y,width,12,muted);y+=12;
   if(b.hasGoal&&(b.goal.kind=="life"||b.goal.kind=="flora")){auto p=game->activePlanet();if(auto* habitat=contactHabitat(s.economy,game->universe,p,b.goal)){wrapped(populationReport(*habitat,b.goal),x,y,width,11,mint);y+=12;}}
  }
+ if(b.hasGoal&&disclosure("Dismantle object","dive-dismantle",x,y,width)){auto clear=game->fieldQuote("fieldDismantle",b.goal.id);wrapped(clear.available?clear.text:clear.reason,x,y,width,11,amber);y+=12;button("Dismantle / 1h",{x,y,width,30},"fieldDismantle",b.goal.id,clear.available&&!ui->paused);y+=40;}
  if(s.hull<99.95){auto repair=game->fieldQuote("fieldRepair");button("Patch / 1h",{x,y,width,30},"fieldRepair","",repair.available&&!ui->paused);y+=40;wrapped(repair.available?repair.text:repair.reason,x,y,width,11,muted);y+=12;}
  if(turnOutlook.warnings&&disclosure("Risks / "+std::to_string(turnOutlook.warnings),"dive-risks",x,y,width)){int shown=0;for(const auto& item:turnOutlook.items)if(item.priority!=Notice::Status){wrapped(item.text,x,y,width,11,amber);y+=10;if(++shown==3)break;}}
  if(game->lastTurn.valid&&disclosure("Recent resolutions","turn-report",x,y,width))turnReport(x,y,width);

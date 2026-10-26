@@ -102,7 +102,7 @@ double samplePopulation(Ecosystem& h,const Contact& c,double wanted){
 }
 void restoreEcosystem(Ecosystem& h,double effort){h.quality=std::min(1.,h.quality+effort*.02);h.pollution=std::max(0.,h.pollution-effort*.04);h.disease=std::max(0.,h.disease-effort*.015);h.restored+=effort;for(auto& p:h.populations){double seed=std::min(p.dormant,std::max(0.,p.capacity*.02-p.mass));p.dormant-=seed;p.mass+=seed;}}
 void advanceEcosystems(Economy& e,Universe& u,double dt){
- std::map<std::string,std::pair<double,double>> exposureByHabitat;for(const auto& s:e.settlements){auto& v=exposureByHabitat[s.habitat];v.first=std::max(v.first,s.pollution);if(s.residents)v.second+=s.built[Mine]+s.built[Refinery]+s.built[FuelPlant];}
+ std::map<std::string,std::pair<double,double>> exposureByHabitat;for(const auto& s:e.settlements){auto& v=exposureByHabitat[s.habitat];v.first=std::max(v.first,s.pollution);if(s.residents)v.second+=workingBuildings(s,Mine)+workingBuildings(s,Refinery)+workingBuildings(s,FuelPlant);}
  for(auto& [id,h]:e.ecosystems){auto exposureRecord=exposureByHabitat.find(id);double exposure=exposureRecord==exposureByHabitat.end()?0:exposureRecord->second.first,footprint=exposureRecord==exposureByHabitat.end()?0:exposureRecord->second.second;h.quality=std::max(0.,h.quality-dt*.000008*footprint);h.pollution=clamp(h.pollution+dt*.08*(exposure-h.pollution),0.,1.);ecologyStep(h,u.planet(h.star,h.planet),e.hour,dt);}
  // Dispersal is a transfer between already registered neighboring habitats,
  // never a fresh population rolled by revisiting a region.

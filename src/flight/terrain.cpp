@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "ground_objects.hpp"
 #include "rlgl.h"
 #include <cstring>
 
@@ -43,13 +44,13 @@ void outcrop(MeshData& mesh,V3 at,V3 up,V3 east,V3 north,double size,double heig
   mesh.triangle(rings[ringCount-1][i],rings[ringCount-1][next],at+up*height+lean,tint,baseRadius,centre,rounded);
  }
 }
-uint32_t hash(int x,int y,int face,double seed){uint32_t h=uint32_t(x)*73856093u^uint32_t(y)*19349663u^uint32_t(face)*83492791u^uint32_t(seed*1300);h^=h>>16;h*=2246822519u;return h^(h>>13);}
-V3 cube(int face,double u,double v){switch(face){case 0:return unit({1,v,-u});case 1:return unit({-1,v,u});case 2:return unit({u,1,-v});case 3:return unit({u,-1,v});case 4:return unit({u,v,1});default:return unit({-u,v,-1});}}
+
 }
 void Renderer::updateGround(const Game& g,int body){
  const auto& p=g.planets[body];double altitude=g.altitude();groundBlend=float(1-smooth(95,330,altitude));bool active=!p.giant&&altitude<335;
  if(!active){groundBody=-1;groundBlend=0;return;}auto n=unit(g.ship.position-p.centre);
- if(groundBody==body&&groundModel.meshCount&&length(n-groundAnchor)*p.radius<22)return;
+ if(groundBody==body&&groundModel.meshCount&&groundDamageRevision==g.geometryRevision&&length(n-groundAnchor)*p.radius<22)return;
+ if(groundDamageRevision!=g.geometryRevision)shadowBody=-1;groundDamageRevision=g.geometryRevision;
  groundBody=body;groundAnchor=n;if(groundModel.meshCount)UnloadModel(groundModel);if(rockModel.meshCount){UnloadModel(rockModel);rockModel={};}
  auto east=unit(cross({0,1,0},n),{1,0,0}),north=unit(cross(n,east));constexpr int side=97;constexpr double span=210;std::vector<V3> points;points.reserve(side*side);std::vector<double> coarse;coarse.reserve(side*side);
  for(int y=0;y<side;y++)for(int x=0;x<side;x++){
@@ -63,30 +64,10 @@ void Renderer::updateGround(const Game& g,int body){
  groundModel=ground.model(groundShader,noiseTexture,surfaceMaps[body].texture,geologyMaps[body].texture,detailMap.texture);groundModel.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;
  // Stable cube-face cells keep small outcrops fixed when the detail patch moves.
  MeshData rocks;
- for(int face=0;face<6;face++){
-  double den=dot(n,cube(face,0,0));if(den<.35)continue;double u=0,v=0;
-  switch(face){case 0:u=-n.z/den;v=n.y/den;break;case 1:u=n.z/den;v=n.y/den;break;case 2:u=n.x/den;v=-n.z/den;break;case 3:u=n.x/den;v=n.z/den;break;case 4:u=n.x/den;v=n.y/den;break;default:u=-n.x/den;v=n.y/den;break;}
-  int cx=std::clamp(int((u+1)*64),0,127),cy=std::clamp(int((v+1)*64),0,127);
- int reach=std::min(128,int(std::ceil(175*64/(p.radius*den*den))));
- for(int y=std::max(0,cy-reach);y<=std::min(127,cy+reach);y++)for(int x=std::max(0,cx-reach);x<=std::min(127,cx+reach);x++){
-  auto h=hash(x,y,face,p.seed);double j=(h&65535)/65535.,k=(h>>16)/65535.;auto d=cube(face,(x+.2+j*.6)/64-1,(y+.2+k*.6)/64-1);
-  if(length(d-n)*p.radius>145||materialElevation(p,d)<.28+.44*p.water)continue;auto at=d*(p.radius+terrain(p,d)+2);bool pad=false;
-  for(const auto& port:g.ports)if(port.planet==body&&length(p.centre+at-port.position)<65){pad=true;break;}if(pad)continue;
-  auto a=unit(cross({0,1,0},d),{1,0,0}),b=unit(cross(d,a));double size=.3+j*1.2,height=.25+k*.9;
-  bool formation=h%11==0,crystal=p.kind==2&&h%5==0,column=p.kind==3&&h%7==0;
-  if(formation){size*=2.5;height*=1.7;}if(p.kind==1){size*=1.35;height*=.7;}if(crystal){size*=.7;height=1.8+k*3.2;}if(column){size*=.8;height=1.4+k*2.6;}
-  Color tint=p.kind==2?Color{164,220,236,255}:Color{static_cast<unsigned char>(155+j*70),static_cast<unsigned char>(153+k*65),static_cast<unsigned char>(159+j*68),255};
-  int type=crystal?2:column?3:p.kind==1?1:0;double baseRadius=length(at);
-  outcrop(rocks,at,d,a,b,size,height,j+k*.31,type,tint,baseRadius,formation||crystal||column?2:1);
-  // Sparse small companions break the single-object-per-cell rhythm. Their
-  // positions depend on the same fixed cell, never on the moving ground patch.
-  if(h%4==0){
-   double angle=j*13.7;auto offset=a*std::cos(angle)+b*std::sin(angle),smallD=unit(at+offset*(size*1.6+.45));
-   auto smallAt=smallD*(p.radius+terrain(p,smallD)+2);
-   bool clear=std::none_of(g.ports.begin(),g.ports.end(),[&](const Port& port){return port.planet==body&&length(p.centre+smallAt-port.position)<60;});
-   if(clear&&materialElevation(p,smallD)>.28+.44*p.water)outcrop(rocks,smallAt,smallD,a,b,.16+j*.24,.11+k*.22,k+j*.57,0,tint,length(smallAt),0);
-  }
- }
+ for(const auto& rock:groundRocks(g,body)){
+  if(objectIntegrity(g.worldDamage,rock.id)<=0)continue;
+  double j=rock.j,k=rock.k;Color tint=p.kind==2?Color{164,220,236,255}:Color{static_cast<unsigned char>(155+j*70),static_cast<unsigned char>(153+k*65),static_cast<unsigned char>(159+j*68),255};
+  outcrop(rocks,rock.at,rock.normal,rock.a,rock.b,rock.size,rock.height,j+k*.31,rock.type,tint,length(rock.at),rock.detail);
  }
  if(!rocks.positions.empty()){rockModel=rocks.model(groundShader,noiseTexture,surfaceMaps[body].texture,geologyMaps[body].texture,detailMap.texture);rockModel.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;}
 }

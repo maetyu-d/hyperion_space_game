@@ -32,14 +32,14 @@ void Renderer::economyPanel(float x,float& y,float width) {
  if(ui->tab==4){
   fitted(std::to_string(e.credits)+" cr / "+std::to_string(e.colonists)+" volunteers / "+std::to_string(e.ships)+" shuttles",x,y,width,11,mint,true);y+=27;selector();
   if(selected){auto& p=*selected;bool docked=e.docked==p.id&&game->canDock(p);
-   para(e.factions[p.owner].name+" / "+p.planetName,mint);row("Residents",std::to_string(p.residents)+" / "+std::to_string(p.built[Habitat]*12)+" beds",x,y,width);row("Power / demand",number(p.power,1)+" / "+number(p.demand,1),x,y,width);row("Health / machinery",number(p.health)+"% / "+number(p.condition*100)+"%",x,y,width);
+   para(e.factions[p.owner].name+" / "+p.planetName,mint);row("Residents",std::to_string(p.residents)+" / "+number(workingBuildings(p,Habitat)*12)+" beds",x,y,width);row("Power / demand",number(p.power,1)+" / "+number(p.demand,1),x,y,width);row("Health / machinery",number(p.health)+"% / "+number(p.condition*100)+"%",x,y,width);
    para(settlementStatus(p),p.alerts?warning:muted);if(p.alerts)para(p.bottleneck,warning);
    button(docked?"Docked":"Rendezvous",{x,y,(width-6)/2,32},"dock",p.id,p.star==game->s.currentStar&&!docked,!docked);button("Plot orbit",{x+(width+6)/2,y,(width-6)/2,32},"plotSettlement",p.id);y+=44;
    if(disclosure("Operations","operations",x,y,width)){
     if(!p.alerts)para(p.bottleneck);
     para("Governor "+p.governor+" / "+p.star+" / "+number(p.position.x)+" : "+number(p.position.y)+(p.depth>0?" / "+number(p.depth)+" m":""));
     row("Morale / loyalty",number(p.morale)+" / "+number(p.loyalty),x,y,width);row("Working population",number(p.labor,1),x,y,width);row("Research throughput",number(p.researchRate,2),x,y,width);
-    if(p.owner==0){full("Assign four volunteers","settle",p.id,docked);full(std::string("Policy / ")+policyName(p.policy),"policy",p.id,docked);full("Repair / 4 alloy + 2 parts","repair",p.id,docked&&p.condition<.999);}
+    if(p.owner==0){full("Assign four volunteers","settle",p.id,docked);full(std::string("Policy / ")+policyName(p.policy),"policy",p.id,docked);full("Repair / 4 alloy + 2 parts","repair",p.id,docked&&p.condition<.999);bool broken=false;for(const auto& entry:e.worldDamage)if(entry.second.owner==p.id&&entry.second.integrity<1&&(entry.second.kind==PortObject||entry.second.kind==PanelObject))broken=true;if(broken){para("Rebuild berth: 32 alloy / 12 parts / 800 cr. Other equipment: 8 alloy / 3 parts / 120 cr.");full("Rebuild port equipment","rebuildInfrastructure",p.id,docked);}}
     else{full("Recruit four / 150 cr","recruit",p.id,docked);if(p.id.rfind("NOMA-",0)==0)full("Petition to restore NOMA charter","recharter",p.id,docked);}
    }
    if(p.owner==0&&disclosure("Construction","construction",x,y,width)){
@@ -47,9 +47,10 @@ void Renderer::economyPanel(float x,float& y,float width) {
     if(disclosure(std::string(def.name),"facilities",x,y,width)){for(int i=0;i<buildingCount;i++){button(buildings[i].name,{x+(i%2)*(width+6)/2,y+(i/2)*34,(width-6)/2,28},"selectBuilding",std::to_string(i),true,i==ui->buildingChoice);}y+=((buildingCount+1)/2)*34+8;}
     para(def.purpose);para(materialList(def.construction)+" / "+std::to_string(def.price)+" cr",mint);
     if(def.workers)para(std::to_string(def.workers)+" workers / "+number(def.power)+" power / "+(stockTotal(def.inputs)>0?materialList(def.inputs):std::string("local resources"))+" -> "+(stockTotal(def.outputs)>0?materialList(def.outputs):std::string("restoration"))+" / "+number(def.hours)+" h");
-    full("Build / "+std::to_string(p.built[ui->buildingChoice])+" existing","construct",p.id+"|"+std::to_string(ui->buildingChoice),docked,true);
+    full("Build / rebuild damaged / "+number(workingBuildings(p,ui->buildingChoice),1)+" operational","construct",p.id+"|"+std::to_string(ui->buildingChoice),docked,true);
+    if(workingBuildings(p,ui->buildingChoice)>0)full("Demolish one / loses function and contents","demolish",p.id+"|"+std::to_string(ui->buildingChoice),docked);
    }
-   if(disclosure("Infrastructure","infrastructure",x,y,width))for(int i=0;i<buildingCount;i++)if(p.built[i])row(buildings[i].name,std::to_string(p.built[i]),x,y,width);
+   if(disclosure("Infrastructure","infrastructure",x,y,width))for(int i=0;i<buildingCount;i++)if(p.built[i])row(buildings[i].name,number(workingBuildings(p,i),1)+" / "+std::to_string(p.built[i]),x,y,width);
    if(disclosure("Warehouse / "+number(stockTotal(p.stock))+" of "+number(storageCapacity(p)),"warehouse",x,y,width))for(int i=0;i<goodCount;i++)row(goods[i].name,number(p.stock[i],1),x,y,width);
    if(disclosure("Environment and deposits","environment",x,y,width)){
     if(const auto* h=settlementHabitat(e,p)){

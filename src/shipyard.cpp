@@ -21,7 +21,7 @@ int64_t vesselValue(const ShipOffer& ship,bool purchase){
 namespace {
 bool buildStock(Economy& e,Settlement& p){
  int count=0;for(const auto& offer:e.shipOffers)if(offer.port==p.id)count++;
- if(count>=2||p.owner==0||p.residents<4||p.condition<.25||p.built[Fabricator]<1||!shipyardPowered(e,p))return false;
+ if(count>=2||p.owner==0||p.residents<4||p.condition<.25||workingBuildings(p,Fabricator)<1||!shipyardPowered(e,p))return false;
  int model=p.owner==1?(count?3:2):(count?2:1);ShipOffer offer;offer.port=p.id;offer.vessel.model=model;
  offer.tank=hyperion::flight::vesselDef(model).tank;offer.fuel=offer.tank*.4;offer.shield=hyperion::flight::shieldCapacity(offer.vessel);
  offer.equipment.rounds=180;offer.equipment.missiles=offer.equipment.decoys=2;
@@ -35,7 +35,7 @@ bool buildStock(Economy& e,Settlement& p){
 }
 void initializeShipyards(Economy& e){
  e.shipyardsInitialized=true;
- for(auto& p:e.settlements)if(p.owner>0&&p.built[Fabricator]>0&&!e.shipyardClock.count(p.id)){
+ for(auto& p:e.settlements)if(p.owner>0&&workingBuildings(p,Fabricator)>0&&!e.shipyardClock.count(p.id)){
   e.shipyardClock[p.id]=e.hour+24;for(int i=0;i<2;i++)if(!buildStock(e,p))break;
  }
 }

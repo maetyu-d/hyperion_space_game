@@ -12,13 +12,13 @@ V2 Game::surfacePosition(hyperion::flight::V3 n)const {
  n=hyperion::flight::unit(n);return {clamp(1800*std::tan(std::atan2(n.x,n.z)*.5),-1.e7,1.e7),clamp(1800*std::tan(std::asin(clamp(n.y,-1.,1.))),-1.e7,1.e7)};
 }
 int Game::flightPort(const std::string& id,bool orbital){
- for(int i=0;i<int(s.flight.ports.size());i++)if(s.flight.ports[i].settlement==id&&(s.flight.ports[i].planet<0)==orbital)return i;
+ for(int i=0;i<int(s.flight.ports.size());i++)if(!s.flight.ports[i].disabled&&s.flight.ports[i].settlement==id&&(s.flight.ports[i].planet<0)==orbital)return i;
  return -1;
 }
 void Game::ensureFlight(){
  ensureEconomy();auto& f=s.flight;f.ship.vessel=s.economy.vessel;
  std::string key=s.seed+"|"+s.currentStar+"|gen:"+std::to_string(universe.generationFor(s.currentStar));for(auto& p:s.economy.settlements)if(p.star==s.currentStar)key+="|"+p.id+":"+std::to_string(p.owner);
- if(f.worldKey==key&&!f.planets.empty()){f.updateMinorBodies(s.hours);return;}
+ if(f.worldKey==key&&!f.planets.empty()){f.updateMinorBodies(s.hours);syncWorldDamage();return;}
  bool resume=f.valid&&f.star==s.currentStar;bool resumeNavigator=resume&&f.autopilot;double shield=f.ship.shield;auto equipment=f.ship.combat;
  auto previousTraffic=std::move(f.traffic);
  f.planets.clear();f.minorBodies.clear();f.ports.clear();if(!resume){f.bolts.clear();f.wrecks.clear();f.effects.clear();f.combatTarget.clear();f.lock=0;}f.route.clear();f.events.clear();f.autopilot=false;
@@ -50,7 +50,7 @@ void Game::ensureFlight(){
   f.ports.push_back({b.name,minorDescription(b),{},normal,-1,"minor:"+b.id,"",-1,index});
  }
  f.updateMinorBodies(s.hours);
- f.worldKey=key;f.star=s.currentStar;f.valid=true;
+ f.worldKey=key;f.star=s.currentStar;f.valid=true;f.damageRevision=0;syncWorldDamage();
  auto resolve=[&](const std::string& id,int fallback){for(int i=0;i<int(f.ports.size());i++)if(f.ports[i].id==id)return i;return clamp(fallback,0,int(f.ports.size())-1);};
  f.target=resolve(f.savedTarget,0);f.lastBerth=resolve(f.savedBerth,0);
  if(resume){
@@ -118,6 +118,7 @@ bool Game::disembark(){
 void Game::processFlightEvents(){
  auto& f=s.flight;auto events=std::move(f.events);f.events.clear();auto& e=s.economy;
  for(auto& event:events){
+  if(event.kind=="worldHit"||event.kind=="groundHit"||event.kind=="minorGroundHit"){processWorldHit(event);continue;}
   missionEvent(event);
   if(securityEvent(event))continue;
   Settlement* port=event.port>=0&&event.port<int(f.ports.size())?findSettlement(e,f.ports[event.port].settlement):nullptr;
@@ -144,7 +145,7 @@ void Game::processFlightEvents(){
    // The event identifies an existing ship. The port outfits its own wing
    // from physical stores; there is no new cargo hold or invented stock.
    auto it=std::find_if(f.traffic.begin(),f.traffic.end(),[&](const hyperion::flight::Traffic& t){return t.id==event.routeId&&!t.dead&&t.kind==1&&t.home==event.port;});
-   if(it==f.traffic.end()||hyperion::flight::length(it->position-f.ports[it->home].position)>210)continue;auto& t=*it;
+   if(it==f.traffic.end()||f.ports[it->home].disabled||hyperion::flight::length(it->position-f.ports[it->home].position)>210)continue;auto& t=*it;
    auto* band=findPirates(e,t.band);if(!band&&!port)continue;auto& stores=band?band->stock:port->stock;
    int rounds=std::min(180-t.ammunition,int(std::floor(std::max(0.,stores[Alloy])*50)));stores[Alloy]=std::max(0.,stores[Alloy]-rounds/50.);t.ammunition+=rounds;
    int seekers=std::min(2-t.missiles,int(std::floor(std::max(0.,stores[Components]))));stores[Components]-=seekers;t.missiles+=seekers;
@@ -174,12 +175,12 @@ void Game::updateFlight(double dt,const hyperion::flight::Input& input){
  f.traffic.erase(std::remove_if(f.traffic.begin(),f.traffic.end(),[&](const hyperion::flight::Traffic& t){if(t.routeId.empty())return false;for(auto& r:s.economy.routes)if(r.id==t.routeId)return !r.outbound||r.trips!=t.trip||stockTotal(r.cargo)<=0;return true;}),f.traffic.end());
  for(auto& r:s.economy.routes)if(r.outbound&&stockTotal(r.cargo)>0){
   auto* from=findSettlement(s.economy,r.from);auto* to=findSettlement(s.economy,r.to);if(!from||!to||from->star!=s.currentStar||to->star!=s.currentStar)continue;
-  int departure=flightPort(from->id,true),arrival=flightPort(to->id,true);if(departure<0||arrival<0)continue;
+  int departure=flightPort(from->id,true),arrival=flightPort(to->id,true);if(departure<0)departure=flightPort(from->id,false);if(arrival<0)arrival=flightPort(to->id,false);for(int i=0;i<int(f.ports.size());i++)if(f.ports[i].planet<0){if(departure<0&&f.ports[i].settlement==from->id)departure=i;if(arrival<0&&f.ports[i].settlement==to->id)arrival=i;}if(departure<0||arrival<0)continue;
   auto it=std::find_if(f.traffic.begin(),f.traffic.end(),[&](const hyperion::flight::Traffic& t){return t.routeId==r.id;});
   if(it==f.traffic.end()){hyperion::flight::Traffic t;t.kind=2;t.id="freight:"+r.id+":"+std::to_string(r.trips);t.home=departure;t.faction=from->owner;t.routeId=r.id;t.trip=r.trips;t.genome={1,universe.hash(int32_t(stringHash(r.id)),int32_t(universe.star(s.currentStar).seed),330),false};t.name=hyperion::flight::vesselDesignation(t.genome);f.traffic.push_back(t);it=f.traffic.end()-1;}
   double phase=clamp(1-r.remaining/std::max(.1,r.duration),0.,1.);
-  std::string pathKey=f.worldKey+"|"+r.id+"|"+std::to_string(r.trips);
-  if(it->transitKey!=pathKey){auto start=f.ports[departure].position+f.ports[departure].normal*90;it->transitPath=hyperion::flight::transferRoute(f.navigationBodies(),start,f.ports[arrival]);it->transitPath.insert(it->transitPath.begin(),start);it->transitKey=pathKey;}
+  std::string pathKey=f.worldKey+"|"+r.id+"|"+std::to_string(r.trips)+"|"+f.ports[departure].id+"|"+f.ports[arrival].id+(f.ports[arrival].disabled?"|holding":"");
+  if(it->transitKey!=pathKey){auto start=f.ports[departure].position+f.ports[departure].normal*90;auto destination=f.ports[arrival];if(destination.disabled)destination.position+=destination.normal*180;it->transitPath=hyperion::flight::transferRoute(f.navigationBodies(),start,destination);it->transitPath.insert(it->transitPath.begin(),start);it->transitKey=pathKey;}
   auto pose=hyperion::flight::freightPose(it->transitPath,phase);it->previous=it->positioned?it->position:pose.position;it->velocity=pose.forward*(hyperion::flight::length(pose.position-it->previous)/std::max(.001,dt));it->forward=pose.forward;it->position=pose.position;it->positioned=true;it->band.clear();if(r.owner==0)for(const auto& band:s.economy.pirates)if(band.star==s.currentStar&&band.truceUntil>s.economy.hour&&band.grievance<10)it->band=band.id;it->reason=r.escortUntil>s.economy.hour?"Commissioned escort":"Commercial shipment";
  }
  // A strategic hold damps thrust only while resolving the turn. Opening a
@@ -188,6 +189,9 @@ void Game::updateFlight(double dt,const hyperion::flight::Input& input){
  double helmThrottle=f.ship.throttle;bool helmAssist=f.ship.assist,helmCruise=f.ship.cruise;
  if(hold){f.ship.throttle=0;f.ship.assist=true;f.ship.cruise=false;f.ship.assistCaptureTime=0;f.ship.assistCapture={};}
  // Flight physics uses bounded substeps even when a render frame is long.
+ bool nearbyArmed=false;for(const auto& t:f.traffic)if(!t.dead&&t.kind==1&&(t.hostile||t.charge>0)&&t.fireClock<=.1&&hyperion::flight::length(t.position-f.ship.position)<2000){nearbyArmed=true;break;}
+ bool contactRisk=f.speed()>1&&f.altitude()<45;if(f.speed()>1){for(const auto& p:f.ports)if(p.minor<0&&hyperion::flight::length(p.position-f.ship.position)<280)contactRisk=true;for(const auto& b:f.minorBodies)if(!b.destroyed&&hyperion::flight::length(b.centre-f.ship.position)<b.source.radius*1.3+f.speed()*.1+30)contactRisk=true;}
+ if(input.fire||input.missile||!f.bolts.empty()||nearbyArmed||contactRisk)prepareWorldObjects();else {syncWorldDamage();f.worldObjects.clear();}
  double remaining=clamp(dt,0.,.1);do{double step=std::min(.025,remaining);f.update(step,input);remaining-=step;}while(remaining>1e-8);
  if(hold&&!f.docked){f.ship.throttle=helmThrottle;f.ship.assist=helmAssist;f.ship.cruise=helmCruise;}
  s.fuel=clamp(f.ship.fuel/100*s.maxFuel,0.,s.maxFuel);s.hull=clamp(f.ship.hull,0.,100.);if(f.noticeAge<dt+.001)notify(f.notice);processFlightEvents();
@@ -213,8 +217,11 @@ bool Game::flightAction(const std::string& a,const std::string& arg){
  else if(a=="salvage"){
   if(f.deployed||f.docked||f.speed()>15)notify("Salvage requires the ship in flight below 15 km/s");
   else{auto cargo=shipStock();double room=std::max(0.,cargoCapacity()-stockTotal(cargo));double recovered=0;const int goods[]={Alloy,Components,Propellant};
-   for(auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55)for(int k=0;k<3;k++){double taken=std::min(wreck.cargo[k],room);if(k==0)taken=std::floor(taken);wreck.cargo[k]-=taken;cargo[goods[k]]+=taken;room-=taken;recovered+=taken;}
-   if(recovered>0){storeShipStock(cargo);completed=true;notify("Wreck salvage / "+std::to_string(int(recovered))+" units recovered into ship cargo");}else notify(room<=0?"Cargo hold full":"No salvage within 55 km");
+   for(auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55){
+    for(int k=0;k<3;k++){double taken=std::min(wreck.cargo[k],room);if(k==0)taken=std::floor(taken);wreck.cargo[k]-=taken;cargo[goods[k]]+=taken;room-=taken;recovered+=taken;}
+    if(wreck.id.rfind("world:",0)==0){auto record=s.economy.worldDamage.find(wreck.id.substr(6));if(record!=s.economy.worldDamage.end())for(int good=0;good<goodCount;good++){double taken=std::min(record->second.salvage[good],room);if(good==Alloy||good==Crystal||good==Biomass||good==Research)taken=std::floor(taken);record->second.salvage[good]-=taken;wreck.supplies[good]=record->second.salvage[good];cargo[good]+=taken;room-=taken;recovered+=taken;}}
+   }
+   if(recovered>0){s.economy.damageRevision++;storeShipStock(cargo);completed=true;notify("Wreck salvage / "+std::to_string(int(recovered))+" units recovered into ship cargo");}else notify(room<=0?"Cargo hold full":"No salvage within 55 km");
   }
  }
  else if(a=="rearm"){

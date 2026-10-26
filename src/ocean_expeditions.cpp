@@ -7,7 +7,7 @@ void advanceOceanWrecks(Economy& e){for(auto& w:e.oceanWrecks)if(w.crew&&e.hour>
 int Game::rescuedCrew()const{int n=0;for(const auto& w:s.economy.oceanWrecks)n+=w.aboard;return n;}
 std::vector<Contact> Game::wreckSites()const{
  std::vector<Contact> out;if(!hasExpedition())return out;
- for(const auto& w:s.economy.oceanWrecks)if(w.star==s.activeStar&&w.planet==s.activePlanet&&std::abs(w.contact.pos.y-s.oceanAtY)<=131&&std::abs(w.contact.pos.x-s.oceanX)<650)out.push_back(w.contact);
+ for(const auto& w:s.economy.oceanWrecks)if(objectIntegrity(s.economy.worldDamage,"field:"+w.contact.id)>0&&w.star==s.activeStar&&w.planet==s.activePlanet&&std::abs(w.contact.pos.y-s.oceanAtY)<=131&&std::abs(w.contact.pos.x-s.oceanX)<650)out.push_back(w.contact);
  std::stable_sort(out.begin(),out.end(),[&](const auto& a,const auto& b){return std::abs(a.pos.x-s.oceanX)<std::abs(b.pos.x-s.oceanX);});return out;
 }
 void Game::discoverOceanWreck(){

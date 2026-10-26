@@ -11,6 +11,7 @@ std::vector<Contact> Game::diveSites(){
  const V2 origin=diveState.star==s.activeStar&&diveState.planet==s.activePlanet?diveState.origin:V2{s.surface.x,s.oceanAtY};
  auto p=activePlanet();std::array<Contact,3> best;std::array<double,3> score{1e20,1e20,1e20};int cell=int(std::floor(origin.x/130));
  for(int x=cell-5;x<=cell+5;x++)for(const auto& c:universe.oceanObjects(p,x,origin.y)){
+  if(objectIntegrity(s.economy.worldDamage,"field:"+c.id)<=0)continue;
   if(c.depth<25||c.depth>maxDepth()-25||c.depth>universe.floorDepth(p,c.pos.x,origin.y)-30)continue;
   int group=category(c);double cost=std::hypot((c.pos.x-origin.x)/(19+s.upgrades[3]*6),(c.depth-45)/185.);
   // Prefer useful descents over a shallow duplicate, and uncharted evidence.

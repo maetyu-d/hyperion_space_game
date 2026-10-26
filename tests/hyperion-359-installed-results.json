@@ -1,0 +1,76 @@
+{
+  "version": "3.59.0",
+  "binarySHA256": "c8b76fa6d90d8ef1c92365819dc64f4b30ca57e921d5baa84a0da65325af3e53",
+  "runs": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.54
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.54
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.55
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.96
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "wreck-at-sea",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "wreck-delivered",
+      "exit": 0,
+      "seconds": 1.66
+    },
+    {
+      "check": "damaged-world",
+      "exit": 0,
+      "seconds": 9.45,
+      "initialJSONExact": false,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": true
+    },
+    {
+      "check": "dismantled-wreck",
+      "exit": 0,
+      "seconds": 9.45,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    }
+  ],
+  "frozenSaveRoundtripsExact": true,
+  "existingCampaignRoundtripsExact": true,
+  "newDamageCampaignsAuthoritativeExact": true
+}

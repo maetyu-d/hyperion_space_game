@@ -1,0 +1,1158 @@
+INFO: Initializing raylib 5.5
+INFO: Platform backend: DESKTOP (GLFW)
+INFO: Supported raylib modules:
+INFO:     > rcore:..... loaded (mandatory)
+INFO:     > rlgl:...... loaded (mandatory)
+INFO:     > rshapes:... loaded (optional)
+INFO:     > rtextures:. loaded (optional)
+INFO:     > rtext:..... loaded (optional)
+INFO:     > rmodels:... loaded (optional)
+INFO:     > raudio:.... loaded (optional)
+INFO: DISPLAY: Trying to enable MSAA x4
+INFO: DISPLAY: Device initialized successfully
+INFO:     > Display size: 1440 x 900
+INFO:     > Screen size:  960 x 600
+INFO:     > Render size:  960 x 600
+INFO:     > Viewport offsets: 0, 0
+INFO: GLAD: OpenGL extensions loaded successfully
+INFO: GL: Supported extensions count: 43
+INFO: GL: OpenGL device information:
+INFO:     > Vendor:   Apple
+INFO:     > Renderer: Apple M1
+INFO:     > Version:  4.1 Metal - 90.5
+INFO:     > GLSL:     4.10
+INFO: GL: VAO extension detected, VAO functions loaded successfully
+INFO: GL: NPOT textures extension detected, full NPOT textures supported
+INFO: GL: DXT compressed textures supported
+INFO: PLATFORM: DESKTOP (GLFW - Cocoa): Initialized successfully
+INFO: TEXTURE: [ID 1] Texture loaded successfully (1x1 | R8G8B8A8 | 1 mipmaps)
+INFO: TEXTURE: [ID 1] Default texture loaded successfully
+INFO: SHADER: [ID 1] Vertex shader compiled successfully
+INFO: SHADER: [ID 2] Fragment shader compiled successfully
+INFO: SHADER: [ID 3] Program shader loaded successfully
+INFO: SHADER: [ID 3] Default shader loaded successfully
+INFO: RLGL: Render batch vertex buffers loaded successfully in RAM (CPU)
+INFO: RLGL: Render batch vertex buffers loaded successfully in VRAM (GPU)
+INFO: RLGL: Default OpenGL state initialized successfully
+INFO: TEXTURE: [ID 2] Texture loaded successfully (128x128 | GRAY_ALPHA | 1 mipmaps)
+INFO: FONT: Default font loaded successfully (224 glyphs)
+INFO: SYSTEM: Working Directory: /Users/user/Documents/SC tutorial/Hyperion
+INFO: TIMER: Target time per frame: 0.000 milliseconds
+INFO: TEXTURE: [ID 3] Texture loaded successfully (256x256 | R8G8B8A8 | 1 mipmaps)
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 5] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 7] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 8] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 9] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 10] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 11] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 12] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 13] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 6] Fragment shader compiled successfully
+INFO: SHADER: [ID 14] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 6] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 15] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 16] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 17] Fragment shader compiled successfully
+INFO: SHADER: [ID 18] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 17] Fragment shader compiled successfully
+INFO: SHADER: [ID 19] Program shader loaded successfully
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 17] Fragment shader compiled successfully
+INFO: SHADER: [ID 20] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 17] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 21] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 22] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 23] Program shader loaded successfully
+INFO: SHADER: [ID 4] Fragment shader compiled successfully
+INFO: SHADER: [ID 24] Program shader loaded successfully
+INFO: VAO: [ID 2] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 4] Texture loaded successfully (2048x2048 | R8G8B8A8 | 1 mipmaps)
+INFO: TEXTURE: [ID 4] Mipmaps generated automatically, total: 12
+Building material storage: RGBA8 / 2048 / 12 mip levels
+INFO: TEXTURE: [ID 5] Texture loaded successfully (2048x2048 | R8G8B8A8 | 1 mipmaps)
+INFO: TEXTURE: [ID 5] Mipmaps generated automatically, total: 12
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+INFO: TEXTURE: [ID 6] Texture loaded successfully (2048x2048 | R8G8B8A8 | 1 mipmaps)
+INFO: TEXTURE: [ID 1] Depth renderbuffer loaded successfully (32 bits)
+INFO: FBO: [ID 1] Framebuffer object created successfully
+INFO: TEXTURE: [ID 6] Mipmaps generated automatically, total: 12
+INFO: TEXTURE: [ID 7] Texture loaded successfully (2048x2048 | R32 | 1 mipmaps)
+INFO: TEXTURE: [ID 2] Depth renderbuffer loaded successfully (32 bits)
+Sun shadow storage: R32F / 2048
+INFO: TEXTURE: [ID 8] Texture loaded successfully (1536x768 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 3] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 8] Mipmaps generated automatically, total: 11
+INFO: TEXTURE: [ID 9] Texture loaded successfully (1536x768 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 4] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 9] Mipmaps generated automatically, total: 11
+INFO: VAO: [ID 3] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 4] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 5] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 6] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 10] Texture loaded successfully (3072x1536 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 5] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 10] Mipmaps generated automatically, total: 12
+INFO: TEXTURE: [ID 11] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 6] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 11] Mipmaps generated automatically, total: 12
+INFO: VAO: [ID 7] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 8] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 9] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 10] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 12] Texture loaded successfully (3072x1536 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 7] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 12] Mipmaps generated automatically, total: 12
+INFO: TEXTURE: [ID 13] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 8] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 13] Mipmaps generated automatically, total: 12
+INFO: VAO: [ID 11] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 12] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 13] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 14] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 14] Texture loaded successfully (3072x1536 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 9] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 14] Mipmaps generated automatically, total: 12
+INFO: TEXTURE: [ID 15] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 10] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 15] Mipmaps generated automatically, total: 12
+INFO: VAO: [ID 15] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 16] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 17] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 18] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 16] Texture loaded successfully (1536x768 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 11] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 16] Mipmaps generated automatically, total: 11
+INFO: TEXTURE: [ID 17] Texture loaded successfully (1536x768 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 12] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 17] Mipmaps generated automatically, total: 11
+INFO: VAO: [ID 19] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 20] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 21] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 22] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 18] Texture loaded successfully (3072x1536 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 13] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 18] Mipmaps generated automatically, total: 12
+INFO: TEXTURE: [ID 19] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 14] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 19] Mipmaps generated automatically, total: 12
+INFO: VAO: [ID 23] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 24] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 25] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 26] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 20] Texture loaded successfully (1296x810 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 15] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 21] Texture loaded successfully (1296x810 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 16] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 22] Texture loaded successfully (1296x810 | R32 | 1 mipmaps)
+INFO: TEXTURE: [ID 17] Depth renderbuffer loaded successfully (32 bits)
+Weather depth: R32F / matched terrain / 1296x810
+INFO: TEXTURE: [ID 23] Texture loaded successfully (648x405 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 18] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 24] Texture loaded successfully (432x270 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 19] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 25] Texture loaded successfully (432x270 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 20] Depth renderbuffer loaded successfully (32 bits)
+INFO: TEXTURE: [ID 26] Texture loaded successfully (432x270 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 21] Depth renderbuffer loaded successfully (32 bits)
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / HIGH graphics / spectral silk / auroras / 3D cockpit / 1296x810
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 29] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 27] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 27] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 30] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 28] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 28] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 31] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 29] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 29] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 32] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 30] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 30] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 33] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 31] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 31] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 34] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 32] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 32] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 35] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 33] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 33] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 36] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 34] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 34] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 37] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 35] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 35] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 38] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 36] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 36] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 39] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 37] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 37] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 40] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 38] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 38] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 41] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 39] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 39] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 42] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 40] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 40] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 43] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 41] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 41] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 44] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 42] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 42] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 45] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 43] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 43] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 46] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 44] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 44] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 47] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 45] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 45] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 48] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 46] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 46] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 49] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 47] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 47] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 50] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 48] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 48] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 51] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 49] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 49] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 52] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 50] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 50] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 53] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 51] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 51] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 54] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 52] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 52] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 55] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 53] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 53] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 56] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 54] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 54] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 57] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 55] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 55] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 58] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 56] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 56] Mipmaps generated automatically, total: 9
+INFO: TEXTURE: [ID 57] Texture loaded successfully (128x128 | R8G8B8A8 | 1 mipmaps)
+INFO: TEXTURE: [ID 57] Mipmaps generated automatically, total: 8
+INFO: VAO: [ID 59] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 60] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 61] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 62] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 63] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 64] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 71] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 72] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 73] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 58] Texture loaded successfully (96x96 | R8G8B8A8 | 1 mipmaps)
+INFO: TEXTURE: [ID 58] Mipmaps generated automatically, total: 7
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/0-reactor-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/0-reactor-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/0-reactor-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 74] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 59] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 59] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 75] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 60] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 60] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 76] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 61] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 61] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 77] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 62] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 62] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 78] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 63] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 63] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 79] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 64] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 64] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/1-habitat-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/1-habitat-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/1-habitat-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 80] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 65] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 65] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 81] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 66] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 66] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/2-warehouse-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/2-warehouse-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/2-warehouse-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 82] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 67] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 67] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/3-solar-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/3-solar-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/3-solar-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/4-gantry-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/4-gantry-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/4-gantry-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/5-cargo-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/5-cargo-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/5-cargo-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/6-tree-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/6-tree-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/6-tree-53.jpg] Image exported successfully
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/7-orbital-panel-7.jpg] Image exported successfully
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/7-orbital-panel-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/7-orbital-panel-53.jpg] Image exported successfully
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/8-orbital-core-7.jpg] Image exported successfully
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/8-orbital-core-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/8-orbital-core-53.jpg] Image exported successfully
+INFO: VAO: [ID 83] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 68] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 68] Mipmaps generated automatically, total: 9
+INFO: VAO: [ID 84] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 69] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 69] Mipmaps generated automatically, total: 9
+INFO: TEXTURE: [ID 70] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 70] Mipmaps generated automatically, total: 12
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/9-asteroid-7.jpg] Image exported successfully
+INFO: FBO: [ID 63] Unloaded framebuffer from VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/9-asteroid-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/9-asteroid-53.jpg] Image exported successfully
+INFO: VAO: [ID 85] Mesh uploaded successfully to VRAM (GPU)
+INFO: TEXTURE: [ID 70] Texture loaded successfully (256x128 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 70] Mipmaps generated automatically, total: 9
+INFO: TEXTURE: [ID 71] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 71] Mipmaps generated automatically, total: 12
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/10-comet-7.jpg] Image exported successfully
+INFO: FBO: [ID 64] Unloaded framebuffer from VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/10-comet-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/10-comet-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 86] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 87] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 88] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 89] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 90] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 91] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 92] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 93] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 94] Mesh uploaded successfully to VRAM (GPU)
+INFO: SHADER: [ID 4] Vertex shader compiled successfully
+INFO: SHADER: [ID 25] Fragment shader compiled successfully
+INFO: SHADER: [ID 26] Program shader loaded successfully
+INFO: VAO: [ID 95] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 96] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 97] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 98] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 99] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 100] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/11-planet-crater-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/11-planet-crater-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/11-planet-crater-53.jpg] Image exported successfully
+INFO: TEXTURE: [ID 71] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 71] Mipmaps generated automatically, total: 12
+INFO: TEXTURE: [ID 72] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 72] Mipmaps generated automatically, total: 12
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/12-moon-scar-7.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/12-moon-scar-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/12-moon-scar-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 101] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 102] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 103] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 104] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 105] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/13-wildlife-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: FBO: [ID 65] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 64] Unloaded framebuffer from VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/13-wildlife-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/13-wildlife-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/14-ground-rock-7.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/14-ground-rock-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/14-ground-rock-53.jpg] Image exported successfully
+INFO: TEXTURE: [ID 71] Texture loaded successfully (2048x1024 | R16G16B16A16 | 1 mipmaps)
+INFO: TEXTURE: [ID 71] Mipmaps generated automatically, total: 12
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/15-pirate-den-7.jpg] Image exported successfully
+INFO: VAO: [ID 71] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 72] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 73] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 71] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 72] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 73] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/15-pirate-den-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/15-pirate-den-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 71] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 72] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 73] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 71] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 72] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 73] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/16-persistent-ruins-7.jpg] Image exported successfully
+INFO: FBO: [ID 64] Unloaded framebuffer from VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/16-persistent-ruins-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/16-persistent-ruins-53.jpg] Image exported successfully
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 28] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 66] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 67] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 69] Mesh uploaded successfully to VRAM (GPU)
+INFO: VAO: [ID 70] Mesh uploaded successfully to VRAM (GPU)
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/17-reconstruction-7.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/17-reconstruction-18.jpg] Image exported successfully
+INFO: FILEIO: [/private/tmp/hyperion359-world-reduced/17-reconstruction-53.jpg] Image exported successfully
+INFO: VAO: [ID 104] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 105] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 103] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 99] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 96] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 97] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 101] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 102] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 98] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 95] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 100] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: SHADER: [ID 26] Unloaded shader program data from VRAM (GPU)
+INFO: VAO: [ID 84] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 83] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 82] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 81] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 80] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 79] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 75] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 74] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 58] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 57] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 85] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 56] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 54] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 76] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 44] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 48] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 33] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 46] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 43] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 41] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 50] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 32] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 49] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 78] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 30] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 39] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 40] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 45] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 55] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 38] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 36] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 34] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 42] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 31] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 51] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 52] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 37] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 47] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 35] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 77] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 53] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 29] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: FBO: [ID 62] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 61] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 60] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 59] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 58] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 57] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 53] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 52] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 51] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 50] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 63] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 49] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 47] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 54] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 37] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 41] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 26] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 39] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 36] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 34] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 43] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 25] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 42] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 56] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 23] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 32] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 33] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 38] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 48] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 31] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 29] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 27] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 35] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 24] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 44] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 45] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 30] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 40] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 28] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 55] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 46] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 22] Unloaded framebuffer from VRAM (GPU)
+INFO: TEXTURE: [ID 57] Unloaded texture data from VRAM (GPU)
+INFO: TEXTURE: [ID 58] Unloaded texture data from VRAM (GPU)
+Sun shadow cache: 0 updates / 0 active frames
+INFO: FBO: [ID 2] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 1] Unloaded framebuffer from VRAM (GPU)
+INFO: VAO: [ID 89] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 90] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 91] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 92] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 93] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 94] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 86] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 87] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 88] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 68] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 69] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 70] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 71] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 72] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 73] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 65] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 66] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 67] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 62] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 63] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 64] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 59] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 60] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 61] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: TEXTURE: [ID 4] Unloaded texture data from VRAM (GPU)
+INFO: TEXTURE: [ID 5] Unloaded texture data from VRAM (GPU)
+INFO: FBO: [ID 3] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 5] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 7] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 9] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 11] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 13] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 4] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 6] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 8] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 10] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 12] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 14] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 15] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 16] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 17] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 18] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 19] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 20] Unloaded framebuffer from VRAM (GPU)
+INFO: FBO: [ID 21] Unloaded framebuffer from VRAM (GPU)
+INFO: VAO: [ID 3] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 7] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 11] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 15] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 19] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 23] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 4] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 8] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 12] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 16] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 20] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 24] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 5] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 9] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 13] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 17] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 21] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 25] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 6] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 10] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 14] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 18] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 22] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 26] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 2] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 27] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: VAO: [ID 28] Unloaded vertex array data from VRAM (GPU)
+INFO: MODEL: Unloaded model (and meshes) from RAM and VRAM
+INFO: SHADER: [ID 5] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 7] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 8] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 11] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 12] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 6] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 13] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 14] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 15] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 16] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 18] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 19] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 21] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 22] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 23] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 9] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 10] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 24] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 20] Unloaded shader program data from VRAM (GPU)
+INFO: SHADER: [ID 17] Unloaded shader program data from VRAM (GPU)
+INFO: TEXTURE: [ID 3] Unloaded texture data from VRAM (GPU)
+INFO: TEXTURE: [ID 2] Unloaded texture data from VRAM (GPU)
+INFO: SHADER: [ID 3] Default shader unloaded successfully
+INFO: TEXTURE: [ID 1] Default texture unloaded successfully
+INFO: Window closed successfully
+PASS: 18 native world destruction scenarios / 972 frames / reduced graphics / saves untouched

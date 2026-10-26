@@ -129,11 +129,11 @@ void Renderer::system(){State& s=game->s;Star star=game->universe.star(s.viewSta
  for(const auto& moon:game->universe.minorBodies(s.viewStar))if(moon.parent==int(i)){auto orbit=minorOrbit(moon,s.hours);float angle=float(std::atan2(orbit.z,orbit.x));Vector2 at=polar(pos,angle,radius+10+float(moon.chartSlot)*5);bool focus=game->selectedMinor==moon.id;DrawCircleV(at,focus?4.f:2.f,moon.ice>.5?Color{153,218,255,220}:Color{209,176,245,200});if(focus)ring(at,7,alpha(mint,.8f));hotspots.push_back({at,7,"minor",moon.id,0,{}});}
  hotspots.push_back({pos,std::max(24.f,radius+10),"planet",p.id,int(i),{}});
  }
- for(const auto& b:game->universe.minorBodies(s.viewStar))if(b.parent<0){auto orbit=minorOrbit(b,s.hours);Vector2 at;bool comet=b.kind==MinorKind::Comet;
+ for(const auto& b:game->universe.minorBodies(s.viewStar))if(b.parent<0&&objectIntegrity(s.economy.worldDamage,"body:"+b.id)>0){auto orbit=minorOrbit(b,s.hours);Vector2 at;bool comet=b.kind==MinorKind::Comet;
   if(comet){at={center.x+float(orbit.x/b.orbit)*reach*.66f,center.y+float(orbit.z/b.orbit)*reach*.43f};auto tail=polar(at,float(std::atan2(at.y-center.y,at.x-center.x)),18*glyph);line(at,tail,alpha(mint,.45f),2*glyph);}
   else{float r=first+(reach-first)*float(b.chartSlot+1)/float(planets.size()),a=float(std::atan2(orbit.z,orbit.x));at={center.x+std::cos(a)*r,center.y+std::sin(a)*r*.64f};}
   bool focus=game->selectedMinor==b.id;Color colour=comet?mint:Color{186,166,227,180};DrawCircleV(at,focus?4.f:comet?2.5f:1.5f,colour);if(focus)ring(at,8,alpha(mint,.8f));hotspots.push_back({at,comet?8.f:5.f,"minor",b.id,0,{}});
-  if(focus||CheckCollisionPointCircle(uiMouse(),at,8))fitted(b.name+" / "+minorKindName(b.kind),at.x+10,at.y-18,std::max(0.f,edge-at.x-20),12,pearl);
+  if(focus||CheckCollisionPointCircle(uiMouse(),at,8))fitted(b.name+" / "+(objectIntegrity(s.economy.worldDamage,"body:"+b.id)<=0?"DEBRIS":minorKindName(b.kind)),at.x+10,at.y-18,std::max(0.f,edge-at.x-20),12,pearl);
  }
 }
 void Renderer::craft(Vector2 p,float scale,float angle,bool submarine){
@@ -197,7 +197,7 @@ void Renderer::contact(const Contact& o,Vector2 p,float scale,bool ocean){Color 
 }
 void Renderer::surface(){State& s=game->s;Planet p=game->activePlanet();float z=float(ui->surfaceZoom);auto project=[&](V2 q){return v(w*.5f+float(q.x-s.surface.x)*z,h*.5f+float(q.y-s.surface.y)*z);};
  double rangeX=w*.5/z+60,rangeY=h*.5/z+60;
- for(int cx=int(std::floor((s.surface.x-rangeX)/86));cx<=int(std::floor((s.surface.x+rangeX)/86));cx++)for(int cy=int(std::floor((s.surface.y-rangeY)/86));cy<=int(std::floor((s.surface.y+rangeY)/86));cy++)for(auto& o:game->universe.surfaceObjects(p,cx,cy)){if(o.kind=="life"||o.kind=="flora")continue;Vector2 pos=project(o.pos);contact(o,pos,.73f,false);}
+ for(int cx=int(std::floor((s.surface.x-rangeX)/86));cx<=int(std::floor((s.surface.x+rangeX)/86));cx++)for(int cy=int(std::floor((s.surface.y-rangeY)/86));cy<=int(std::floor((s.surface.y+rangeY)/86));cy++)for(auto& o:game->universe.surfaceObjects(p,cx,cy)){if(o.kind=="life"||o.kind=="flora"||objectIntegrity(s.economy.worldDamage,"field:"+o.id)<=0)continue;Vector2 pos=project(o.pos);contact(o,pos,.73f,false);}
  drawWildlife(false);
  if(distance(s.surface,s.waypoint)>4){Vector2 q=project(s.waypoint);line(v(w*.5f,h*.5f),q,alpha(mint,.32f));ring(q,12,mint);line(v(q.x-18,q.y),v(q.x+18,q.y),alpha(mint,.5f));}
  auto move=game->planMove();if(move.valid){auto next=project(move.position);line(v(w*.5f,h*.5f),next,mint,2);ring(next,5,mint);fitted("ENTER / 1 step / "+std::to_string(move.turns)+" turns / Shift+Enter follows route",28,h-144,UILayout::worldRight(w,ui->panel)-56,10,mint,true);}
@@ -348,14 +348,14 @@ void Renderer::panel(){panelDrawing=true;float left=UILayout::panelLeft(w),x=lef
    std::sort(nearby.begin(),nearby.end(),[&](const Star& a,const Star& b){return distance(a.pos,here.pos)<distance(b.pos,here.pos);});
    for(size_t i=0;i<std::min(size_t(10),nearby.size());i++){button(nearby[i].name+" / "+num(distance(nearby[i].pos,here.pos))+" ly",{x,y,contentWidth,34},"selectStar",nearby[i].id);y+=42;}
   }else if(s.mode==Mode::System){if(s.flight.valid&&!s.flight.deployed&&s.viewStar==s.currentStar)combatPanel(x,y,contentWidth);Planet p=game->planet();const MinorBody* minor=nullptr;for(const auto& b:game->universe.minorBodies(s.viewStar))if(b.id==game->selectedMinor)minor=&b;
-   if(minor){fitted(minor->name,x,y,contentWidth,26,pearl);y+=40;wrapped(minorDescription(*minor),x,y,contentWidth,14,mint);y+=18;row("Survey",s.scanned.count(minor->id)?"Catalogued":"Uncharted",x,y,contentWidth);if(minor->parent>=0)row("Parent",game->universe.planet(s.viewStar,minor->parent).name,x,y,contentWidth);
-    button("Set fly-by destination",{x,y,contentWidth,32},"plotMinor","",s.viewStar==s.currentStar);y+=42;wrapped("K takes the helm. I opens destinations; J flies to a safe stand-off point. Survey within 600 km at low speed.",x,y,contentWidth,12,muted);y+=22;
+   if(minor){bool destroyed=objectIntegrity(s.economy.worldDamage,"body:"+minor->id)<=0;fitted(minor->name,x,y,contentWidth,26,pearl);y+=40;wrapped(minorDescription(*minor),x,y,contentWidth,14,mint);y+=18;if(destroyed){wrapped("Fractured / debris and finite salvage remain in orbit",x,y,contentWidth,13,Color{255,178,125,255});y+=12;}row("Survey",s.scanned.count(minor->id)?"Catalogued":"Uncharted",x,y,contentWidth);if(minor->parent>=0)row("Parent",game->universe.planet(s.viewStar,minor->parent).name,x,y,contentWidth);
+    button("Set fly-by destination",{x,y,contentWidth,32},"plotMinor","",s.viewStar==s.currentStar&&!destroyed);y+=42;wrapped("K takes the helm. I opens destinations; J flies to a safe stand-off point. Survey within 600 km at low speed.",x,y,contentWidth,12,muted);y+=22;
    }else{text(p.name,x,y,34,pearl);y+=46;wrapped(p.dominant+" / "+p.formation,x,y,contentWidth,14,mint);y+=20;
    row("Temperature",num(p.temp)+" K",x,y,contentWidth);row("Gravity",num(p.gravity,2)+" g",x,y,contentWidth);row("Ocean coverage",num(p.water*100)+"%",x,y,contentWidth);row("Atmosphere",num(p.pressure,2)+" atm",x,y,contentWidth);row("Biology",p.bio,x,y,contentWidth);row("Moons",std::to_string(p.moonCount),x,y,contentWidth);if(p.generation>=2)row("Architecture",game->universe.profile(p.starId).layout,x,y,contentWidth);y+=15;
    wrapped(atmosphere(p)+". "+(p.giant?"Turbulent pressure cells and layered condensates. Remote sensing is available.":"Coordinate-generated terrain and discoveries. Land to begin a surface expedition."),x,y,contentWidth,15,muted);y+=25;
    }
    heading("SYSTEM BODIES",x,y);y+=42;for(auto& q:game->universe.planets(s.viewStar)){button(q.name+" / "+q.type,{x,y,contentWidth,35},"planet",std::to_string(q.index),true,q.index==s.selectedPlanet);y+=43;}
-   if(disclosure("Moons / asteroids / comets","minor-bodies",x,y,contentWidth))for(const auto& b:game->universe.minorBodies(s.viewStar)){button(b.name+" / "+minorKindName(b.kind),{x,y,contentWidth,30},"minorBody",b.id,true,b.id==game->selectedMinor);y+=37;}
+   if(disclosure("Moons / asteroids / comets","minor-bodies",x,y,contentWidth))for(const auto& b:game->universe.minorBodies(s.viewStar)){button(b.name+" / "+(objectIntegrity(s.economy.worldDamage,"body:"+b.id)<=0?"DEBRIS":minorKindName(b.kind)),{x,y,contentWidth,30},"minorBody",b.id,true,b.id==game->selectedMinor);y+=37;}
   }else{Planet p=game->activePlanet();text(p.name,x,y,34,pearl);y+=48;
    if(s.mode==Mode::Ocean){row("Zone",oceanZone(s.depth),x,y,contentWidth);row("Pressure",num(1+s.depth/10)+" atm",x,y,contentWidth);row("Seafloor",num(game->universe.floorDepth(p,s.oceanX,s.oceanAtY))+" m",x,y,contentWidth);row("Certified depth",num(game->maxDepth())+" m",x,y,contentWidth);row("Hull integrity",num(s.hull)+"%",x,y,contentWidth);}
    else{row("Terrain",game->universe.terrain(p,s.surface),x,y,contentWidth);row("Temperature",num(p.temp)+" K",x,y,contentWidth);row("Wind",num(p.wind)+" m/s",x,y,contentWidth);}

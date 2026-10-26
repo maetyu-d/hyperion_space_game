@@ -35,7 +35,7 @@ const char* policyName(int policy);
 
 struct OceanWreck {
  Contact contact;std::string star,home;int planet=0,faction=1,initialCrew=0,crew=0,aboard=0,deliveredCrew=0,lost=0;
- Stock initial{},remaining{},recovered{},delivered{};double created=0,supportUntil=0;bool surveyed=false,breached=false;
+ Stock initial{},remaining{},recovered{},delivered{},destroyed{};double created=0,supportUntil=0;bool surveyed=false,breached=false;
 };
 OceanWreck* findOceanWreck(struct Economy&,const std::string&);
 const OceanWreck* findOceanWreck(const struct Economy&,const std::string&);
@@ -59,7 +59,7 @@ struct Settlement {
     V2 position;
     double depth = 0;
     Stock stock{};
-    std::array<int, buildingCount> built{};
+    std::array<int, buildingCount> built{};std::map<int,double> facilityIntegrity;
     std::array<double, buildingCount> progress{};
     // Last resolved shift, used by the visual presentation; never drives output.
     std::array<double, buildingCount> activity{};
@@ -72,6 +72,8 @@ struct Settlement {
     int alerts = 0;
     std::string bottleneck = "Establishing production";
 };
+inline double workingBuildings(const Settlement& site,int kind){double count=site.built[kind];for(const auto& [slot,hp]:site.facilityIntegrity)if(slot/24==kind)count-=1-hp;return std::max(0.,count);}
+inline double facilityIntegrity(const Settlement& site,int kind,int ordinal){auto it=site.facilityIntegrity.find(kind*24+ordinal);return it==site.facilityIntegrity.end()?1:it->second;}
 struct TradeRoute {
     std::string id, from, to, status = "Awaiting departure";
     int good = Rations, owner = 0, capacity = 20;
@@ -105,6 +107,7 @@ struct VesselService {double fuel=0,hull=0,work=0;int64_t price=0;hyperion::flig
 VesselService quoteVesselService(const ShipOffer&,const Stock&);
 struct EconomicEvent { double hour = 0; std::string place, cause; };
 struct Economy {
+    WorldDamageMap worldDamage;uint64_t damageRevision=1,geometryRevision=1;
     std::vector<OceanWreck> oceanWrecks;
     std::vector<Mission> missions;std::map<std::string,double> missionClock;
     int ecosystemRevision=1;std::map<std::string,Ecosystem> ecosystems;
@@ -159,6 +162,7 @@ void advanceEconomy(Economy&, Universe&, double hour);
 bool foundSettlement(Economy&, Universe&, const Planet&, V2 position, double depth,
                      Stock& ship, std::string& message);
 bool construct(Economy&, Settlement&, int building, Stock& ship, std::string& message);
+bool rebuildInfrastructure(Economy&, Settlement&, Stock&, std::string&);
 bool repairSettlement(Economy&, Settlement&, Stock& ship, std::string& message);
 bool transferCargo(Economy&, Settlement&, Stock& ship, int good, int quantity,
                    bool deposit, std::string& message);

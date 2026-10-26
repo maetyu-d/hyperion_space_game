@@ -22,6 +22,7 @@ void Renderer::nextMoves(float x,float& y,float width){
    const double distanceTo=s.mode==Mode::Ocean?std::hypot((c.pos.x-s.oceanX)*5,c.depth-s.depth):distance(c.pos,s.surface);
    fitted(c.kind+" / "+number(distanceTo)+" survey units / "+(s.scanned.count(c.id)?"CATALOGUED":"UNSTUDIED"),x,y,width,10,mint,true);y+=25;
    wrapped(study.available?study.text:collect.available?collect.text:study.reason,x,y,width,12,muted);y+=10;
+   if(disclosure("Dismantle object","field-dismantle",x,y,width)){auto clear=game->fieldQuote("fieldDismantle",c.id);wrapped(clear.available?clear.text:clear.reason,x,y,width,11,amber);y+=12;button("Dismantle / 1 h",{x,y,width,30},"fieldDismantle",c.id,clear.available&&!ui->paused);y+=39;}
    button("Study / 1 h",{x,y,(width-6)/2,30},"fieldStudy",c.id,study.available&&!ui->paused,true);
    button("Collect / 1 h",{x+(width+6)/2,y,(width-6)/2,30},"fieldCollect",c.id,collect.available&&!ui->paused);y+=38;
    if(!study.available&&!collect.available&&study.reason.find("closer")!=std::string::npos){auto approach=game->fieldQuote("fieldApproach",c.id);button("Plot / free",{x,y,(width-6)/2,29},"fieldFocus",c.id);button("Approach / up to 6 h",{x+(width+6)/2,y,(width-6)/2,29},"fieldApproach",c.id,approach.available&&!ui->paused);y+=39;wrapped(approach.available?approach.text:approach.reason,x,y,width,11,muted);y+=10;}

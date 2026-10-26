@@ -48,7 +48,7 @@ void Renderer::combatPanel(float x,float& y,float width){
  row("Charge / heat",n(c.energy)+"% / "+n(c.heat)+"%",x,y,width);row("Rounds / seekers / decoys",std::to_string(c.rounds)+" / "+std::to_string(c.missiles)+" / "+std::to_string(c.decoys),x,y,width);
  row("Plating",n(c.armour)+"%",x,y,width);for(int i=0;i<hyperion::flight::SystemCount;i++)row(hyperion::flight::systemName(i),n(c.systems[i])+"%",x,y,width);
  if(f.docked&&!game->s.economy.docked.empty()){button("Repair / services",{x,y,(width-6)/2,30},"panel","5");button("Rearm",{x+(width+6)/2,y,(width-6)/2,30},"rearm");y+=41;}
- else{bool salvage=false;for(auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)>0)salvage=true;if(salvage){button("Collect salvage",{x,y,width,30},"salvage","",f.speed()<=15);y+=40;}}
+ else{bool salvage=false;for(auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&(std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)+std::accumulate(wreck.supplies.begin(),wreck.supplies.end(),0.))>0)salvage=true;if(salvage){button("Collect salvage",{x,y,width,30},"salvage","",f.speed()<=15);y+=40;}}
  wrapped("Pulse strips shields. Kinetic pierces plating. Plasma hits hard. Resonance drains charge and chains between hostiles. U focuses a subsystem; penetrating hits with a sustained lock disable it. Z: seeker. Y: decoy.",x,y,width,12,muted);y+=24;
 }
 void Renderer::flightHUD(){
@@ -198,7 +198,7 @@ void Renderer::flightHUD(){
    float pulse=float(std::min(1.,f.hitConfirm*8)),outer=19+4*pulse,inner=15+2*pulse;tint.a=static_cast<unsigned char>(230*pulse);
    for(int side:{-1,1}){DrawLineEx({cx+side*outer,cy-outer},{cx+side*inner,cy-inner},1.7f,tint);DrawLineEx({cx+side*outer,cy+outer},{cx+side*inner,cy+inner},1.7f,tint);}
   }
-  if(!compact&&speed<=15)for(const auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)>0){button("Collect salvage",{24,deckY-73,150,30},"salvage");break;}
+  if(!compact&&speed<=15)for(const auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&(std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)+std::accumulate(wreck.supplies.begin(),wreck.supplies.end(),0.))>0){button("Collect salvage",{24,deckY-73,150,30},"salvage");break;}
  }
 
  // One lower deck carries the flight readings, scope and contextual controls.
@@ -326,12 +326,12 @@ void Renderer::flightHUD(){
  flightDirector(landing,stoppingDistance);
 }
 void Renderer::flightPanel(float x,float& y,float width){
- auto& f=game->s.flight;combatPanel(x,y,width);const auto& target=f.ports[f.target];
+ auto& f=game->s.flight;combatPanel(x,y,width);const auto& target=f.ports[f.target];bool debris=target.minor>=0&&f.minorBodies[target.minor].destroyed;if(target.disabled||debris){wrapped(debris?"Fractured body / finite salvage remains":"Berth destroyed / reconstruction required",x,y,width,12,pink);y+=14;}
  fitted(target.name,x,y,width,21,pearl);y+=31;fitted((target.minor>=0?"Fly-by / ":target.planet>=0?"Surface / ":"Orbit / ")+n(f.targetDistance())+" km",x,y,width,11,mint,true);y+=23;
  if(auto* site=flightPresentation.settlement(target.settlement)){fitted(site->factionName+" / "+n(site->residents)+" residents",x,y,width,12,muted);y+=22;if(site->alerts){fitted(site->status,x,y,width,12,pink);y+=24;}}
  button(f.autopilot?"Take control / J":"Navigate / J",{x,y,width,32},"navigate","",!(f.docked&&f.dockedPort==f.target),true);y+=44;
  if(target.minor>=0){const auto& b=f.minorBodies[target.minor];bool surveyed=game->s.scanned.count(b.source.id);wrapped(b.source.composition,x,y,width,12,mint);y+=12;
-  button(surveyed?"Survey archived":"Survey / 6 battery",{x,y,width,30},"surveyMinor","",!surveyed&&game->s.battery>=6&&f.speed()<=20&&hyperion::flight::length(b.centre-f.ship.position)-b.source.radius<=600);y+=40;
+  button(surveyed?"Survey archived":"Survey / 6 battery",{x,y,width,30},"surveyMinor","",!surveyed&&!b.destroyed&&game->s.battery>=6&&f.speed()<=20&&hyperion::flight::length(b.centre-f.ship.position)-b.source.radius<=600);y+=40;
  }
  const char* filters[]={"All","Surface","Orbit","Bodies"};for(int i=0;i<4;i++)button(filters[i],{x+i*(width+6)/4,y,(width-18)/4,28},"filterDestinations",std::to_string(i),true,ui->destinationFilter==i);y+=40;
  std::vector<int> order(f.ports.size());std::iota(order.begin(),order.end(),0);std::stable_sort(order.begin(),order.end(),[&](int a,int b){return hyperion::flight::length(f.ports[a].position-f.ship.position)<hyperion::flight::length(f.ports[b].position-f.ship.position);});

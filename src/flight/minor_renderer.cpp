@@ -35,7 +35,7 @@ RenderTexture2D Renderer::bakeMinorField(const MinorBody& body,int width){
 }
 void Renderer::prepareMinorBodies(const Game& g){
  V3 eye{camera.position.x,camera.position.y,camera.position.z};std::vector<MinorDetailCandidate> candidates;
- for(int i=0;i<int(g.minorBodies.size());i++){const auto& b=g.minorBodies[i];auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
+ for(int i=0;i<int(g.minorBodies.size());i++){const auto& b=g.minorBodies[i];if(b.destroyed)continue;auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
   if(dot(offset,g.ship.forward)<-b.source.radius*1.3||distance>58000||pixels<.65)continue;
   if(!minorModels.count(b.source.id)){auto model=LoadModelFromMesh(bodyMesh(b.source));model.materials[0].shader=minorShader;minorModels.emplace(b.source.id,model);minorFields[b.source.id].base=bakeMinorField(b.source,256);}
   candidates.push_back({i,pixels,minorFields.at(b.source.id).detail.id!=0});
@@ -56,7 +56,7 @@ void Renderer::drawMinorBodies(const Game& g,bool depth){
  V3 eye{camera.position.x,camera.position.y,camera.position.z};
  if(depth){uniform(planetDepth,"patchCos",0.f);uniform(planetDepth,"groundPass",0.f);}
  else{minorDrawn=0;uniform(minorShader,"lightDirection",sunDirection);uniform(minorShader,"eye",eye);}
- for(const auto& b:g.minorBodies){auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
+ for(const auto& b:g.minorBodies){if(b.destroyed)continue;auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
   if(dot(offset,g.ship.forward)<-b.source.radius*1.3||distance>58000||pixels<.65)continue;
   auto it=minorModels.find(b.source.id);if(it==minorModels.end())continue;
   auto& model=it->second;model.materials[0].shader=depth?planetDepth:minorShader;
@@ -68,7 +68,7 @@ void Renderer::drawCometTails(const Game& g){
  V3 eye{camera.position.x,camera.position.y,camera.position.z};
  if(!cometGlow.id){auto image=GenImageColor(128,128,BLANK);auto* pixels=static_cast<Color*>(image.data);for(int y=0;y<128;y++)for(int x=0;x<128;x++){double r=std::hypot((x-63.5)/63.5,(y-63.5)/63.5);pixels[y*128+x]={255,255,255,static_cast<unsigned char>(255*std::exp(-r*r*7)*std::clamp((1-r)*8,0.,1.))};}cometGlow=LoadTextureFromImage(image);UnloadImage(image);GenTextureMipmaps(&cometGlow);SetTextureFilter(cometGlow,TEXTURE_FILTER_TRILINEAR);}
  BeginBlendMode(BLEND_ADDITIVE);rlDrawRenderBatchActive();rlDisableDepthMask();rlDisableBackfaceCulling();
- for(const auto& b:g.minorBodies)if(b.source.kind==MinorKind::Comet&&length(b.centre-eye)<50000){
+ for(const auto& b:g.minorBodies)if(!b.destroyed&&b.source.kind==MinorKind::Comet&&length(b.centre-eye)<50000){
   double activity=std::clamp(12000./std::max(4000.,length(b.centre)),.3,1.4);auto tail=-sunDirection;auto side=unit(cross(tail,eye-b.centre),{1,0,0});
   auto orbit=minorOrbit(b.source,(presentation?presentation->hours:g.time/55)+1);auto tangent=unit(V3{orbit.x,orbit.y,orbit.z}-b.centre,{0,0,1});
   for(int plume=0;plume<2;plume++){

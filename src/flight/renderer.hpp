@@ -15,7 +15,7 @@ class Renderer {
  RenderTexture2D bakeMinorField(const MinorBody&,int);void prepareMinorBodies(const Game&);
  void clearMinorBodies();void drawMinorBodies(const Game&,bool depth=false);void drawCometTails(const Game&);
  Shader lifeShader{};std::array<Model,24> lifeModels{};std::array<int,15> lifeUniforms{};int lifeDrawn=0;LifeVisibilityBudget lifeBudget;
- void drawCombat(const Game&);void drawLife(const Scene&);void clearLife();
+ void drawWorldDamage(const Game&);void drawCombat(const Game&);void drawLife(const Scene&);void clearLife();
  bool profiling=false;std::array<double,6> timings{};
  struct PortAsset {Model close{},detailed{},distant{};std::vector<V3> detailCentres;V3 at{},up{};uint64_t key=0;double radius=60;int detail=-1;};
  std::unordered_map<std::string,PortAsset> portAssets;std::map<std::tuple<int,int,int,int>,Model> craftAssets;
@@ -28,7 +28,7 @@ class Renderer {
  Texture2D opaqueDepth{},noiseTexture{},buildingTexture{},buildingDetailTexture{};
  std::vector<Model> planets,distantPlanets,atmospheres,clouds;std::vector<int> detailedBodies;
  Model ringModel{},cockpitModel{};Camera3D camera{};
- Model groundModel{},rockModel{};int groundBody=-1;V3 groundAnchor;Shader dust{};float groundBlend=0;
+ uint64_t groundDamageRevision=0;Model groundModel{},rockModel{};int groundBody=-1;V3 groundAnchor;Shader dust{};float groundBlend=0;
  Matrix sunMatrix{};V3 shadowAnchor{},shadowEye{};float shadowBlend=-1;int shadowBody=-1;uint64_t shadowCasters=0;unsigned shadowUpdates=0,shadowFrames=0;bool shadowActive=false;
  void drawSunShadows(const Game&,V3);
  void updateGround(const Game&,int);void drawGroundEffects(const Game&);

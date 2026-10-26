@@ -42,13 +42,20 @@ FieldQuote Game::fieldQuote(const std::string& action,const std::string& id){
   if(s.mode==Mode::Ocean&&s.depth>maxDepth())return reject("Ascend to certified depth before field repairs");
   if(s.hull>=99.95)return reject("Hull is already sound");auto stock=shipStock();if(stock[Alloy]<2||stock[Components]<1)return reject("Patch needs 2 alloy and 1 component");
   q.battery=8;q.repair=std::min(8.,100-s.hull);q.text="+"+number(q.repair)+" hull / 2 alloy / 1 component / 8 battery / 1 h";
- }else if(action=="fieldStudy"||action=="fieldCollect"){
+ }else if(action=="fieldStudy"||action=="fieldCollect"||action=="fieldDismantle"){
   auto sites=fieldSites();auto it=std::find_if(sites.begin(),sites.end(),[&](const auto& c){return c.id==id;});if(it==sites.end())return reject("Contact is outside passive sensor range");const auto& c=*it;
   if(s.mode==Mode::Ocean&&s.depth>maxDepth())return reject("Ascend to certified depth before studying or sampling");
   if(s.mode==Mode::Ocean&&!oceanKnown(c))return reject("Resolve the contact with sonar first / Space or Shift+Space");
   const double reach=s.mode==Mode::Ocean?260+s.upgrades[1]*190:34+s.upgrades[1]*14;if(fieldDistance(s,c)>reach)return reject("Move closer / inside survey range");
   double room=std::floor(std::max(0.,cargoCapacity()-stockTotal(shipStock())));
-  if(action=="fieldStudy"){
+  if(action=="fieldDismantle"){
+   if(s.economy.worldDamage.size()>=60000)return reject("Local destruction record limit reached");
+   if(c.kind=="vent")return reject("Geological vents remain part of the planet");
+   if(c.kind=="wreck"){auto* w=findOceanWreck(s.economy,c.id);if(w&&w->crew>0)return reject("Rescue the crew before dismantling this wreck");}
+   if(fieldDistance(s,c)>(s.mode==Mode::Ocean?80:16))return reject("Approach within cutter range / 16 surface or 80 underwater units");
+   if(shipStock()[Components]<1)return reject("Dismantling needs 1 component");
+   q.battery=20;q.text="Destroy this object / 1 component / 20 battery / 1 h / loses its remaining resources and evidence";
+  }else if(action=="fieldStudy"){
    if(s.scanned.count(id))return reject("Already catalogued / choose another discovery");q.battery=6;int data=research(c)+int(universe.hash(int32_t(c.n?c.n:1),int32_t(c.pos.x),4)%5)+6+s.upgrades[1]*2;
    q.gain[Research]=std::min(room,double(data));q.text=gains(q.gain)+" / 6 battery / 1 h / no specimens removed";
   }else{
@@ -68,7 +75,7 @@ FieldQuote Game::fieldQuote(const std::string& action,const std::string& id){
  if(s.battery<q.battery)return reject("Need "+std::to_string(q.battery)+" battery / wait or move normally to recharge");q.available=true;return q;
 }
 bool Game::fieldAction(const std::string& action,const std::string& id){
- if(action!="fieldRecharge"&&action!="fieldApproach"&&action!="fieldStudy"&&action!="fieldCollect"&&action!="fieldRepair"&&action!="fieldPush"&&action!="fieldTravel"&&action!="fieldFocus")return false;
+ if(action!="fieldDismantle"&&action!="fieldRecharge"&&action!="fieldApproach"&&action!="fieldStudy"&&action!="fieldCollect"&&action!="fieldRepair"&&action!="fieldPush"&&action!="fieldTravel"&&action!="fieldFocus")return false;
  if(action=="fieldFocus"){for(const auto& c:fieldSites())if(c.id==id){waypoint(c);return true;}notify("Contact is no longer within passive sensor range");return true;}
  auto q=fieldQuote(action,id);if(!q.available){notify(q.reason);return true;}if(s.mode==Mode::Ocean&&!diveState.active)beginDive(false);
  if(action=="fieldRecharge"){waitHours(q.move.turns);notify(!lastTurn.interruption.empty()?"Recharge stopped / "+lastTurn.interruption:s.battery>=12?"Scanner ready / "+lastTurn.summary():"Recharge paused before deadline / "+lastTurn.summary(),Notice::Important);return true;}
@@ -79,7 +86,8 @@ bool Game::fieldAction(const std::string& action,const std::string& id){
  if(action=="fieldRepair"){auto cargo=shipStock();cargo[Alloy]-=2;cargo[Components]-=1;storeShipStock(cargo);s.hull+=q.repair;result="Hull patched / "+q.text;}
  else{
   auto sites=fieldSites();const auto found=std::find_if(sites.begin(),sites.end(),[&](const auto& c){return c.id==id;});if(found==sites.end()){s.battery=battery;notify("Contact is no longer within passive sensor range");return true;}const Contact c=*found;focusedContact=c.id;
-  if(action=="fieldStudy"){catalogue(c,false,6+s.upgrades[1]*2);s.scanned.insert(recorded(id));result="Studied "+c.name+" / "+gains(q.gain)+" / ecosystem left intact";}
+  if(action=="fieldDismantle"){auto cargo=shipStock();cargo[Components]-=1;storeShipStock(cargo);clearFieldContact(c);result="Dismantled "+c.name+" / remaining evidence and resources lost";}
+  else if(action=="fieldStudy"){catalogue(c,false,6+s.upgrades[1]*2);s.scanned.insert(recorded(id));result="Studied "+c.name+" / "+gains(q.gain)+" / ecosystem left intact";}
   else{auto cargo=shipStock();if(living(c)){auto& h=ensureContactHabitat(s.economy,universe,activePlanet(),c);q.gain[Biomass]=samplePopulation(h,c,q.gain[Biomass]);}for(int g=0;g<goodCount;g++)cargo[g]+=q.gain[g];storeShipStock(cargo);s.scanned.insert(taken(id));result="Collected at "+c.name+" / "+gains(q.gain);}
   if(action=="fieldStudy")if(auto* wreck=findOceanWreck(s.economy,c.id))wreck->surveyed=true;
   if(s.mode==Mode::Ocean&&diveState.active){if(action=="fieldStudy")++diveState.studies;else ++diveState.collections;}

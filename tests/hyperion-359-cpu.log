@@ -1,0 +1,79 @@
+Test project /Users/user/Documents/SC tutorial/Hyperion/build
+      Start 28: frontier_integration
+      Start  5: submersible_survey_expeditions
+      Start 30: strategy_handoff
+ 1/37 Test  #5: submersible_survey_expeditions ...   Passed    2.98 sec
+      Start  2: ship_destruction
+ 2/37 Test #30: strategy_handoff .................   Passed    3.01 sec
+      Start 32: review_regressions
+ 3/37 Test  #2: ship_destruction .................   Passed    0.36 sec
+      Start 31: turn_based
+ 4/37 Test #31: turn_based .......................   Passed    1.73 sec
+      Start 20: faction_security
+ 5/37 Test #32: review_regressions ...............   Passed    2.34 sec
+      Start 26: simulation
+ 6/37 Test #20: faction_security .................   Passed    0.95 sec
+      Start 27: economy
+ 7/37 Test #26: simulation .......................   Passed    1.54 sec
+      Start  4: persistent_wreck_expeditions
+ 8/37 Test #27: economy ..........................   Passed    1.58 sec
+      Start 16: persistent_ecosystems
+ 9/37 Test  #4: persistent_wreck_expeditions .....   Passed    1.45 sec
+      Start 15: visible_wildlife
+10/37 Test #16: persistent_ecosystems ............   Passed    1.32 sec
+      Start  1: persistent_world_destruction
+11/37 Test  #1: persistent_world_destruction .....   Passed    0.10 sec
+      Start 19: shipyards
+12/37 Test #15: visible_wildlife .................   Passed    1.15 sec
+      Start 18: procedural_generation
+13/37 Test #19: shipyards ........................   Passed    1.08 sec
+      Start 35: ship_handling
+14/37 Test #18: procedural_generation ............   Passed    1.15 sec
+      Start  7: fieldwork_play_loop
+15/37 Test #35: ship_handling ....................   Passed    0.69 sec
+      Start 33: living_world
+16/37 Test  #7: fieldwork_play_loop ..............   Passed    0.80 sec
+      Start 13: procedural_operations
+17/37 Test #33: living_world .....................   Passed    0.95 sec
+      Start  8: event_aware_turn_planner
+18/37 Test #13: procedural_operations ............   Passed    0.34 sec
+      Start 11: minor_bodies
+19/37 Test #28: frontier_integration .............   Passed   11.92 sec
+      Start 22: combat
+20/37 Test  #8: event_aware_turn_planner .........   Passed    0.71 sec
+      Start 37: landing_and_departure
+21/37 Test #11: minor_bodies .....................   Passed    0.92 sec
+      Start 14: life_graphics
+22/37 Test #22: combat ...........................   Passed    1.10 sec
+      Start  9: optional_flight_hud
+23/37 Test #37: landing_and_departure ............   Passed    0.76 sec
+      Start  6: strategy_continuity
+24/37 Test #14: life_graphics ....................   Passed    0.80 sec
+      Start 34: precision_helm
+25/37 Test  #9: optional_flight_hud ..............   Passed    0.81 sec
+      Start 29: planning_briefing
+26/37 Test  #6: strategy_continuity ..............   Passed    1.10 sec
+      Start 17: procedural_life
+27/37 Test #34: precision_helm ...................   Passed    1.05 sec
+      Start 36: branding_and_save_continuity
+28/37 Test #29: planning_briefing ................   Passed    1.22 sec
+      Start  3: combat_audio_signals
+29/37 Test  #3: combat_audio_signals .............   Passed    0.09 sec
+      Start 24: architecture_geometry
+30/37 Test #17: procedural_life ..................   Passed    1.06 sec
+      Start 21: combat_tactics
+31/37 Test #36: branding_and_save_continuity .....   Passed    1.08 sec
+      Start 25: pointer_input
+32/37 Test #25: pointer_input ....................   Passed    0.00 sec
+      Start 23: building_material
+33/37 Test #23: building_material ................   Passed    0.01 sec
+      Start 10: minor_material_layout
+34/37 Test #10: minor_material_layout ............   Passed    0.00 sec
+      Start 12: screen_layout
+35/37 Test #12: screen_layout ....................   Passed    0.00 sec
+36/37 Test #24: architecture_geometry ............   Passed    0.78 sec
+37/37 Test #21: combat_tactics ...................   Passed    1.07 sec
+
+100% tests passed, 0 tests failed out of 37
+
+Total Test time (real) =  16.46 sec

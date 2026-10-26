@@ -9,6 +9,8 @@ namespace {
 bool fitShip(Economy& e,Captain& c,bool replacement){
  auto* p=findSettlement(e,c.home);auto* band=findPirates(e,c.band);if(!p||!p->residents)return false;
  if(!band&&p->owner!=c.faction)return false;
+ if(band&&objectIntegrity(e.worldDamage,"port:den:"+band->id)<=0)return false;
+ if(!band&&objectIntegrity(e.worldDamage,"port:orbit:"+p->id)<=0&&objectIntegrity(e.worldDamage,"port:surface:"+p->id)<=0)return false;
  auto& stock=band?band->stock:p->stock;auto& money=band?band->treasury:e.factions[c.faction].treasury;
  double multiplier=replacement?2:1;int64_t cost=replacement?240:120;
  if(stock[Alloy]<4*multiplier||stock[Components]<2*multiplier||stock[Propellant]<2*multiplier||money<cost)return false;

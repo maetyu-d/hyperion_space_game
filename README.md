@@ -1,4 +1,4 @@
-# HYPERION 3.58
+# HYPERION 3.59
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,48 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Destructible universe in 3.59
+
+Weapons, explosive splash and physical collisions can damage settlement
+facilities, station cores and solar wings, loading equipment, containers,
+beacons, planted vegetation, native organisms and surface rocks. Asteroids and
+comets fracture into debris with finite ore, crystal and fuel salvage. Ship
+wrecks can also be destroyed. Planets and moons receive local impact scars;
+planetary impacts deform the nearby collision and terrain surface.
+
+Damage belongs to the campaign. Returning to a system or loading a save retains
+ruins, missing objects and remaining salvage. Facility integrity reduces actual
+production, power, housing, storage and services. Reactor and fuel-plant losses
+can chain through neighboring objects and pollute the habitat; habitat losses
+cost lives and morale. Destroyed containers remove real warehouse goods.
+Killed organisms return their existing biomass to the ecosystem's detritus.
+Destroying a pirate anchorage removes its supplies and increases surviving
+crews' vendettas. Civilian infrastructure attacks incur restitution and standing
+losses. Firing near a port forfeits its protection from hostile fire.
+
+At an owned settlement, **Construction** rebuilds a damaged facility in its
+original lot. **Demolish one** removes a standing facility. **Operations →
+Rebuild port equipment** restores a berth first, then other equipment, using
+ship materials and credits. NPC settlements attempt funded reconstruction every
+six hours. Freight holds when both destination berths are destroyed.
+
+On a surface expedition or underwater, open **Dismantle object** in the contact
+details. Close-range cutting takes one turn, one component and 20 battery,
+and loses the object's remaining supplies and evidence. Natural geological
+vents remain part of the planet; rescue a wreck's crew before dismantling its
+hull. Study and collection remain separate choices.
+
+Low graphics and Reduced effects use the same destruction state with smaller
+debris budgets. Older campaigns load with intact scenery until it is damaged.
+`hyperion_world_destruction_tests` exercises collision, economy, law, ecology,
+reconstruction, finite salvage, malformed saves and turn-based dismantling.
+The optional native `hyperion_world_destruction_check` target renders 18
+scenarios, including saved ruins, reconstruction and moon impacts.
+
+![A reactor blast tears through nearby infrastructure beneath the spectral sky](docs/screenshots/settlement-destruction.jpg)
+
+*Reactor damage cascades through real neighboring objects; the ruins persist.*
 
 ## Ship destruction in 3.58
 

@@ -2,7 +2,7 @@
 namespace hyperion {
 ShipOffer Game::currentVessel()const{ShipOffer ship;ship.port=s.economy.docked;ship.vessel=s.economy.vessel;ship.hull=s.hull;ship.fuel=s.fuel;ship.tank=s.maxFuel;ship.shield=s.flight.ship.shield;ship.equipment=s.flight.ship.combat;return ship;}
 bool Game::canUseShipyard(const Settlement& p)const{
- const auto& f=s.flight;return canDock(p)&&s.economy.docked==p.id&&f.valid&&!f.deployed&&f.docked&&f.dockedPort>=0&&f.dockedPort<int(f.ports.size())&&f.ports[f.dockedPort].settlement==p.id&&p.residents>=4&&p.condition>=.25&&p.built[Fabricator]>0&&shipyardPowered(s.economy,p);
+ const auto& f=s.flight;return canDock(p)&&s.economy.docked==p.id&&f.valid&&!f.deployed&&f.docked&&f.dockedPort>=0&&f.dockedPort<int(f.ports.size())&&f.ports[f.dockedPort].settlement==p.id&&p.residents>=4&&p.condition>=.25&&workingBuildings(p,Fabricator)>0&&shipyardPowered(s.economy,p);
 }
 bool Game::shipyardAction(const std::string& action,const std::string& arg){
  if(action!="tradeShip"&&action!="refitShip")return false;

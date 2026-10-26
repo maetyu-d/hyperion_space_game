@@ -88,7 +88,7 @@ std::vector<std::string> fields(const std::string& arg) {
 }
 }
 bool Game::economicAction(const std::string& action,const std::string& arg) {
-    static const std::set<std::string> actions={"harvestPolicy","harvestTarget","restoreHabitat","found","dock","construct","repair","policy","deposit","withdraw","buy","sell","route","routeToggle","routeRetire","acceptContract","deliverContract","civicResearch","envoy","recruit","freighter","wait","plotSettlement","loadPropellant","settle","mediate","donate","recharter"};
+    static const std::set<std::string> actions={"harvestPolicy","harvestTarget","restoreHabitat","found","dock","construct","demolish","repair","rebuildInfrastructure","policy","deposit","withdraw","buy","sell","route","routeToggle","routeRetire","acceptContract","deliverContract","civicResearch","envoy","recruit","freighter","wait","plotSettlement","loadPropellant","settle","mediate","donate","recharter"};
     if (!actions.count(action)) return false;
     syncEconomy();auto& e=s.economy;Stock cargo=shipStock();std::string message;bool success=false;
     auto parts=fields(arg);auto site=[&]()->Settlement* {return parts.empty()?nullptr:findSettlement(e,parts[0]);};
@@ -135,7 +135,9 @@ bool Game::economicAction(const std::string& action,const std::string& arg) {
             else if(action=="harvestPolicy"&&p->owner==0){p->harvestPolicy=(p->harvestPolicy+1)%3;success=true;message=harvestPolicyName(p->harvestPolicy);economicEvent(e,p->name,"Harvest charter changed / "+message);}
             else if(action=="harvestTarget"&&p->owner==0){p->harvestTarget=(p->harvestTarget+1)%4;success=true;message=harvestTargetName(p->harvestTarget);economicEvent(e,p->name,"Harvest focus / "+message);}
             else if(action=="restoreHabitat"&&p->owner==0){auto* h=settlementHabitat(e,*p);if(!h||h->capacity<=0)message="No indigenous biosphere to restore";else if(h->quality>=.999&&h->pollution<.001&&h->disease<.001)message="Habitat does not need intervention";else if(cargo[Medicine]<2||cargo[Biomass]<8)message="Restoration needs two medicine and eight biomass";else{cargo[Medicine]-=2;cargo[Biomass]-=8;h->nutrients+=8;h->input+=8;restoreEcosystem(*h,5);success=true;message="Habitat treated / native propagules released / food-web recovery takes time";economicEvent(e,p->name,message);}}
+            else if(action=="demolish"&&parts.size()==2&&p->owner==0){int kind=std::stoi(parts[1]);if(kind<0||kind>=buildingCount)message="Choose a building";else{int slot=-1;for(int i=0;i<p->built[kind];i++)if(facilityIntegrity(*p,kind,i)>0){slot=kind*24+i;break;}if(slot<0)message="No standing facility of this type";else{ensureFlight();WorldObject object;object.id=facilityObjectId(p->id,kind,slot%24);object.owner=p->id;object.kind=FacilityObject;object.body=p->planet;object.slot=slot;object.up=surfaceNormal(p->position);object.position=s.flight.planets[p->planet].centre+object.up*s.flight.planets[p->planet].radius;object.capacity=1;int index=int(s.flight.worldObjects.size());s.flight.worldObjects.push_back(object);flight::Event hit{"worldHit",index,0,object.id,"NOMA",object.id};hit.amount=1;processWorldHit(hit);success=true;message=std::string(buildings[kind].name)+" demolished / remaining capacity removed";}}}
             else if (action=="construct"&&parts.size()==2) success=construct(e,*p,std::stoi(parts[1]),cargo,message);
+            else if(action=="rebuildInfrastructure")success=rebuildInfrastructure(e,*p,cargo,message);
             else if (action=="repair") success=repairSettlement(e,*p,cargo,message);
             else if (action=="policy"&&p->owner==0) {p->policy=(p->policy+1)%4;success=true;message=std::string("Charter policy / ")+policyName(p->policy);economicEvent(e,p->name,message);}
             else if(action=="recharter"){
@@ -144,7 +146,7 @@ bool Game::economicAction(const std::string& action,const std::string& arg) {
             }
             else if (action=="recruit") success=recruitColonists(e,*p,message);
             else if (action=="settle"&&p->owner==0) {
-                if(e.colonists>=4&&p->residents+4<=p->built[Habitat]*12){e.colonists-=4;p->residents+=4;success=true;message="Four expedition volunteers settled here";economicEvent(e,p->name,message);}
+                if(e.colonists>=4&&p->residents+4<=workingBuildings(*p,Habitat)*12){e.colonists-=4;p->residents+=4;success=true;message="Four expedition volunteers settled here";economicEvent(e,p->name,message);}
                 else message="Assigning volunteers needs four passengers and four available beds";
             }
             else if (parts.size()==2) {

@@ -14,12 +14,12 @@ void finishMission(Economy& e,Mission& m,int state,const std::string& cause){
  economicEvent(e,issuer?issuer->name:m.star,m.title+" / "+cause);
 }
 namespace {
-Contact surveyTarget(const Universe& u,const Planet& p,const Settlement& site,uint32_t seed,const std::set<std::string>* known){
+Contact surveyTarget(const Universe& u,const Planet& p,const Settlement& site,uint32_t seed,const std::set<std::string>* known,const WorldDamageMap& damage){
  Contact best;uint32_t score=0;
  int cx=int(std::floor(site.position.x/86)),cy=int(std::floor(site.position.y/86));
  for(int x=-2;x<=2;x++)for(int y=-2;y<=2;y++){
   auto contacts=site.depth>0?u.oceanObjects(p,int(std::floor(site.position.x/130))+x,site.position.y+y*26):u.surfaceObjects(p,cx+x,cy+y);
-  for(const auto& c:contacts){if(c.depth>850||(known&&known->count(c.id)))continue;uint32_t rank=u.hash(int32_t(c.n),int32_t(seed),421);if(best.id.empty()||rank>score){best=c;score=rank;}}
+  for(const auto& c:contacts){if(c.depth>850||(known&&known->count(c.id))||objectIntegrity(damage,"field:"+c.id)<=0)continue;uint32_t rank=u.hash(int32_t(c.n),int32_t(seed),421);if(best.id.empty()||rank>score){best=c;score=rank;}}
  }
  return best;
 }
@@ -29,11 +29,12 @@ void advanceMissions(Economy& e,Universe& u,const std::string& star,const std::s
   auto* issuer=findSettlement(e,m.issuer);
   if(!issuer||issuer->owner!=m.faction||issuer->residents==0){finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Issuing settlement lost its charter or population / unused escrow returned");continue;}
   if(e.hour>m.deadline+1e-8){finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Deadline elapsed / unused escrow returned");continue;}
+  if(m.kind==SurveyMission&&m.state<=MissionActive&&objectIntegrity(e.worldDamage,"field:"+m.target)<=0){finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Survey target destroyed / unused escrow returned");continue;}
   if(m.state==MissionOffered&&m.kind==SurveyMission&&catalogued&&catalogued->count(m.target)){finishMission(e,m,MissionExpired,"Field evidence already catalogued / new proposals follow the next shift");continue;}
   if(m.state==MissionOffered&&m.kind==EscortMission){auto r=std::find_if(e.routes.begin(),e.routes.end(),[&](const auto& r){return r.id==m.target;});if(r==e.routes.end()||!r->outbound||r->trips!=m.trip||r->remaining<r->duration*.5){finishMission(e,m,MissionExpired,"Quoted convoy departed or resolved before acceptance");continue;}}
   if(m.kind==InterdictionMission&&m.state<=MissionActive){auto* c=findCaptain(e,m.target);if(!c||c->destroyed){finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Named captain lost before NOMA completed the objective / escrow returned");continue;}}
   if(m.state==MissionOffered&&m.kind==ReliefMission&&issuer->stock[m.good]>=reserveFor(*issuer,m.good)*.98){finishMission(e,m,MissionExpired,"Local shortage resolved by production or other trade");continue;}
-  if(m.kind==WreckMission){auto* w=findOceanWreck(e,m.target);if(!w){finishMission(e,m,MissionFailed,"Wreck record unavailable");continue;}if(m.trip==1&&w->crew+w->aboard+w->deliveredCrew<m.quantity){finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Stranded crew could not survive until rescue");continue;}}
+  if(m.kind==WreckMission){auto* w=findOceanWreck(e,m.target);if(!w){finishMission(e,m,MissionFailed,"Wreck record unavailable");continue;}if(m.trip==0&&w->remaining[m.good]+w->recovered[m.good]+w->delivered[m.good]<m.quantity){finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Commissioned wreck supplies destroyed / unused escrow returned");continue;}if(m.trip==1&&w->crew+w->aboard+w->deliveredCrew<m.quantity){finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Stranded crew could not survive until rescue");continue;}}
   if(m.state==MissionActive&&m.kind==EscortMission){
    auto r=std::find_if(e.routes.begin(),e.routes.end(),[&](const auto& r){return r.id==m.target;});
    if(r==e.routes.end()){finishMission(e,m,MissionFailed,"Freight route retired / escrow returned");continue;}
@@ -65,7 +66,7 @@ void advanceMissions(Economy& e,Universe& u,const std::string& star,const std::s
   }
   std::vector<const Captain*> pirates;for(const auto& c:e.captains)if(c.star==star&&!c.band.empty()&&!c.destroyed)pirates.push_back(&c);
   if(!pirates.empty()){const auto& captain=*pirates[seed%pirates.size()];auto* band=findPirates(e,captain.band);auto m=base;m.kind=InterdictionMission;m.target=captain.id;m.risk=clamp(.35+captain.role*.12+(band?band->raids*.04:0),0.,1.);m.cause=(band?band->name:"Local raiders")+" operates from "+(band?band->haven:captain.home)+". Interdict "+captain.name+" / "+hyperion::flight::vesselDesignation(captain.genome)+". "+std::to_string(band?band->raids:0)+" recorded raids.";candidates.push_back({m,.35+m.risk*.6});}
-  auto contact=surveyTarget(u,world,site,seed,catalogued);
+  auto contact=surveyTarget(u,world,site,seed,catalogued,e.worldDamage);
   if(!contact.id.empty()){
    bool used=false;for(const auto& old:e.missions)if(old.kind==SurveyMission&&old.target==contact.id)used=true;
    if(!used){auto m=base;m.kind=SurveyMission;m.target=contact.id;m.contact=contact;m.quantity=4+int(seed%5);m.good=Research;m.risk=clamp(weather.storm*.35+world.hazards*.35+contact.depth/3000.,0.,1.);auto region=u.region(world,contact.pos,contact.depth);m.cause=site.name+" requests field evidence from "+contact.name+" in "+region.name+" on "+world.name+". "+contact.desc;m.cause=m.cause.substr(0,1800);candidates.push_back({m,.7+(world.anomaly?.5:0)+world.life*.3});}

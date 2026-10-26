@@ -87,12 +87,5 @@ inline void closeFacility(Builder& m,const FacilitySite& site,const FactionStyle
  }
  if(k==Habitat&&faction==4){double height=(8+(site.occupants/4)*4)*style.height;for(int i=0;i<4;i++){double a=i*pi*.5;m.beam({std::cos(a)*7*style.width,.4,std::sin(a)*7*style.width},{std::cos(a)*3,height,std::sin(a)*3},.09,inlay,6);}}
 }
-inline bool plantingClear(const SettlementLayout& layout,V3 p){
- if(std::hypot(p.x,p.z)<49||(std::abs(p.x)<29&&p.z>32&&p.z<85))return false;
- for(const auto& site:layout.facilities){
-  if(length(p-site.position)<19)return false;
-  if(site.ordinal==0){auto direction=unit(site.position);double along=dot(p,direction);if(along>40&&along<length(site.position)+5&&length(p-direction*along)<8)return false;}
- }
- return true;
-}
+inline bool plantingClear(const SettlementLayout& layout,V3 p){return hyperion::flight::plantingClear(layout,p);}
 }

@@ -1,0 +1,60 @@
+{
+  "version": "3.59.0",
+  "cpuSuites": 37,
+  "cpuFailures": 0,
+  "worldDestructionAssertions": 703,
+  "addressAndUndefinedSanitizers": "passed; leak detection unavailable on this macOS runtime",
+  "nativeWorldScenes": 54,
+  "nativeWorldFrames": 2916,
+  "nativeWorldProfiles": [
+    "high",
+    "low",
+    "reduced"
+  ],
+  "fullGameNativeChecks": [
+    {
+      "check": "combat",
+      "flag": "--combat-visual-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 49.1,
+      "noSave": true
+    },
+    {
+      "check": "fieldwork",
+      "flag": "--fieldwork-check",
+      "size": "720x450",
+      "exit": 0,
+      "seconds": 11.05,
+      "noSave": true
+    },
+    {
+      "check": "ocean",
+      "flag": "--ocean-survey-check",
+      "size": "720x450",
+      "exit": 0,
+      "seconds": 20.55,
+      "noSave": true
+    },
+    {
+      "check": "strategy",
+      "flag": "--strategy-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 13.7,
+      "noSave": true
+    },
+    {
+      "check": "landing",
+      "flag": "--surface-transition-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 18.57,
+      "noSave": true
+    }
+  ],
+  "existingCampaignRoundtripsExact": 9,
+  "newDestructionCampaignsAuthoritativeExact": 2,
+  "installedBinarySHA256": "c8b76fa6d90d8ef1c92365819dc64f4b30ca57e921d5baa84a0da65325af3e53",
+  "previousVersionPreserved": "3.58.0"
+}

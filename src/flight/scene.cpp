@@ -14,7 +14,7 @@ uint32_t sceneHash(const std::string& text){uint32_t h=2166136261u;for(unsigned 
 uint64_t SettlementView::geometryKey()const{
  uint64_t h=sceneHash(id);auto add=[&](int v){h^=uint64_t(v)+0x9e3779b97f4a7c15ull+(h<<6)+(h>>2);};
  add(faction);add(residents/4);add(submerged);
- for(int n:facilities)add(n);
+ for(int n:facilities)add(n);for(const auto& [slot,hp]:facilityIntegrity){add(slot);add(int(hp*4));}
  // A cargo stack represents up to twenty real units; tiny consumption changes
  // update shader uniforms without rebuilding the settlement's static mesh.
  for(double n:stock)add(std::min(8,int(std::ceil(std::max(0.,n)/20.))));
@@ -29,6 +29,11 @@ SettlementLayout layoutSettlement(const SettlementView& view){
   result.facilities.push_back({kind,i,occupants,p,angle});result.radius=std::max(result.radius,length(p)+22);
  }
  return result;
+}
+bool plantingClear(const SettlementLayout& layout,V3 p){
+ if(std::hypot(p.x,p.z)<49||(std::abs(p.x)<29&&p.z>32&&p.z<85))return false;
+ for(const auto& site:layout.facilities){if(length(p-site.position)<19)return false;if(site.ordinal==0){auto direction=unit(site.position);double along=dot(p,direction);if(along>40&&along<length(site.position)+5&&length(p-direction*along)<8)return false;}}
+ return true;
 }
 const SettlementView* Scene::settlement(const std::string& id)const{for(auto& s:settlements)if(s.id==id)return &s;return nullptr;}
 const ShipmentView* Scene::shipment(const std::string& id)const{for(auto& s:shipments)if(s.id==id)return &s;return nullptr;}

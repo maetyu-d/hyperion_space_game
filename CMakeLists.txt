@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
-project(Hyperion VERSION 3.58.0 LANGUAGES C CXX)
+project(Hyperion VERSION 3.59.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 option(HYPERION_BUILD_APP "Build native desktop application" ON)
 option(HYPERION_SANITIZE "Enable address/undefined sanitizers" OFF)
-add_library(hyperion_core src/universe.cpp src/minor_bodies.cpp src/flight/minor_bodies.cpp src/procedural.cpp src/procedural_economy.cpp src/turns.cpp src/continuity.cpp src/ocean_ops.cpp src/ocean_expeditions.cpp src/ocean_storage.cpp src/fieldwork.cpp src/planning.cpp src/missions.cpp src/missions_game.cpp src/missions_storage.cpp src/game.cpp src/storage.cpp src/save_session.cpp src/legacy_save.cpp src/economy.cpp src/security.cpp src/security_game.cpp src/security_storage.cpp src/shipyard.cpp src/shipyard_game.cpp src/shipyard_storage.cpp src/flight/vessel.cpp src/economy_storage.cpp src/economy_game.cpp src/flight_storage.cpp src/flight_game.cpp src/flight/game.cpp src/flight/handling.cpp src/flight/combat.cpp src/flight/threat.cpp src/biosphere.cpp src/ecosystem.cpp src/ecosystem_storage.cpp src/wildlife.cpp src/flight/scene.cpp src/flight_scene.cpp)
+add_library(hyperion_core src/universe.cpp src/minor_bodies.cpp src/flight/minor_bodies.cpp src/procedural.cpp src/procedural_economy.cpp src/turns.cpp src/continuity.cpp src/ocean_ops.cpp src/ocean_expeditions.cpp src/ocean_storage.cpp src/fieldwork.cpp src/planning.cpp src/missions.cpp src/missions_game.cpp src/missions_storage.cpp src/game.cpp src/storage.cpp src/save_session.cpp src/legacy_save.cpp src/economy.cpp src/security.cpp src/security_game.cpp src/security_storage.cpp src/shipyard.cpp src/shipyard_game.cpp src/shipyard_storage.cpp src/flight/vessel.cpp src/economy_storage.cpp src/world_damage_storage.cpp src/world_destruction.cpp src/economy_game.cpp src/flight_storage.cpp src/flight_game.cpp src/flight/game.cpp src/flight/handling.cpp src/flight/combat.cpp src/flight/threat.cpp src/biosphere.cpp src/ecosystem.cpp src/ecosystem_storage.cpp src/wildlife.cpp src/flight/scene.cpp src/flight/world_objects.cpp src/flight_scene.cpp)
 target_include_directories(hyperion_core PUBLIC src PRIVATE vendor)
 target_compile_options(hyperion_core PRIVATE -Wall -Wextra -Wpedantic)
 if(HYPERION_SANITIZE)
@@ -17,7 +17,7 @@ if(HYPERION_BUILD_APP)
   set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
   add_subdirectory(vendor/raylib EXCLUDE_FROM_ALL)
   if(APPLE)
-    add_executable(Hyperion MACOSX_BUNDLE src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
+    add_executable(Hyperion MACOSX_BUNDLE src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/world_damage_renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
     set_target_properties(Hyperion PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Hyperion"
       MACOSX_BUNDLE_GUI_IDENTIFIER "studio.hyperion.game"
       MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
@@ -28,7 +28,7 @@ if(HYPERION_BUILD_APP)
       COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/assets/Hyperion.icns"
         "${CMAKE_CURRENT_BINARY_DIR}/Hyperion.app/Contents/Resources/Hyperion.icns")
   else()
-    add_executable(Hyperion src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
+    add_executable(Hyperion src/main.cpp src/ocean_renderer.cpp src/field_renderer.cpp src/turn_renderer.cpp src/flight_hud.cpp src/renderer.cpp src/economy_renderer.cpp src/missions_renderer.cpp src/shipyard_renderer.cpp src/wildlife_renderer.cpp src/audio.cpp src/flight_renderer.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/world_damage_renderer.cpp src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
   endif()
   target_link_libraries(Hyperion PRIVATE hyperion_core raylib)
   target_include_directories(Hyperion PRIVATE vendor)
@@ -43,14 +43,23 @@ endif()
 include(CTest)
 if(BUILD_TESTING AND HYPERION_BUILD_APP)
   # Explicit native visual check; never run a windowed GPU test in CPU ctest.
+  add_executable(hyperion_world_destruction_check EXCLUDE_FROM_ALL
+    tests/world_destruction_native.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/world_damage_renderer.cpp
+    src/flight/minor_renderer.cpp src/flight/settlements.cpp src/flight/terrain.cpp src/flight/life.cpp)
+  target_include_directories(hyperion_world_destruction_check PRIVATE src vendor)
+  target_link_libraries(hyperion_world_destruction_check PRIVATE hyperion_core raylib)
   add_executable(hyperion_life_continuity_check EXCLUDE_FROM_ALL
-    tests/life_continuity_native.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp
+    tests/life_continuity_native.cpp src/flight/renderer.cpp src/flight/combat_renderer.cpp src/flight/world_damage_renderer.cpp
     src/flight/minor_renderer.cpp src/flight/settlements.cpp
     src/flight/terrain.cpp src/flight/life.cpp)
   target_include_directories(hyperion_life_continuity_check PRIVATE src vendor)
   target_link_libraries(hyperion_life_continuity_check PRIVATE hyperion_core raylib)
 endif()
 if(BUILD_TESTING)
+  add_executable(hyperion_world_destruction_tests tests/world_destruction.cpp)
+  target_include_directories(hyperion_world_destruction_tests PRIVATE vendor)
+  target_link_libraries(hyperion_world_destruction_tests PRIVATE hyperion_core)
+  add_test(NAME persistent_world_destruction COMMAND hyperion_world_destruction_tests)
   add_executable(hyperion_destruction_tests tests/destruction.cpp)
   target_link_libraries(hyperion_destruction_tests PRIVATE hyperion_core)
   add_test(NAME ship_destruction COMMAND hyperion_destruction_tests)

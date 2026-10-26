@@ -64,10 +64,10 @@ const Settlement* findSettlement(const Economy& e,const std::string& id) {
     return it==e.settlements.end()?nullptr:&*it;
 }
 double stockTotal(const Stock& s) { return std::accumulate(s.begin(),s.end(),0.); }
-double storageCapacity(const Settlement& s) { return 220+s.built[Warehouse]*260.; }
+double storageCapacity(const Settlement& s) { return 220+workingBuildings(s,Warehouse)*260.; }
 double reserveFor(const Settlement& s,int good) {
     double use=good==Rations?s.residents*.18:good==Medicine?s.residents*.025:good==Propellant?2.:0.;
-    for (int i=0;i<buildingCount;i++) use+=buildings[i].inputs[good]*s.built[i]/buildings[i].hours;
+    for (int i=0;i<buildingCount;i++) use+=buildings[i].inputs[good]*workingBuildings(s,i)/buildings[i].hours;
     return std::max(8.,use*12);
 }
 double marketPrice(const Settlement& s,int good) {
@@ -192,7 +192,7 @@ void updateSettlement(Economy& e,Universe& u,Settlement& s,double dt) {
     bool fed=s.stock[Rations]>=s.residents*.035*dt;
     double rationNeed=s.residents*.035*dt,used=std::min(s.stock[Rations],rationNeed);s.stock[Rations]-=used;
     double foodFraction=rationNeed>0?used/rationNeed:1;
-    double overcrowding=std::max(0.,s.residents-s.built[Habitat]*12.)/12;
+    double overcrowding=std::max(0.,s.residents-workingBuildings(s,Habitat)*12.)/12;
     s.health=clamp(s.health+dt*((foodFraction-.85)*.9-c.toxicity*.32*(e.researched[4]?.5:1)),0.,100.);
     s.morale=clamp(s.morale+dt*((foodFraction-.75)*1.2-overcrowding*.35-s.pollution*.18+(s.policy==Relief?.15:0)),0.,100.);
     if (s.health<80&&s.stock[Medicine]>0) {
@@ -202,11 +202,11 @@ void updateSettlement(Economy& e,Universe& u,Settlement& s,double dt) {
     auto* habitat=settlementHabitat(e,s);
     if(habitat)s.ecosystem=harvestAvailable(*habitat,s.harvestPolicy,s.harvestTarget);
     s.pollution=std::max(0.,s.pollution-dt*(.0018+c.storm*.001));
-    double solar=s.built[Solar]*6*c.daylight*s.condition*(e.researched[2]?1.35:1);
-    bool reactor=s.built[Reactor]>0&&s.stock[Propellant]>0;
-    double potentialDemand=0;for(int i=0;i<buildingCount;i++)potentialDemand+=s.built[i]*buildings[i].power;
-    double nominalReactor=s.built[Reactor]*16*s.condition;
-    double reserve=reactor?std::min(s.stock[Propellant],dt*.13*s.built[Reactor]*clamp((potentialDemand-solar)/std::max(.001,nominalReactor),0.,1.)):0.;
+    double solar=workingBuildings(s,Solar)*6*c.daylight*s.condition*(e.researched[2]?1.35:1);
+    bool reactor=workingBuildings(s,Reactor)>0&&s.stock[Propellant]>0;
+    double potentialDemand=0;for(int i=0;i<buildingCount;i++)potentialDemand+=workingBuildings(s,i)*buildings[i].power;
+    double nominalReactor=workingBuildings(s,Reactor)*16*s.condition;
+    double reserve=reactor?std::min(s.stock[Propellant],dt*.13*workingBuildings(s,Reactor)*clamp((potentialDemand-solar)/std::max(.001,nominalReactor),0.,1.)):0.;
     s.stock[Propellant]-=reserve;
     double reactorPower=reserve/dt/.13*16*s.condition;
     double power=solar+reactorPower;s.power=power;s.demand=0;
@@ -216,12 +216,12 @@ void updateSettlement(Economy& e,Universe& u,Settlement& s,double dt) {
     std::array<int,9> order={Growhouse,Harvester,FuelPlant,Refinery,Mine,CrystalBore,MedLab,Fabricator,Observatory};
     if (s.policy==Industry) order={FuelPlant,Refinery,Mine,CrystalBore,Fabricator,Growhouse,Harvester,MedLab,Observatory};
     if (s.policy==Relief) order={Growhouse,MedLab,Harvester,FuelPlant,Mine,Refinery,CrystalBore,Observatory,Fabricator};
-    s.activity={};s.activity[Solar]=s.built[Solar]>0?clamp(c.daylight*s.condition,0.,1.):0.;
-    s.activity[Habitat]=s.built[Habitat]>0&&s.residents>0?s.condition*clamp(s.health/100.,0.,1.):0.;
-    s.activity[Warehouse]=s.built[Warehouse]>0&&power>0?s.condition*.6:0.;
+    s.activity={};s.activity[Solar]=workingBuildings(s,Solar)>0?clamp(c.daylight*s.condition,0.,1.):0.;
+    s.activity[Habitat]=workingBuildings(s,Habitat)>0&&s.residents>0?s.condition*clamp(s.health/100.,0.,1.):0.;
+    s.activity[Warehouse]=workingBuildings(s,Warehouse)>0&&power>0?s.condition*.6:0.;
     s.researchRate=0;double workers=able,availablePower=power;std::string bottleneck;bool made=false;
     auto produce=[&](int b) {
-        int count=s.built[b];if (!count) return;
+        double count=workingBuildings(s,b);if (!count) return;
         const auto& def=buildings[b];double workforce=std::min(workers,double(count*def.workers));
         if (workforce<.05) {if (bottleneck.empty()) bottleneck="No workers for "+std::string(def.name);return;}
         Stock inputs=def.inputs;
@@ -241,7 +241,7 @@ void updateSettlement(Economy& e,Universe& u,Settlement& s,double dt) {
         if (b==Harvester) rate*=c.fertility*(habitat?(.25+.75*habitat->quality):0);
         if(b==Growhouse&&habitat&&habitat->capacity>0)rate*=.55+.45*ecosystemServices(*habitat);
         if(b==MedLab&&habitat&&habitat->capacity>0)rate*=.45+.55*biodiversity(*habitat);
-        s.activity[b]=clamp(rate/std::max(1,count),0.,1.);
+        s.activity[b]=clamp(rate/std::max(1.,count),0.,1.);
         if(b==Observatory)s.researchRate=rate;
         s.progress[b]+=dt*rate;
         for (int n=0;s.progress[b]+1e-8>=def.hours&&n<24;n++) {
@@ -265,8 +265,8 @@ void updateSettlement(Economy& e,Universe& u,Settlement& s,double dt) {
     if (s.policy!=Stewardship&&s.pollution<=.5) produce(Restoration);
     s.labor=able-workers;s.bottleneck=bottleneck.empty()?(made?"Production completing":"Shifts in progress"):bottleneck;
     double load=clamp((power-availablePower-solar)/std::max(.001,nominalReactor),0.,1.);
-    double actualBurn=std::min(reserve,dt*.13*s.built[Reactor]*load);
-    s.activity[Reactor]=s.built[Reactor]>0?clamp(actualBurn/(dt*.13*s.built[Reactor]),0.,1.):0.;
+    double actualBurn=std::min(reserve,dt*.13*workingBuildings(s,Reactor)*load);
+    s.activity[Reactor]=workingBuildings(s,Reactor)>0?clamp(actualBurn/(dt*.13*workingBuildings(s,Reactor)),0.,1.):0.;
     s.stock[Propellant]+=reserve-actualBurn;s.reactorUse+=actualBurn;
 
     s.condition=clamp(s.condition-dt*(.00008+c.storm*.00015+s.pollution*.00015),.08,1.);
@@ -310,7 +310,7 @@ void updateSettlement(Economy& e,Universe& u,Settlement& s,double dt) {
     if (e.hour>=s.nextMigration) {
         s.nextMigration=e.hour+24;
         int sponsor=s.owner==0?s.authority:s.owner;
-        if (s.health>80&&s.morale>75&&s.stock[Rations]>s.residents*4&&s.residents<s.built[Habitat]*12&&e.factions[sponsor].reservePopulation>0) {
+        if (s.health>80&&s.morale>75&&s.stock[Rations]>s.residents*4&&s.residents<workingBuildings(s,Habitat)*12&&e.factions[sponsor].reservePopulation>0) {
             s.residents++;e.factions[sponsor].reservePopulation--;economicEvent(e,s.name,"Reliable food and housing attracted a migrant from "+e.factions[sponsor].name+".");
         }
     }
@@ -323,6 +323,7 @@ void updateRoute(Economy& e,TradeRoute& route,double dt,const std::unordered_map
     if (route.outbound) {
         route.remaining=std::max(0.,route.remaining-dt);
         if (route.remaining>1e-8) {route.status="In transit / "+std::to_string(int(std::ceil(route.remaining)))+" h";return;}
+                if(objectIntegrity(e.worldDamage,"port:orbit:"+to->id)<=0&&objectIntegrity(e.worldDamage,"port:surface:"+to->id)<=0){route.status="Holding cargo / destination berths destroyed";return;}
         double room=std::max(0.,storageCapacity(*to)-stockTotal(to->stock));
         for (int g=0;g<goodCount;g++) {double amount=std::min(route.cargo[g],room);route.cargo[g]-=amount;to->stock[g]+=amount;room-=amount;}
         if (stockTotal(route.cargo)>.001) {route.status="Holding cargo / destination warehouse full";return;}
@@ -333,6 +334,7 @@ void updateRoute(Economy& e,TradeRoute& route,double dt,const std::unordered_map
     if (e.hour<route.nextDeparture) {route.status="Turnaround";return;}
     if (route.owner==0&&(from->owner!=0||to->owner!=0)) {route.status="Charter changed / route blocked";return;}
     if (route.commercial&&e.factions[from->owner].relations[to->owner]<-50) {route.status="Faction embargo";return;}
+    if(objectIntegrity(e.worldDamage,"port:orbit:"+from->id)<=0&&objectIntegrity(e.worldDamage,"port:surface:"+from->id)<=0){route.status="Departure berths destroyed / rebuild required";return;}
     double available=std::max(0.,from->stock[route.good]-reserveFor(*from,route.good));
     double need=route.commercial?std::max(0.,reserveFor(*to,route.good)*1.6-to->stock[route.good]):route.capacity;
     int capacity=route.owner==0&&e.researched[3]?32:route.capacity;
@@ -364,6 +366,10 @@ void advanceEconomy(Economy& e,Universe& u,double targetHour) {
     while (e.hour+.25<=targetHour+1e-8&&steps++<8192) {
         e.hour+=.25;advanceEcosystems(e,u,.25);
         for (auto& s:e.settlements) updateSettlement(e,u,s,.25);
+        if(std::abs(e.hour/6-std::round(e.hour/6))<1e-8)for(auto& site:e.settlements)if(site.owner!=0){
+            bool rebuilt=false;for(auto it=site.facilityIntegrity.begin();it!=site.facilityIntegrity.end();++it){const auto& def=buildings[it->first/24];if(site.treasury>=def.price&&has(site.stock,def.construction)){subtract(site.stock,def.construction);site.treasury-=def.price;e.factions[site.authority].treasury+=def.price;site.facilityIntegrity.erase(it);e.damageRevision++;e.geometryRevision++;economicEvent(e,site.name,"Local crews rebuilt damaged infrastructure using warehouse supplies.");rebuilt=true;break;}}
+            if(!rebuilt)for(auto it=e.worldDamage.begin();it!=e.worldDamage.end();++it){const auto& d=it->second;if(d.owner!=site.id||d.integrity>=1||(d.kind!=PortObject&&d.kind!=PanelObject))continue;bool core=d.kind==PortObject;Stock cost=stock({{Alloy,core?32.:8.},{Components,core?12.:3.}});int price=core?800:120;if(site.treasury>=price&&has(site.stock,cost)){subtract(site.stock,cost);site.treasury-=price;e.factions[site.authority].treasury+=price;e.worldDamage.erase(it);e.damageRevision++;e.geometryRevision++;economicEvent(e,site.name,"Local crews reconstructed port equipment; physical supplies and treasury funded the work.");break;}}
+        }
         // Runoff travels between nearby sites instead of remaining a private penalty.
         std::vector<double> runoff(e.settlements.size(),0);
         for(const auto& region:regions)for(size_t a=0;a<region.second.size();a++)for(size_t b=a+1;b<region.second.size();b++){
@@ -424,10 +430,19 @@ bool foundSettlement(Economy& e,Universe& u,const Planet& p,V2 at,double depth,S
 bool construct(Economy& e,Settlement& s,int building,Stock& ship,std::string& message) {
     if (building<0||building>=buildingCount||s.owner!=0) {message="Only player-chartered settlements accept construction orders";return false;}
     auto& def=buildings[building];
-    if (s.built[building]>=24) {message="Local construction limit reached";return false;}
+    int restore=-1;for(const auto& [slot,hp]:s.facilityIntegrity)if(slot/24==building&&hp<1){restore=slot;break;}
+    if (s.built[building]>=24&&restore<0) {message="Local construction limit reached";return false;}
     if (e.credits<def.price||!has(ship,def.construction)) {message="Construction needs "+std::to_string(def.price)+" credits; missing "+deficits(ship,def.construction);return false;}
-    subtract(ship,def.construction);e.credits-=def.price;e.factions[s.authority].treasury+=def.price;s.built[building]++;
+    subtract(ship,def.construction);e.credits-=def.price;e.factions[s.authority].treasury+=def.price;if(restore>=0)s.facilityIntegrity.erase(restore);else s.built[building]++;e.damageRevision++;e.geometryRevision++;
     economicEvent(e,s.name,std::string(def.name)+" commissioned. "+def.purpose);message=std::string(def.name)+" constructed";return true;
+}
+bool rebuildInfrastructure(Economy& e,Settlement& site,Stock& cargo,std::string& message){
+ if(site.owner!=0){message="Only player-chartered infrastructure accepts reconstruction orders";return false;}
+ auto chosen=e.worldDamage.end();for(auto it=e.worldDamage.begin();it!=e.worldDamage.end();++it)if(it->second.owner==site.id&&it->second.integrity<1&&(it->second.kind==PortObject||it->second.kind==PanelObject))if(chosen==e.worldDamage.end()||it->second.kind<chosen->second.kind)chosen=it;
+ if(chosen==e.worldDamage.end()){message="No port equipment needs reconstruction";return false;}
+ bool core=chosen->second.kind==PortObject;Stock cost=stock({{Alloy,core?32.:8.},{Components,core?12.:3.}});int price=core?800:120;
+ if(e.credits<price||!has(cargo,cost)){message=std::string(core?"Berth: 32 alloy / 12 components / 800 cr":"Equipment: 8 alloy / 3 components / 120 cr");return false;}
+ subtract(cargo,cost);e.credits-=price;e.factions[site.authority].treasury+=price;e.worldDamage.erase(chosen);e.damageRevision++;e.geometryRevision++;message=core?"Berth reconstructed / docking restored":"Port equipment reconstructed";economicEvent(e,site.name,message);return true;
 }
 bool repairSettlement(Economy& e,Settlement& s,Stock& ship,std::string& message) {
     Stock cost=stock({{Alloy,4},{Components,2}});

@@ -6,7 +6,7 @@ void Game::storeSecurity(){
  }
 }
 void Game::refreshSecurity(){
- auto& e=s.economy;auto& f=s.flight;if(f.ports.empty())return;
+ auto& e=s.economy;auto& f=s.flight;if(f.ports.empty())return;for(const auto& faction:e.factions)if(faction.warrant>0)f.portCombat=std::max(f.portCombat,5.);
  for(auto& c:e.captains)if(c.star==s.currentStar){
   int home=-1;std::string id=c.band.empty()?"orbit:"+c.home:"den:"+c.band;
   for(int i=0;i<int(f.ports.size());i++)if(f.ports[i].id==id){home=i;break;}if(home<0)continue;

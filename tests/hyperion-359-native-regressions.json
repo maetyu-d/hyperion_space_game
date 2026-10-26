@@ -1,0 +1,46 @@
+{
+  "version": "3.59.0",
+  "binarySHA256": "92a705151357ae2e39f00960793fb97544b83198dfcbd0cc7e01dba2aa9d0e6d",
+  "runs": [
+    {
+      "check": "combat",
+      "flag": "--combat-visual-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 49.1,
+      "noSave": true
+    },
+    {
+      "check": "fieldwork",
+      "flag": "--fieldwork-check",
+      "size": "720x450",
+      "exit": 0,
+      "seconds": 11.05,
+      "noSave": true
+    },
+    {
+      "check": "ocean",
+      "flag": "--ocean-survey-check",
+      "size": "720x450",
+      "exit": 0,
+      "seconds": 20.55,
+      "noSave": true
+    },
+    {
+      "check": "strategy",
+      "flag": "--strategy-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 13.7,
+      "noSave": true
+    },
+    {
+      "check": "landing",
+      "flag": "--surface-transition-check",
+      "size": "960x600",
+      "exit": 0,
+      "seconds": 18.57,
+      "noSave": true
+    }
+  ]
+}

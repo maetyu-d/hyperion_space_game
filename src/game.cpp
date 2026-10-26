@@ -88,7 +88,7 @@ std::vector<Contact> Game::targets(){std::vector<Contact> a;if(s.mode!=Mode::Sur
  if(s.mode==Mode::Ocean)for(const auto& c:wreckSites())a.push_back(c);
  LifeView view;view.centre=s.mode==Mode::Ocean?V2{s.oceanX,s.oceanAtY}:s.surface;view.observer=view.centre;view.observerDepth=s.depth;view.alert=s.mode==Mode::Ocean?diveAlert():.65;view.depth=s.depth;view.ocean=s.mode==Mode::Ocean;view.radius=100+s.upgrades[1]*25;view.hours=s.hours;view.limit=80;std::set<std::string> species;
  for(const auto& animal:visibleLife(s.economy,universe,p,view))if(species.insert(animal.contact.id).second)a.push_back(animal.contact);
- return a;}
+ a.erase(std::remove_if(a.begin(),a.end(),[&](const Contact& c){return objectIntegrity(s.economy.worldDamage,"field:"+c.id)<=0;}),a.end());return a;}
 bool Game::catalogue(const Contact& o,bool collect,int bonus){ensureEconomy();if(!s.scanned.insert(o.id).second)return false;Stock previousCargo=shipStock();Planet p=activePlanet();int gain=o.kind=="relic"?22:o.kind=="signal"?19:o.kind=="life"?12:o.kind=="vent"?13:o.kind=="mineral"?7:9;
  s.resources[3]+=bonus+gain+int(universe.hash(int32_t(o.n?o.n:1),int32_t(o.pos.x),4)%5);
  if(collect&&o.kind=="mineral"){auto local=universe.region(p,o.pos,o.depth);s.economy.hold[Ore]+=p.generation>=2?int(std::round(7+local.ore*6)):14;s.resources[1]+=p.generation>=2?int(std::round(3+local.crystal*3)):4+int(universe.hash(int32_t(o.n?o.n:1),7)%5);}

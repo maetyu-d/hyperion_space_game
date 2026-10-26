@@ -7,11 +7,11 @@ void Game::updateMinorBodies(double hours){
  if(autopilot&&!route.empty()&&target>=0&&target<int(ports.size())&&ports[target].minor>=0){route.back()=ports[target].position+ports[target].normal*90;if(route.size()==2)route.front()=ports[target].position+ports[target].normal*130;}
 }
 std::vector<Planet> Game::navigationBodies()const{
- auto result=planets;for(const auto& b:minorBodies){Planet p{};p.centre=b.centre;p.radius=b.source.radius*1.24+4;result.push_back(p);}return result;
+ auto result=planets;for(const auto& b:minorBodies){if(b.destroyed)continue;Planet p{};p.centre=b.centre;p.radius=b.source.radius*1.24+4;result.push_back(p);}return result;
 }
 double Game::minorHit(V3 a,V3 b,double clearance,int* body)const{
  double first=std::numeric_limits<double>::infinity();auto d=b-a;double aa=dot(d,d);
- for(int i=0;i<int(minorBodies.size());i++){const auto& p=minorBodies[i];auto o=a-p.centre;double bound=p.source.radius*1.24+clearance;
+ for(int i=0;i<int(minorBodies.size());i++){const auto& p=minorBodies[i];if(p.destroyed)continue;auto o=a-p.centre;double bound=p.source.radius*1.24+clearance;
   auto field=[&](double t){auto v=o+d*t;auto n=unit(v);return length(v)-minorRadius(p.source,{n.x,n.y,n.z})-clearance;};
   if(dot(o,o)<=bound*bound&&field(0)<=0){first=0;if(body)*body=i;continue;}
   if(aa<1e-14)continue;double bb=dot(o,d),h=bb*bb-aa*(dot(o,o)-bound*bound);if(h<0)continue;
@@ -25,7 +25,7 @@ void Game::minorContacts(V3 previous){
  const auto& b=minorBodies[index];auto at=mix(previous,ship.position,hit),n=unit(at-b.centre);
  ship.position=b.centre+n*(minorRadius(b.source,{n.x,n.y,n.z})+2.1);
  double impact=std::max(0.,-dot(ship.velocity,n));ship.velocity+=n*(impact*1.15);ship.velocity=ship.velocity*.94;
- if(impact>2){damageShip((impact-2)*.7,CollisionDamage,b.centre);if(hitFlash>.1)message("Collision / "+b.source.name+" / brake before the surface");}
+ if(impact>2){for(int i=0;i<int(worldObjects.size());i++)if(worldObjects[i].kind==hyperion::MinorObjectKind&&worldObjects[i].slot==index){damageWorld(i,impact*impact*.075,CollisionDamage,at,true);break;}damageShip((impact-2)*.7,CollisionDamage,b.centre);if(hitFlash>.1)message("Collision / "+b.source.name+" / brake before the surface");}
  cancelNavigation();ship.throttle=0;
 }
 }

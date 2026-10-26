@@ -67,7 +67,7 @@ std::vector<LifeAgent> visibleLife(const Economy& e,const Universe& u,const Plan
   if(it!=e.ecosystems.end())h=&it->second;else{auto base=baseline.find(id);if(base==baseline.end())base=baseline.emplace(id,generateEcosystem(u,p,int(std::floor(chart.x/640)),int(std::floor(chart.y/640)),depth>0?1+int(depth/1000):0,region.biome)).first;h=&base->second;}
   if(h->capacity<=0)continue;g.hasFood=guildMass(*h,Producer)+guildMass(*h,Chemotroph)>.01;g.pollution=h->pollution;uint32_t seed=u.hash(x,y,int32_t(p.seed),view.ocean?0x331b:0x331a);g.phase=random(seed,1);
   double closest=180;for(const auto& port:e.settlements)if(port.star==p.starId&&port.planet==p.index&&port.residents>0&&(port.depth>0)==view.ocean){double d=std::hypot(port.position.x-chart.x,port.position.y-chart.y)+std::abs(port.depth-depth)*.12;if(d<closest){closest=d;g.port=&port;g.pollution=std::max(h->pollution,port.pollution);}}
-  bool harvesting=g.port&&g.port->activity[Harvester]>.25&&g.port->harvestPolicy==2;g.disturbance=std::max(g.pollution>.5?smooth((g.pollution-.4)*2):0.,harvesting?.85:0.);g.garden=g.port&&g.port->built[Growhouse]>0&&g.port->stock[Rations]>0&&g.pollution<.45&&!harvesting;
+  bool harvesting=g.port&&g.port->activity[Harvester]>.25&&g.port->harvestPolicy==2;g.disturbance=std::max(g.pollution>.5?smooth((g.pollution-.4)*2):0.,harvesting?.85:0.);g.garden=g.port&&workingBuildings(*g.port,Growhouse)>0&&g.port->stock[Rations]>0&&g.pollution<.45&&!harvesting;
   for(int slot=0;slot<7;slot++){
    auto& a=g.agents[slot];a.flora=slot<2||slot==6;a.guild=a.flora?(slot==6?Chemotroph:Producer):slot==4?Predator:slot==5?(wet?FilterFeeder:Decomposer):Grazer;
    if(slot==6&&region.geothermal<.25)continue;
@@ -78,7 +78,7 @@ std::vector<LifeAgent> visibleLife(const Economy& e,const Universe& u,const Plan
    V2 homeChart{a.home.x,view.ocean?view.centre.y:a.home.y};if(!view.ocean&&(u.elevation(p,homeChart.x,homeChart.y)<u.seaLevel(p))!=wet)continue;
    a.marine=wet;a.contact.kind=pop.flora?"flora":"life";a.contact.n=pop.seed;a.contact.name=objectName(a.contact.kind,pop.seed);a.contact.habitatPos=chart;a.contact.habitatDepth=depth;a.contact.habitatBiome=region.biome;
    a.contact.id="BIO:"+h->id+":"+std::to_string(pop.seed)+":"+(pop.flora?"P":"A");a.contact.desc=region.biome+". "+biologicalTraits(a.contact)+" This moving cohort belongs to the persistent regional "+guildName(a.guild)+" population.";
-   a.id="L1:"+p.id+":"+std::to_string(x)+":"+std::to_string(y)+":"+std::to_string(slot)+(view.ocean?":O:"+std::to_string(int(std::floor(view.centre.y/130))):":S");auto bio=phenotype(a.contact);a.size=bio.size*(a.flora?1.5:slot==4?1.65:1.0);if(g.port)a.settlement=g.port->id;g.alive[slot]=true;
+   a.id="L1:"+p.id+":"+std::to_string(x)+":"+std::to_string(y)+":"+std::to_string(slot)+(view.ocean?":O:"+std::to_string(int(std::floor(view.centre.y/130))):":S");if(objectIntegrity(e.worldDamage,a.id)<=0)continue;auto bio=phenotype(a.contact);a.size=bio.size*(a.flora?1.5:slot==4?1.65:1.0);if(g.port)a.settlement=g.port->id;g.alive[slot]=true;
   }
   // Missing visible plants may still exist below the render density threshold.
   for(int slot=0;slot<2;slot++)if(!g.alive[slot])g.agents[slot].home=add(g.centre,V2{slot?9.:-9.,-5});

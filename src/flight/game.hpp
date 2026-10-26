@@ -1,4 +1,5 @@
 #pragma once
+#include "../world_damage.hpp"
 #include "vessel.hpp"
 #include "threat.hpp"
 #include "../minor_bodies.hpp"
@@ -11,30 +12,14 @@
 #include <vector>
 
 namespace hyperion::flight {
-constexpr double pi=3.14159265358979323846;
-struct V3 {
-  double x=0,y=0,z=0;
-  V3 operator+(V3 b)const{return{x+b.x,y+b.y,z+b.z};}
-  V3 operator-(V3 b)const{return{x-b.x,y-b.y,z-b.z};}
-  V3 operator-()const{return{-x,-y,-z};}
-  V3 operator*(double s)const{return{x*s,y*s,z*s};}
-  V3 operator/(double s)const{return *this*(1/s);}
-  V3& operator+=(V3 b){return *this=*this+b;}
-};
-inline double dot(V3 a,V3 b){return a.x*b.x+a.y*b.y+a.z*b.z;}
-inline V3 cross(V3 a,V3 b){return{a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x};}
-inline double length(V3 a){return std::sqrt(dot(a,a));}
-inline V3 unit(V3 a,V3 fallback={0,1,0}){double l=length(a);return l>1e-9?a/l:fallback;}
-inline V3 mix(V3 a,V3 b,double t){return a*(1-t)+b*t;}
-inline V3 rotate(V3 v,V3 axis,double a){axis=unit(axis);return v*std::cos(a)+cross(axis,v)*std::sin(a)+axis*dot(axis,v)*(1-std::cos(a));}
-inline bool finite(V3 v){return std::isfinite(v.x)&&std::isfinite(v.y)&&std::isfinite(v.z);}
 // Material properties are derived from the surveyed world; flight rendering
 // never invents a second planet or changes its collision/navigation geometry.
+struct SurfaceScar {V3 normal;double radius=1,depth=.2;};
 struct Planet {std::string name,biome;V3 centre;double radius,seed;V3 portNormal;bool giant=false;
- double water=.35,life=.25,temperature=289,atmosphere=1;int kind=0;uint32_t worldSeed=0;int generation=1,landform=0;double tectonic=.5;
+ double water=.35,life=.25,temperature=289,atmosphere=1;int kind=0;uint32_t worldSeed=0;int generation=1,landform=0;double tectonic=.5;std::vector<SurfaceScar> scars{};
 };
-struct Port {std::string name,description;V3 position,normal;int planet;std::string id,settlement;int body=-1;int minor=-1;};
-struct MinorObject {hyperion::MinorBody source;V3 centre;};
+struct Port {std::string name,description;V3 position,normal;int planet;std::string id,settlement;int body=-1;int minor=-1;bool disabled=false;};
+struct MinorObject {hyperion::MinorBody source;V3 centre;bool destroyed=false;};
 std::vector<V3> transferRoute(const std::vector<Planet>& planets,V3 start,const Port& destination);
 struct RoutePose {V3 position,forward;};
 RoutePose freightPose(const std::vector<V3>& path,double progress);
@@ -78,9 +63,9 @@ struct CombatFeedback {
  double recoil=0,impact=0,shieldBreak=0;int weapon=Pulse,confirmation=ShieldImpact;
  std::array<uint32_t,5> shots{};uint32_t shieldHits=0,hullHits=0,breaks=0,destructions=0;
 };
-struct Wreck {V3 position,velocity;double life=180;std::array<double,3> cargo{};std::string id;HullRemains hull{};};
+struct Wreck {V3 position,velocity;double life=180;std::array<double,3> cargo{};std::string id;HullRemains hull{};int debrisKind=0;std::array<double,9> supplies{};};
 struct Courier {bool active=false;std::string issuer,destination;int64_t escrow=0;double deadline=0;};
-struct Event {std::string kind;int port=-1,faction=0;std::string routeId;std::string actor,victim;
+struct Event {std::string kind;int port=-1,faction=0;std::string routeId;std::string actor,victim;double amount=0;int weapon=0;V3 position,normal;
  Event(std::string k,int p=-1,int f=0,std::string r="",std::string a="",std::string v=""):kind(std::move(k)),port(p),faction(f),routeId(std::move(r)),actor(std::move(a)),victim(std::move(v)){}
 };
 struct LandingInfo {
@@ -89,6 +74,7 @@ struct LandingInfo {
  bool available=false,safe=false,water=false;
 };
 struct Game {
+  hyperion::WorldDamageMap worldDamage;std::vector<hyperion::WorldObject> worldObjects;int worldBlastDepth=0;double portCombat=0;V3 scarAnchor{1e10,0,0};uint64_t scarKey=0;uint64_t geometryRevision=0,damageRevision=0;std::string damageStar;
   std::vector<Planet> planets;
   std::vector<MinorObject> minorBodies;
   std::vector<Port> ports;
@@ -143,6 +129,7 @@ struct Game {
   void minorContacts(V3 previous);
   int combatTargetIndex()const;void cycleCombatTarget();bool selectWeapon(int);
   void prepareCombat(double,Input&);void updateCombat(double,const Input&);
+  void damageWorld(int,double,int,V3,bool);
   void damageShip(double,int,V3);void damageTraffic(int,double,int,V3,bool credited,int module=0,const std::string& attacker="");void chainArc(int,double);
   bool enemiesOf(const Traffic&,const Traffic&)const;
   bool lineOfSight(V3,V3)const;double terrainHit(V3,V3)const;bool protectedPort(V3)const;

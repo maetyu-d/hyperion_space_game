@@ -1,4 +1,5 @@
 #include "economy_storage.hpp"
+#include "world_damage_storage.hpp"
 #include "ecosystem_storage.hpp"
 #include "security_storage.hpp"
 #include "shipyard_storage.hpp"
@@ -28,6 +29,8 @@ J encodeEconomy(const Economy& e) {
         {"labor",s.labor},{"productivity",s.productivity},{"researchRate",s.researchRate},{"nextContract",s.nextContract},{"nextMigration",s.nextMigration},
         {"medicineUsed",s.medicineUsed},{"reactorUse",s.reactorUse},{"upkeep",s.upkeep},
         {"diplomaticClock",s.diplomaticClock},{"mortality",s.mortality},{"alerts",s.alerts},{"bottleneck",s.bottleneck}});
+    for(size_t i=0;i<e.settlements.size();i++)if(!e.settlements[i].facilityIntegrity.empty()){auto damaged=J::array();for(const auto& [slot,hp]:e.settlements[i].facilityIntegrity)damaged.push_back({slot,hp});j["settlements"][i]["facilityDamage"]=damaged;}
+    if(!e.worldDamage.empty())j["destruction"]=encodeWorldDamage(e.worldDamage);
     j["routes"]=J::array();for (const auto& r:e.routes) j["routes"].push_back({
         {"id",r.id},{"from",r.from},{"to",r.to},{"status",r.status},{"good",r.good},{"owner",r.owner},
         {"capacity",r.capacity},{"enabled",r.enabled},{"outbound",r.outbound},{"commercial",r.commercial},
@@ -68,6 +71,7 @@ Economy decodeEconomy(const J& j,Universe& u,double hour) {
         if (s.id.empty()||!ids.insert(s.id).second||u.star(s.star).id!=s.star) throw std::runtime_error("Invalid settlement identity");
         s.planet=int(n(v,"planet",0,0,int(u.planets(s.star).size())-1));s.owner=int(n(v,"owner",0,0,4));s.habitat=t(v,"habitat");double hp=n(v,"harvestPolicy",0,0,2),ht=n(v,"harvestTarget",0,0,3);if(std::floor(hp)!=hp||std::floor(ht)!=ht)throw std::runtime_error("Fractional harvest policy");s.harvestPolicy=int(hp);s.harvestTarget=int(ht);s.authority=int(n(v,"authority",1,1,4));s.residents=int(n(v,"residents",0,0,10000));s.policy=int(n(v,"policy",0,0,3));
         auto point=a<double,2>(v,"position",-1e7,1e7);s.position={point[0],point[1]};s.depth=n(v,"depth",0,0,15000);s.stock=a<double,goodCount>(v,"stock",0,1e8);s.built=a<int,buildingCount>(v,"built",0,24);s.progress=a<double,buildingCount>(v,"progress",0,1000);if(v.contains("activity"))s.activity=a<double,buildingCount>(v,"activity",0,1);
+        if(v.contains("facilityDamage")){const auto& damage=v.at("facilityDamage");array(damage,336);for(const auto& item:damage){if(!item.is_array()||item.size()!=2||!item[0].is_number_integer())throw std::runtime_error("Invalid damaged building");int slot=item[0].get<int>();double hp=item[1].get<double>();if(slot<0||slot>=336||slot%24>=s.built[slot/24]||!std::isfinite(hp)||hp<0||hp>=1||!s.facilityIntegrity.emplace(slot,hp).second)throw std::runtime_error("Invalid building integrity");}}
         s.treasury=int64_t(n(v,"treasury",0,0,1e12));s.health=n(v,"health",90,0,100);s.morale=n(v,"morale",75,0,100);s.loyalty=n(v,"loyalty",80,0,100);s.condition=n(v,"condition",1,0,1);s.pollution=n(v,"pollution",0,0,1);s.ecosystem=n(v,"ecosystem",150,0,10000);s.oreDeposit=n(v,"oreDeposit",18000,0,1e9);s.crystalDeposit=n(v,"crystalDeposit",6000,0,1e9);
         s.power=n(v,"power",0,0,1e6);s.demand=n(v,"demand",0,0,1e6);s.labor=n(v,"labor",0,0,1e6);s.productivity=n(v,"productivity",1,0,2);s.researchRate=n(v,"researchRate",0,0,1000);
         s.nextContract=n(v,"nextContract",hour,0,1e12);s.nextMigration=n(v,"nextMigration",hour,0,1e12);s.medicineUsed=n(v,"medicineUsed",0,0,1e12);s.reactorUse=n(v,"reactorUse",0,0,1e12);s.upkeep=n(v,"upkeep",0,0,1e12);s.diplomaticClock=n(v,"diplomaticClock",0,0,24);s.mortality=n(v,"mortality",0,0,24);s.alerts=int(n(v,"alerts",0,0,31));s.bottleneck=t(v,"bottleneck");e.settlements.push_back(s);
@@ -87,6 +91,7 @@ Economy decodeEconomy(const J& j,Universe& u,double hour) {
     }
     const auto& history=j.at("history");array(history,2000);for (const auto& v:history) e.history.push_back({n(v,"hour",0,0,hour+.000001),t(v,"place"),t(v,"cause")});
     if (!e.docked.empty()&&!ids.count(e.docked)) throw std::runtime_error("Invalid docked settlement");
+    if(j.contains("destruction"))e.worldDamage=decodeWorldDamage(j.at("destruction"),u);
     if(j.contains("ecosystems"))decodeEcosystems(e,j.at("ecosystems"),u);else for(const auto& s:e.settlements)if(!s.habitat.empty())throw std::runtime_error("Habitat reference has no ecosystem state");
     if(j.contains("security"))decodeSecurity(e,j.at("security"));
     if(j.contains("shipyard"))decodeShipyard(e,j.at("shipyard"));

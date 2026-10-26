@@ -2,7 +2,7 @@
 #include <set>
 namespace hyperion {
 namespace {
-bool produces(const Settlement& p,int good){for(int b=0;b<buildingCount;b++)if(p.built[b]&&buildings[b].outputs[good]>0)return true;return false;}
+bool produces(const Settlement& p,int good){for(int b=0;b<buildingCount;b++)if(workingBuildings(p,b)&&buildings[b].outputs[good]>0)return true;return false;}
 double scoreSite(const Universe& u,const Planet& p,V2 at,int owner){
  auto r=u.region(p,at);bool land=r.elevation>=u.seaLevel(p);double shelter=std::exp(-std::abs(r.temperature-290)/180.)/(1+p.hazards);
  double coast=std::exp(-std::abs(r.elevation-u.seaLevel(p))*30);return shelter+coast*.25+(land?.45:-.8)+(owner==1?r.ore+r.crystal*.4:owner==2?r.biomass*5+r.moisture:owner==4?r.crystal+r.geothermal:coast+r.ore*.2);

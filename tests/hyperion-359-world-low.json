@@ -1,0 +1,182 @@
+[
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "reactor",
+    "persistentDamage": 55,
+    "profile": "low",
+    "scene": 0,
+    "target": "facility:PORT:HOME:1:240"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "habitat",
+    "persistentDamage": 0,
+    "profile": "low",
+    "scene": 1,
+    "target": "facility:PORT:HOME:1:264"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "warehouse",
+    "persistentDamage": 0,
+    "profile": "low",
+    "scene": 2,
+    "target": "facility:PORT:HOME:1:288"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "solar",
+    "persistentDamage": 0,
+    "profile": "low",
+    "scene": 3,
+    "target": "facility:PORT:HOME:1:216"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "gantry",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 4,
+    "target": "prop:surface:PORT:HOME:1:gantry:0"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "cargo",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 5,
+    "target": "prop:surface:PORT:HOME:1:cargo:0"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "tree",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 6,
+    "target": "prop:surface:PORT:HOME:1:tree:6"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "orbital-panel",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 7,
+    "target": "prop:orbit:PORT:HOME:1:panel:0"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "orbital-core",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 8,
+    "target": "port:orbit:PORT:HOME:1"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "asteroid",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 9,
+    "target": "body:HOME/asteroid/0/0"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "comet",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 10,
+    "target": "body:HOME/comet/0"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "planet-crater",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 11,
+    "target": "planet-scar"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "moon-scar",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 12,
+    "target": "HOME#0/moon/0"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "wildlife",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 13,
+    "target": "L1:HOME#2:-7:-8:1:S"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "ground-rock",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 14,
+    "target": "rock:HOME:2:4:24:30"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "pirate-den",
+    "persistentDamage": 1,
+    "profile": "low",
+    "scene": 15,
+    "target": "port:den:band:HOME"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "persistent-ruins",
+    "persistentDamage": 55,
+    "profile": "low",
+    "scene": 16,
+    "target": "facility:PORT:HOME:1:240"
+  },
+  {
+    "frames": 54,
+    "frozenClock": true,
+    "geometryValid": true,
+    "name": "reconstruction",
+    "persistentDamage": 55,
+    "profile": "low",
+    "scene": 17,
+    "target": "facility:PORT:HOME:1:240"
+  }
+]

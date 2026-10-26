@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "world_collision.hpp"
 #include "../worldgen.hpp"
 #include <istream>
 #include <ostream>
@@ -12,7 +13,9 @@ double terrain(const Planet& p,V3 n){
     +1.4*std::sin(n.x*71+n.y*33)*std::sin(n.z*67);
   double flat=std::clamp((dot(n,p.portNormal)-.985)/.012,0.,1.);
   flat=flat*flat*(3-2*flat);
-  return std::max(.5,h*(1-flat)+3*flat);
+  double height=std::max(.5,h*(1-flat)+3*flat);
+  for(const auto& scar:p.scars){double d2=2*(1-dot(n,scar.normal))*p.radius*p.radius;if(d2<scar.radius*scar.radius*1.5){double u=std::sqrt(std::max(0.,d2))/scar.radius;double bowl=std::max(0.,1-u*u);height-=scar.depth*bowl*bowl;height+=scar.depth*.22*std::exp(-std::pow((u-1)*7,2));}}
+  return height;
 }
 V3 terrainNormal(const Planet& p,V3 n){
  n=unit(n);auto east=unit(cross({0,1,0},n),{1,0,0}),north=unit(cross(n,east));double step=.5/p.radius;
@@ -64,6 +67,7 @@ void Game::launch(){
   message(surface?"Departure assist / vertical lift / steer or thrust to take control / J for navigation.":"Docking clamps released / clearing the berth. Clear skies, commander.");
 }
 void Game::dockAt(int index,bool preserveAttitude){
+ if(index>=0&&index<int(ports.size())&&ports[index].disabled){index=-1;for(int i=0;i<int(ports.size());i++)if(!ports[i].disabled&&ports[i].minor<0){index=i;break;}if(index<0){docked=false;dockedPort=-1;savedDock.clear();return;}}
   if(index<0||index>=int(ports.size()))return;
   if(ports[index].minor>=0){message("Fly-by destination / no docking facilities. Survey from the destination panel.");return;}
   ship.position=ports[index].position+ports[index].normal*(ports[index].planet<0?90:.25);
@@ -79,7 +83,7 @@ bool Game::dock(){
   if(ports.empty())return false;
   if(docked){launch();return true;}
   int nearest=-1;double best=1e30;
-  for(int i=0;i<int(ports.size());i++)if(ports[i].minor<0){double d=length(ship.position-ports[i].position);if(d<best){best=d;nearest=i;}}
+  for(int i=0;i<int(ports.size());i++)if(ports[i].minor<0&&!ports[i].disabled){double d=length(ship.position-ports[i].position);if(d<best){best=d;nearest=i;}}
   if(nearest<0)return false;
   double limit=ports[nearest].planet>=0?55:95;
   if(best<limit&&speed()<55){
@@ -157,7 +161,7 @@ void Game::update(double dt,const Input& supplied){
   // Integrate forces, contacts and RCS in steps of at most 10 ms.
   int steps=std::max(1,int(std::ceil(dt/.01)));double step=dt/steps;
   if(dt>0)for(int i=0;i<steps&&!docked;i++)stepHandling(step,in);
-  updateCombat(dt,in);
+  worldContacts(*this);updateCombat(dt,in);
   if(ship.hull<=0){events.push_back({"rescue",lastBerth,0,"",lastAttacker,"NOMA"});bolts.clear();combatTarget.clear();lock=0;ship.combat.energy=25;ship.combat.heat=0;ship.combat.overheated=false;ship.hull=25;ship.shield=0;ship.fuel=std::max(5.,ship.fuel);dockAt(std::clamp(lastBerth,0,int(ports.size())-1));message("Emergency rescue to the last berth. Cargo lost; repair before departure.");}
   recordIds();
 }

@@ -483,7 +483,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  }
  drawLife(sceneView);
  for(const auto&t:g.traffic)if(!t.dead&&length(t.position-g.ship.position)<6500&&dot(t.position-g.ship.position,g.ship.forward)>-80)drawFactionCraft(t,sceneView);
- drawShipRemains(g);drawCombat(g);
+ drawWorldDamage(g);drawShipRemains(g);drawCombat(g);
  auto facing=unit(cross(g.ship.forward,g.ship.up)),vertical=g.ship.up;
  for(const auto& wreck:g.wrecks)if(length(wreck.position-g.ship.position)<1700)ring(wreck.position,facing,vertical,6,alpha(mint,.25f),24);
  // A bounded, seeded discharge follows the same storm front as the helm.
@@ -509,7 +509,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  }
  auto sunScreen=GetWorldToScreenEx(vec(g.ship.position+sunDirection*40000),camera,renderW,renderH);float sunVisibility=dot(g.ship.forward,sunDirection)>0?1.f:0.f;
  for(const auto& body:g.planets){auto offset=body.centre-g.ship.position;double along=dot(offset,sunDirection);if(along>0&&length(offset-sunDirection*along)<body.radius+8)sunVisibility=0;}
- for(const auto& body:g.minorBodies){auto offset=body.centre-g.ship.position;double along=dot(offset,sunDirection);if(along>0&&length(offset-sunDirection*along)<body.source.radius)sunVisibility=0;}
+ for(const auto& body:g.minorBodies){if(body.destroyed)continue;auto offset=body.centre-g.ship.position;double along=dot(offset,sunDirection);if(along>0&&length(offset-sunDirection*along)<body.source.radius)sunVisibility=0;}
  set(post,"sunPosition",Vector2{sunScreen.x/renderW,1-sunScreen.y/renderH});set(post,"sunVisibility",sunVisibility);
  set(post,"texel",Vector2{1.f/renderW,1.f/renderH});set(post,"hit",float(g.hitFlash));set(post,"effects",reduced?.12f:1.f);
  auto shipRight=unit(cross(g.ship.forward,g.ship.up));

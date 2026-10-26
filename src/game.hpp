@@ -94,6 +94,7 @@ public:
  bool shipyardAction(const std::string&,const std::string&);bool canUseShipyard(const Settlement&)const;ShipOffer currentVessel()const;
  void refreshSecurity();void storeSecurity();bool securityEvent(const hyperion::flight::Event&);bool securityAction(const std::string&,const std::string&);
  void ensureFlight();void enterFlight();void updateFlight(double,const hyperion::flight::Input& = {});
+ void clearFieldContact(const Contact&);void syncWorldDamage();void prepareWorldObjects();void processWorldHit(const hyperion::flight::Event&);
  void parkFlight(int,V2,bool orbital=false);bool disembark();void processFlightEvents();
  bool flightAction(const std::string&,const std::string&);int flightPort(const std::string&,bool orbital=false);
  hyperion::flight::V3 surfaceNormal(V2)const;V2 surfacePosition(hyperion::flight::V3)const;
