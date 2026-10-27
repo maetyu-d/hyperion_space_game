@@ -4,6 +4,7 @@
 #include "../screen_layout.hpp"
 #include "shaders.hpp"
 #include "space_shaders.hpp"
+#include "ring_geometry.hpp"
 #include "minor_shaders.hpp"
 #include "geology.hpp"
 #include "building_material.hpp"
@@ -90,20 +91,6 @@ struct CabinMesh {
   mesh.vertices=floats(positions);mesh.normals=floats(normals);mesh.texcoords=floats(uv);mesh.colors=static_cast<unsigned char*>(MemAlloc(unsigned(colours.size())));std::copy(colours.begin(),colours.end(),mesh.colors);UploadMesh(&mesh,false);return LoadModelFromMesh(mesh);
  }
 };
-Mesh annulus(){
- constexpr int segments=256;Mesh mesh{};mesh.vertexCount=(segments+1)*2;mesh.triangleCount=segments*2;
- mesh.vertices=static_cast<float*>(MemAlloc(mesh.vertexCount*3*sizeof(float)));mesh.normals=static_cast<float*>(MemAlloc(mesh.vertexCount*3*sizeof(float)));
- mesh.texcoords=static_cast<float*>(MemAlloc(mesh.vertexCount*2*sizeof(float)));mesh.indices=static_cast<unsigned short*>(MemAlloc(mesh.triangleCount*3*sizeof(unsigned short)));
- V3 a{1,0,0},b=unit({0,.32,1}),normal=unit(cross(a,b));
- for(int i=0;i<=segments;i++)for(int edge=0;edge<2;edge++){
-  int v=i*2+edge;double angle=i*2*pi/segments;auto p=(a*std::cos(angle)+b*std::sin(angle))*(edge?1.77:1.29);
-  mesh.vertices[v*3]=float(p.x);mesh.vertices[v*3+1]=float(p.y);mesh.vertices[v*3+2]=float(p.z);
-  mesh.normals[v*3]=float(normal.x);mesh.normals[v*3+1]=float(normal.y);mesh.normals[v*3+2]=float(normal.z);
-  mesh.texcoords[v*2]=float(edge);mesh.texcoords[v*2+1]=float(i)/segments;
- }
- for(int i=0;i<segments;i++){int k=i*6;unsigned short a=static_cast<unsigned short>(i*2);for(auto index:{a,static_cast<unsigned short>(a+2),static_cast<unsigned short>(a+1),static_cast<unsigned short>(a+1),static_cast<unsigned short>(a+2),static_cast<unsigned short>(a+3)})mesh.indices[k++]=index;}
- UploadMesh(&mesh,false);return mesh;
-}
 Mesh globe(const Planet&p,int lon=192,int lat=96){Mesh mesh{};mesh.vertexCount=(lon+1)*(lat+1);mesh.triangleCount=lon*lat*2;
   mesh.vertices=static_cast<float*>(MemAlloc(mesh.vertexCount*3*sizeof(float)));
   mesh.normals=static_cast<float*>(MemAlloc(mesh.vertexCount*3*sizeof(float)));
@@ -155,7 +142,7 @@ bool Renderer::init(GraphicsQuality initialQuality){
  groundShader.locs[SHADER_LOC_MAP_OCCLUSION]=GetShaderLocation(groundShader,"sunShadowTexture");
  for(auto shader:{world,groundShader,cloud})shader.locs[SHADER_LOC_MAP_ALBEDO]=GetShaderLocation(shader,"surfaceTexture");
  for(auto shader:{world,groundShader})shader.locs[SHADER_LOC_MAP_ROUGHNESS]=GetShaderLocation(shader,"geologyTexture");
- ringModel=LoadModelFromMesh(annulus());ringModel.materials[0].shader=ringShader;
+ ringModel=LoadModelFromMesh(planetRingMesh(lowGraphics?256:extremeGraphics?768:512,lowGraphics?24:extremeGraphics?64:48));ringModel.materials[0].shader=ringShader;
  for(auto shader:{sky,world,groundShader,atmo,cloud,cloudResolve,ringShader,aurora,blur,post,supersampleResolve,cockpitShader,structure,surfaceBake,geologyBake,detailBake,planetDepth,sunDepth,dust,minorShader,minorBake})if(shader.id==0||shader.id==rlGetShaderIdDefault())return false;
  // Set wrapping before filtering: raylib resets anisotropy on parameter
  // changes. Trilinear min/mag comes first, then 16x anisotropy last.

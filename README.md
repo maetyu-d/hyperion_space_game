@@ -1,4 +1,4 @@
-# HYPERION 3.71
+# HYPERION 3.72
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,19 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Planet ring display audit in 3.72
+
+Planet rings now subdivide across their width as well as around their
+circumference. Curved-space projection therefore follows the individual bands
+instead of stretching them across a single wide triangle. Low, High and Extreme
+use progressively finer meshes; the colours, gaps and translucent material stay
+the same.
+
+A dedicated native ring audit checks oblique and close views against a dense
+reference, verifies near/far ring occlusion from both sides of the planet, and
+captures edge-on, psychedelic, CGA and EGA views. The previous 3.71 app is
+preserved under `releases/`.
 
 ## Graphics display audit in 3.71
 

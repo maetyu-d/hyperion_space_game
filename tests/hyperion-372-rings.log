@@ -1,0 +1,104 @@
+ring sampling 0 legacy 1.5729 corrected 0.0122832
+ring sampling 1 legacy 0.140646 corrected 0.0054541
+ring sampling 2 legacy 0.502956 corrected 0.0138398
+ring sampling 3 legacy 0.677559 corrected 0.0559687
+ring occlusion -1 hidden 1280 front 7306 leaks 0 missing 0
+ring occlusion 1 hidden 1280 front 7306 leaks 0 missing 0
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / low graphics / spectral silk / auroras / 3D cockpit / 1728x1080
+above-flat brightness 1.08442e+08 coloured 319123
+below-flat brightness 1.20463e+08 coloured 332856
+edge-flat brightness 9.81152e+07 coloured 276151
+above-curved brightness 1.07063e+08 coloured 300398
+close-curved brightness 1.26029e+08 coloured 342862
+below-curved brightness 1.23402e+08 coloured 344661
+Sun shadow cache: 0 updates / 0 active frames
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Weather depth: R32F / matched terrain / 1920x1200
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1920x1200
+psychedelic brightness 2.28907e+08 coloured 525873
+Sun shadow cache: 0 updates / 0 active frames
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / low graphics / spectral silk / auroras / 3D cockpit / 1728x1080
+cga brightness 1.32604e+07 coloured 20489
+ega brightness 9.02904e+06 coloured 21629
+Sun shadow cache: 0 updates / 0 active frames
+[
+  {
+    "colouredPixels": 319123,
+    "curvature": 0.0,
+    "quality": "low",
+    "scene": "above-flat",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 332856,
+    "curvature": 0.0,
+    "quality": "low",
+    "scene": "below-flat",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 276151,
+    "curvature": 0.0,
+    "quality": "low",
+    "scene": "edge-flat",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 300398,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "above-curved",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 342862,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "close-curved",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 344661,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "below-curved",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 525873,
+    "curvature": 1.0,
+    "quality": "high",
+    "scene": "psychedelic",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 20489,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "cga",
+    "wireframe": true
+  },
+  {
+    "colouredPixels": 21629,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "ega",
+    "wireframe": true
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "version": "3.72.0",
+  "binarySHA256": "c435bfec838d32767eb5c94a7b769ceb3de62e02021a2c66b42a68e358f06d3c",
+  "cpuSuitesPassed": 44,
+  "ringViewsPassed": 9,
+  "denseRingReferenceComparisonsPassed": 4,
+  "ringOcclusionAuditsPassed": 2,
+  "minimumBandErrorReductionPercent": 91.7396442881439,
+  "maximumBandErrorReductionPercent": 99.21907159048506,
+  "ringLeaks": 0,
+  "missingNearRingPixels": 0,
+  "curvedSpaceScenariosPassed": 16,
+  "installedHighStandardPassed": true,
+  "installedExtremeEGAPassed": true,
+  "offPalettePixels": 0,
+  "playerPreferencesUnchanged": true,
+  "auditsUseNoSaveScenes": true,
+  "runningSessionKeptOpen": true,
+  "previousApp": "releases/Hyperion 3.71.app"
+}

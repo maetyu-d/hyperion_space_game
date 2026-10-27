@@ -1,0 +1,36 @@
+[
+  {
+    "correctedMeanRGBAError": 0.012283203125,
+    "legacyMeanRGBAError": 1.5728974609375,
+    "scene": 0
+  },
+  {
+    "correctedMeanRGBAError": 0.0054541015625,
+    "legacyMeanRGBAError": 0.140646484375,
+    "scene": 1
+  },
+  {
+    "correctedMeanRGBAError": 0.01383984375,
+    "legacyMeanRGBAError": 0.5029560546875,
+    "scene": 2
+  },
+  {
+    "correctedMeanRGBAError": 0.05596875,
+    "legacyMeanRGBAError": 0.67755859375,
+    "scene": 3
+  },
+  {
+    "farRingPixelsHidden": 1280,
+    "missingNearRingPixels": 0,
+    "nearRingPixelsVisible": 7306,
+    "ringLeaks": 0,
+    "side": -1
+  },
+  {
+    "farRingPixelsHidden": 1280,
+    "missingNearRingPixels": 0,
+    "nearRingPixelsVisible": 7306,
+    "ringLeaks": 0,
+    "side": 1
+  }
+]

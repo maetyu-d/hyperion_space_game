@@ -1,0 +1,65 @@
+[
+  {
+    "colouredPixels": 319123,
+    "curvature": 0.0,
+    "quality": "low",
+    "scene": "above-flat",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 332856,
+    "curvature": 0.0,
+    "quality": "low",
+    "scene": "below-flat",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 276151,
+    "curvature": 0.0,
+    "quality": "low",
+    "scene": "edge-flat",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 300398,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "above-curved",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 342862,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "close-curved",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 344661,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "below-curved",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 525873,
+    "curvature": 1.0,
+    "quality": "high",
+    "scene": "psychedelic",
+    "wireframe": false
+  },
+  {
+    "colouredPixels": 20489,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "cga",
+    "wireframe": true
+  },
+  {
+    "colouredPixels": 21629,
+    "curvature": 1.0,
+    "quality": "low",
+    "scene": "ega",
+    "wireframe": true
+  }
+]

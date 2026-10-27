@@ -1,0 +1,370 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Weather depth: R32F / matched terrain / 1920x1200
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1920x1200
+Weather depth: R32F / matched terrain / 1920x1200
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1920x1200
+Sun shadow cache: 0 updates / 0 active frames
+Sun shadow cache: 0 updates / 0 active frames
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / low graphics / spectral silk / auroras / 3D cockpit / 1728x1080
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / low graphics / spectral silk / auroras / 3D cockpit / 1728x1080
+Sun shadow cache: 0 updates / 0 active frames
+Sun shadow cache: 0 updates / 0 active frames
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Weather depth: R32F / matched terrain / 1920x1200
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1920x1200
+Sun shadow cache: 1 updates / 2 active frames
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1728x1080
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / low graphics / spectral silk / auroras / 3D cockpit / 1728x1080
+Sun shadow cache: 1 updates / 2 active frames
+[
+  {
+    "centreVariance": 1787.1024454025455,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 2,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "trade-fold-high",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 1101.9793806996229,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 2,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "trade-fold-cga",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": true
+  },
+  {
+    "centreVariance": 394.28580897534994,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 1,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": 5,
+    "quality": "high",
+    "scene": "nil-pocket-high",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 4667.120856286381,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 1,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": 5,
+    "quality": "high",
+    "scene": "nil-pocket-cga",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": true
+  },
+  {
+    "centreVariance": 816.3350327043017,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 1,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "low",
+    "scene": "crossing-before",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 816.5264566226965,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": 2.9566138599537037,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 1,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 1,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "low",
+    "scene": "crossing-after",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 4218.837753681186,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "ordinary-flat",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 6432.526048287184,
+    "comparisonError": 31.01699826388889,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 1.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "ordinary-curved",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 4685.561552470019,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 1.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "ordinary-cga",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": true
+  },
+  {
+    "centreVariance": 1851.9535588321785,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 1.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": true,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "ordinary-ega",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": true
+  },
+  {
+    "centreVariance": 741.1720220392344,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 1.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "ordinary-psychedelic",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 1102.7344628695246,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "close-flat",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 1102.7344628695246,
+    "comparisonError": 0.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 0.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "close-curved",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 6345.928265675853,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 1.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": 0.0,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 2,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "low",
+    "scene": "ordinary-low",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 3.7023448040503126,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 1.0,
+    "curvedEffectDifference": -1.0,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": -1236.1370413575414,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 0,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "low",
+    "scene": "curved-effect-baseline",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  },
+  {
+    "centreVariance": 15.140659396337469,
+    "comparisonError": -1.0,
+    "crossingMeanAbsoluteError": -1.0,
+    "curvature": 1.0,
+    "curvedEffectDifference": 2.792236328125,
+    "destinationViews": 0,
+    "ega": false,
+    "flatEffectForward": -1236.1370413575414,
+    "gpuProjectionErrorKm": 0.19501811684327552,
+    "gpuRasterErrorPixels": 0.06878885429704269,
+    "mouths": 0,
+    "nearMeshDifferencePixels": 0,
+    "nilBody": -1,
+    "quality": "low",
+    "scene": "curved-effect-visible",
+    "skyDirectionError": 1.4355806879332947e-07,
+    "sunGlareLeak": 0,
+    "wireframe": false
+  }
+]
