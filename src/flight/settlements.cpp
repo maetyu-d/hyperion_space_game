@@ -281,7 +281,7 @@ Renderer::BrokenStructure Renderer::buildBrokenStructure(const StructureRemains&
  for(int cell=0;cell<int(fracture.parts.size());cell++){const auto& part=fracture.parts[cell];if(part.vertices.empty())continue;asset.indices.push_back(cell);Builder m;auto pivot=part.bounds.centre();for(const auto& v:part.vertices){auto p=v.position-pivot;for(double n:{p.x,p.y,p.z})m.vertices.push_back(float(n));for(double n:{v.normal.x,v.normal.y,v.normal.z})m.normals.push_back(float(n));for(float n:v.uv)m.uv.push_back(n);for(auto n:v.colour)m.colours.push_back(n);}
   auto model=m.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;
   asset.parts.push_back(model);asset.bounds.push_back(part.bounds);asset.triangles+=int(part.vertices.size()/3);asset.caps+=part.capTriangles;
-  auto inside=architecture::fractureInterior(part,shape.seed^uint32_t(cell*997),lowGraphics?2:6);Model detail{};if(!inside.vertices.empty()){for(size_t i=0;i<inside.vertices.size();i+=3){inside.vertices[i]-=float(pivot.x);inside.vertices[i+1]-=float(pivot.y);inside.vertices[i+2]-=float(pivot.z);}detail=inside.model(structure);detail.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;detail.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;detail.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;}asset.interiors.push_back(detail);
+  auto inside=architecture::fractureInterior(part,shape.seed^uint32_t(cell*997),lowGraphics?2:extremeGraphics?12:6);Model detail{};if(!inside.vertices.empty()){for(size_t i=0;i<inside.vertices.size();i+=3){inside.vertices[i]-=float(pivot.x);inside.vertices[i+1]-=float(pivot.y);inside.vertices[i+2]-=float(pivot.z);}detail=inside.model(structure);detail.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;detail.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;detail.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;}asset.interiors.push_back(detail);
  }return asset;
 }
 void Renderer::prepareStructures(const Game& game){
@@ -394,7 +394,7 @@ void Renderer::drawSettlement(const Port& port,const SettlementView* view,const 
  auto& asset=it->second;double distance=length(port.position-game.ship.position),pixels=asset.radius/std::max(1.,distance)*scene.texture.height;
  structureState(structure,factionStyle(view?view->faction:0),{camera.position.x,camera.position.y,camera.position.z},sunDirection,presentation->seconds,view);
  double nearest=distance;for(auto centre:asset.detailCentres)nearest=std::min(nearest,length(centre-game.ship.position));
- asset.detail=architecture::settlementDetail(asset.detail,pixels,nearest);
+ asset.detail=architecture::settlementDetail(asset.detail,extremeGraphics?pixels*1.7:pixels,extremeGraphics?nearest*.55:nearest);
  uniform(structure,"useSunShadow",shadowActive&&shadowBody==port.planet?groundBlend:0.f);
  uniform(structure,"shadowCentre",port.planet>=0?game.planets[port.planet].centre:V3{});uniform(structure,"skyRadial",port.normal);
  uniform(structure,"structureAir",port.planet>=0?float(game.planets[port.planet].atmosphere):0.f);

@@ -6,7 +6,7 @@ struct LifeMesh {std::vector<float> positions,normals;std::vector<unsigned char>
 enum LifeMaterial : unsigned char {LifeFlesh=75,LifeShell=120,LifeMembrane=170,LifeVein=210,LifeEye=238,LifePupil=255};
 namespace life_detail {
 struct Builder {
- LifeMesh mesh;bool detailed;int part=0;
+ LifeMesh mesh;bool detailed;bool extreme=false;int part=0;
  void vertex(V3 p,V3 n,unsigned char material,double flex=0){
   for(double v:{p.x,p.y,p.z})mesh.positions.push_back(float(v));
   for(double v:{n.x,n.y,n.z})mesh.normals.push_back(float(v));
@@ -14,13 +14,13 @@ struct Builder {
  }
  void face(V3 a,V3 b,V3 c,unsigned char material,double flex=0){auto n=unit(cross(b-a,c-a));for(auto p:{a,b,c})vertex(p,n,material,flex);}
  void ball(V3 c,V3 r,unsigned char material=LifeFlesh,double flex=0){
-  int around=detailed?14:10,rings=detailed?8:6;
+  int around=extreme?28:detailed?14:10,rings=extreme?16:detailed?8:6;
   auto pt=[&](int x,int y){double a=x*2*pi/around,t=y*pi/rings;return c+V3{r.x*std::sin(t)*std::cos(a),r.y*std::cos(t),r.z*std::sin(t)*std::sin(a)};};
   auto tri=[&](V3 a,V3 b,V3 d){for(auto p:{a,b,d}){auto n=p-c;vertex(p,unit({n.x/(r.x*r.x),n.y/(r.y*r.y),n.z/(r.z*r.z)}),material,flex);}};
   for(int y=0;y<rings;y++)for(int x=0;x<around;x++){auto a=pt(x,y),b=pt(x+1,y),d=pt(x,y+1),e=pt(x+1,y+1);if(y)tri(a,b,d);if(y+1<rings)tri(b,e,d);}
  }
  void tube(V3 a,V3 control,V3 b,double ra,double rb,unsigned char material=LifeFlesh,double flexibility=1,double rootFlex=0){
-  bool fine=ra<.021;int sides=fine?4:detailed?7:5,steps=fine?2:detailed?5:3;double total=length(control-a)+length(b-control);auto axisDirection=unit(b-a),reference=std::abs(axisDirection.y)>.9?V3{1,0,0}:V3{0,1,0};
+  bool fine=ra<.021;int sides=fine?(extreme?6:4):extreme?12:detailed?7:5,steps=fine?(extreme?4:2):extreme?10:detailed?5:3;double total=length(control-a)+length(b-control);auto axisDirection=unit(b-a),reference=std::abs(axisDirection.y)>.9?V3{1,0,0}:V3{0,1,0};
   auto centre=[&](double t){return a*((1-t)*(1-t))+control*(2*t*(1-t))+b*(t*t);};
   auto ring=[&](int row,int k){double t=double(row)/steps,angle=k*2*pi/sides;auto dir=unit((control-a)*(1-t)+(b-control)*t),axis=unit(cross(dir,reference)),side=unit(cross(dir,axis));auto radial=axis*std::cos(angle)+side*std::sin(angle);return std::pair<V3,V3>{centre(t)+radial*(ra+(rb-ra)*t),unit(radial-dir*((rb-ra)/std::max(.001,total)))};};
   auto emit=[&](int row,int k){auto p=ring(row,k);vertex(p.first,p.second,material,rootFlex+(flexibility-rootFlex)*row/steps);};
@@ -28,7 +28,7 @@ struct Builder {
   for(int k=0;k<sides;k++){face(a,ring(0,k+1).first,ring(0,k).first,material,rootFlex);face(b,ring(steps,k).first,ring(steps,k+1).first,material,flexibility);}
  }
  void leaf(V3 a,V3 bend,V3 b,V3 side,double width,unsigned char material=LifeMembrane){
-  int steps=detailed?6:4;side=unit(side);V3 oldL=a,oldR=a;double oldT=0;
+  int steps=extreme?12:detailed?6:4;side=unit(side);V3 oldL=a,oldR=a;double oldT=0;
   auto normal=[&](double t){return unit(cross(side,(bend-a)*(1-t)+(b-bend)*t));};
   auto tri=[&](V3 p,V3 q,V3 r,double tp,double tq,double tr,bool back){auto emit=[&](V3 v,double t){vertex(v,normal(t)*(back?-1:1),material,t);};if(back){emit(r,tr);emit(q,tq);emit(p,tp);}else{emit(p,tp);emit(q,tq);emit(r,tr);}};
   for(int j=1;j<=steps;j++){double t=double(j)/steps,w=j==steps?0:std::sin(pi*t)*width;auto c=a*((1-t)*(1-t))+bend*(2*t*(1-t))+b*(t*t),l=c+side*w,r=c-side*w;
@@ -55,8 +55,8 @@ struct Builder {
  }
 };
 }
-inline LifeMesh lifeMesh(int plan,bool flora,bool detailed=false){
- using namespace life_detail;Builder b{{},detailed};
+inline LifeMesh lifeMesh(int plan,bool flora,bool detailed=false,bool extreme=false){
+ using namespace life_detail;Builder b{{},detailed,extreme};
  auto stem=[&](V3 a,V3 mid,V3 end,double r=.06){b.tube(a,mid,end,r,r*.35,LifeShell,.75);};
  if(flora){
   // Embedded root collars, curved primary growth and separate membrane/vein tissue.

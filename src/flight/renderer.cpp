@@ -102,8 +102,7 @@ Mesh annulus(){
  for(int i=0;i<segments;i++){int k=i*6;unsigned short a=static_cast<unsigned short>(i*2);for(auto index:{a,static_cast<unsigned short>(a+2),static_cast<unsigned short>(a+1),static_cast<unsigned short>(a+1),static_cast<unsigned short>(a+2),static_cast<unsigned short>(a+3)})mesh.indices[k++]=index;}
  UploadMesh(&mesh,false);return mesh;
 }
-Mesh globe(const Planet&p){
-  constexpr int lon=192,lat=96;Mesh mesh{};mesh.vertexCount=(lon+1)*(lat+1);mesh.triangleCount=lon*lat*2;
+Mesh globe(const Planet&p,int lon=192,int lat=96){Mesh mesh{};mesh.vertexCount=(lon+1)*(lat+1);mesh.triangleCount=lon*lat*2;
   mesh.vertices=static_cast<float*>(MemAlloc(mesh.vertexCount*3*sizeof(float)));
   mesh.normals=static_cast<float*>(MemAlloc(mesh.vertexCount*3*sizeof(float)));
   mesh.texcoords=static_cast<float*>(MemAlloc(mesh.vertexCount*2*sizeof(float)));
@@ -127,7 +126,8 @@ Mesh globe(const Planet&p){
   UploadMesh(&mesh,false);return mesh;
 }
 }
-bool Renderer::init(){
+bool Renderer::init(GraphicsQuality initialQuality){
+ quality=initialQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;
  uniforms.clear();noiseTexture=lookupNoise();sky=LoadShaderFromMemory(nullptr,skyFragment);world=LoadShaderFromMemory(worldVertex,worldFragment);
  // Distant globe fragments do not carry close material registers or work.
  std::string groundVertex=worldVertex,groundFragment=worldFragment;
@@ -136,7 +136,7 @@ bool Renderer::init(){
  std::string volumeVertex=worldVertex;volumeVertex.insert(volumeVertex.find('\n')+1,"#define CLAMP_NEAR\n");
  atmo=LoadShaderFromMemory(volumeVertex.c_str(),atmoFragment);cloud=LoadShaderFromMemory(volumeVertex.c_str(),cloudFragment);ringShader=LoadShaderFromMemory(worldVertex,ringFragment);aurora=LoadShaderFromMemory(volumeVertex.c_str(),auroraFragment);
  cloudResolve=LoadShaderFromMemory(nullptr,cloudResolveFragment);
- blur=LoadShaderFromMemory(nullptr,blurFragment);post=LoadShaderFromMemory(nullptr,postFragment);cockpitShader=LoadShaderFromMemory(worldVertex,cockpitFragment);
+ blur=LoadShaderFromMemory(nullptr,blurFragment);post=LoadShaderFromMemory(nullptr,postFragment);supersampleResolve=LoadShaderFromMemory(nullptr,supersampleResolveFragment);cockpitShader=LoadShaderFromMemory(worldVertex,cockpitFragment);
  structure=LoadShaderFromMemory(worldVertex,structureFragment);minorShader=LoadShaderFromMemory(worldVertex,minorFragment);minorBake=LoadShaderFromMemory(nullptr,minorBakeFragment);
  minorShader.locs[SHADER_LOC_MAP_NORMAL]=GetShaderLocation(minorShader,"grainTexture");
  minorShader.locs[SHADER_LOC_MAP_ALBEDO]=GetShaderLocation(minorShader,"materialTexture");minorShader.locs[SHADER_LOC_MAP_ROUGHNESS]=GetShaderLocation(minorShader,"detailTexture");
@@ -152,21 +152,23 @@ bool Renderer::init(){
  for(auto shader:{world,groundShader,cloud})shader.locs[SHADER_LOC_MAP_ALBEDO]=GetShaderLocation(shader,"surfaceTexture");
  for(auto shader:{world,groundShader})shader.locs[SHADER_LOC_MAP_ROUGHNESS]=GetShaderLocation(shader,"geologyTexture");
  ringModel=LoadModelFromMesh(annulus());ringModel.materials[0].shader=ringShader;
- for(auto shader:{sky,world,groundShader,atmo,cloud,cloudResolve,ringShader,aurora,blur,post,cockpitShader,structure,surfaceBake,geologyBake,detailBake,planetDepth,sunDepth,dust,minorShader,minorBake})if(shader.id==0||shader.id==rlGetShaderIdDefault())return false;
+ for(auto shader:{sky,world,groundShader,atmo,cloud,cloudResolve,ringShader,aurora,blur,post,supersampleResolve,cockpitShader,structure,surfaceBake,geologyBake,detailBake,planetDepth,sunDepth,dust,minorShader,minorBake})if(shader.id==0||shader.id==rlGetShaderIdDefault())return false;
+ // Set wrapping before filtering: raylib resets anisotropy on parameter
+ // changes. Trilinear min/mag comes first, then 16x anisotropy last.
  // Bake/upload one field at a time so the higher resolution only needs one
  // temporary CPU image. Both fields keep a complete, repeating mip chain.
- constexpr int buildingSize=architecture::buildingTextureSize;
+ const auto profile=flightQualityProfile(quality);const int buildingSize=profile.materialWidth;
  auto loadBuildingField=[&](const std::vector<unsigned char>& pixels){
   Image image{const_cast<unsigned char*>(pixels.data()),buildingSize,buildingSize,1,PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
   auto result=LoadTextureFromImage(image);
-  if(result.id){GenTextureMipmaps(&result);SetTextureFilter(result,TEXTURE_FILTER_TRILINEAR);SetTextureWrap(result,TEXTURE_WRAP_REPEAT);}
+  if(result.id){GenTextureMipmaps(&result);SetTextureWrap(result,TEXTURE_WRAP_REPEAT);SetTextureFilter(result,TEXTURE_FILTER_TRILINEAR);if(extremeGraphics)SetTextureFilter(result,TEXTURE_FILTER_ANISOTROPIC_16X);}
   return result;
  };
- buildingTexture=loadBuildingField(architecture::bakeBuildingMaterial());if(!buildingTexture.id)return false;
+ buildingTexture=loadBuildingField(architecture::bakeBuildingMaterial(buildingSize));if(!buildingTexture.id)return false;
  std::printf("Building material storage: RGBA8 / %d / %d mip levels\n",buildingTexture.width,buildingTexture.mipmaps);
  std::array<float,4> detailMean{};
  {
-  auto pixels=architecture::bakeBuildingDetail();detailMean=architecture::bakedMaterialMean(pixels);
+  auto pixels=architecture::bakeBuildingDetail(buildingSize);detailMean=architecture::bakedMaterialMean(pixels);
   buildingDetailTexture=loadBuildingField(pixels);
  }
  if(!buildingDetailTexture.id)return false;
@@ -175,40 +177,72 @@ bool Renderer::init(){
  SetShaderValue(structure,detailMeanLoc,detailMean.data(),SHADER_UNIFORM_VEC4);
  std::printf("Building detail mean: %.5f / %.5f / %.5f / %.5f\n",detailMean[0],detailMean[1],detailMean[2],detailMean[3]);
  // These channels are material data, including alpha, so bake without blending.
- int detailSize=lowGraphics?1024:2048;detailMap=LoadRenderTexture(detailSize,detailSize);if(!detailMap.id)return false;
+ int detailSize=profile.detailWidth;detailMap=LoadRenderTexture(detailSize,detailSize);if(!detailMap.id)return false;
  BeginTextureMode(detailMap);ClearBackground(BLANK);set(detailBake,"resolution",Vector2{float(detailMap.texture.width),float(detailMap.texture.height)});rlDrawRenderBatchActive();rlDisableColorBlend();
  BeginShaderMode(detailBake);texture(detailBake,"noiseTexture",noiseTexture);DrawRectangle(0,0,detailMap.texture.width,detailMap.texture.height,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
- GenTextureMipmaps(&detailMap.texture);SetTextureFilter(detailMap.texture,TEXTURE_FILTER_TRILINEAR);SetTextureWrap(detailMap.texture,TEXTURE_WRAP_REPEAT);
- int shadowSize=lowGraphics?1024:2048;sunScene=linearTarget(shadowSize,shadowSize,PIXELFORMAT_UNCOMPRESSED_R32);
+ GenTextureMipmaps(&detailMap.texture);SetTextureWrap(detailMap.texture,TEXTURE_WRAP_REPEAT);SetTextureFilter(detailMap.texture,TEXTURE_FILTER_TRILINEAR);if(extremeGraphics)SetTextureFilter(detailMap.texture,TEXTURE_FILTER_ANISOTROPIC_16X);
+ int shadowSize=profile.shadowWidth;sunScene=linearTarget(shadowSize,shadowSize,PIXELFORMAT_UNCOMPRESSED_R32);
  SetTextureFilter(sunScene.texture,TEXTURE_FILTER_POINT);SetTextureWrap(sunScene.texture,TEXTURE_WRAP_CLAMP);
  std::printf("Sun shadow storage: %s / %d\n",sunScene.texture.format==PIXELFORMAT_UNCOMPRESSED_R32?"R32F":"disabled fallback",shadowSize);
  return noiseTexture.id!=0;
+}
+void Renderer::bakePlanetFields(const Game& g,int body,bool close){
+ const auto& p=g.planets[body];const auto profile=flightQualityProfile(quality);
+ for(auto* maps:{&surfaceMaps,&geologyMaps}){auto& previous=(*maps)[body];if(previous.id){UnloadRenderTexture(previous);previous={};}}
+  int mapWidth=close?profile.nearSurfaceWidth:p.giant?profile.giantSurfaceWidth:profile.surfaceWidth,mapHeight=mapWidth/2;auto data=linearTarget(mapWidth,mapHeight);if(!data.id)throw std::runtime_error("Planet field allocation failed");BeginTextureMode(data);ClearBackground(BLANK);set(surfaceBake,"resolution",Vector2{float(mapWidth),float(mapHeight)});set(surfaceBake,"seed",float(p.seed));set(surfaceBake,"kind",float(p.kind));set(surfaceBake,"water",float(p.water));set(surfaceBake,"generation",float(p.generation));set(surfaceBake,"worldParams",Vector4{float(p.worldSeed&65535),float(p.worldSeed>>16),float(p.landform),float(p.tectonic)});
+  rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(surfaceBake);texture(surfaceBake,"noiseTexture",noiseTexture);DrawRectangle(0,0,mapWidth,mapHeight,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
+  GenTextureMipmaps(&data.texture);SetTextureWrap(data.texture,TEXTURE_WRAP_REPEAT);SetTextureFilter(data.texture,TEXTURE_FILTER_TRILINEAR);if(extremeGraphics)SetTextureFilter(data.texture,TEXTURE_FILTER_ANISOTROPIC_16X);surfaceMaps[body]=data;
+  // The extra material field is small and mipmapped. Geological loops run
+  // once here rather than in every flight fragment, including on distant worlds.
+  int geologyWidth=close?profile.nearGeologyWidth:p.giant?profile.giantGeologyWidth:profile.geologyWidth,geologyHeight=geologyWidth/2;auto geology=linearTarget(geologyWidth,geologyHeight);
+  if(geology.id){
+   BeginTextureMode(geology);ClearBackground(BLANK);set(geologyBake,"resolution",Vector2{float(geologyWidth),float(geologyHeight)});
+   set(geologyBake,"seed",float(p.seed));set(geologyBake,"kind",float(p.kind));set(geologyBake,"water",float(p.water));set(geologyBake,"life",float(p.life));set(geologyBake,"atmosphere",float(p.atmosphere));set(geologyBake,"temperature",float(p.temperature));
+   rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(geologyBake);texture(geologyBake,"noiseTexture",noiseTexture);DrawRectangle(0,0,geologyWidth,geologyHeight,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
+   GenTextureMipmaps(&geology.texture);SetTextureWrap(geology.texture,TEXTURE_WRAP_REPEAT);SetTextureFilter(geology.texture,TEXTURE_FILTER_TRILINEAR);if(extremeGraphics)SetTextureFilter(geology.texture,TEXTURE_FILTER_ANISOTROPIC_16X);
+  }
+  geologyMaps[body]=geology;
+ if(body<int(planets.size()))for(auto* models:{&planets,&distantPlanets}){auto& material=(*models)[body].materials[0];material.maps[MATERIAL_MAP_ALBEDO].texture=data.texture;material.maps[MATERIAL_MAP_ROUGHNESS].texture=geology.texture;}
+ if(body<int(clouds.size()))clouds[body].materials[0].maps[MATERIAL_MAP_ALBEDO].texture=data.texture;
+ if(groundBody==body)groundBody=-1;
+}
+void Renderer::preparePlanetDetail(const Game& g){
+ if(!extremeGraphics||surfaceMaps.empty())return;const int next=g.nearestPlanet();if(next==extremeDetailBody)return;
+ if(extremeDetailBody>=0)bakePlanetFields(g,extremeDetailBody,false);
+ bakePlanetFields(g,next,true);extremeDetailBody=next;
+}
+bool Renderer::materialFilteringValid()const{
+#if defined(__APPLE__)
+ GLint previous=0;glGetIntegerv(GL_TEXTURE_BINDING_2D,&previous);bool valid=true;
+ auto inspect=[&](Texture2D t){
+  if(!t.id){valid=false;return;}glBindTexture(GL_TEXTURE_2D,t.id);GLint minFilter=0,magFilter=0;GLfloat anisotropy=1;
+  glGetTexParameteriv(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,&minFilter);glGetTexParameteriv(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,&magFilter);
+  if(extremeGraphics)glGetTexParameterfv(GL_TEXTURE_2D,0x84FE /* GL_TEXTURE_MAX_ANISOTROPY_EXT */,&anisotropy);
+  bool filtered=minFilter==GL_LINEAR_MIPMAP_LINEAR&&magFilter==GL_LINEAR&&(!extremeGraphics||anisotropy>=15.9f);
+  if(!filtered)std::printf("Material filter audit: texture %u / %dx%d / min %d / mag %d / anisotropy %.1f\n",t.id,t.width,t.height,minFilter,magFilter,anisotropy);
+  valid=valid&&filtered;
+ };
+ inspect(buildingTexture);inspect(buildingDetailTexture);inspect(detailMap.texture);for(const auto& map:surfaceMaps)inspect(map.texture);for(const auto& map:geologyMaps)inspect(map.texture);
+ glBindTexture(GL_TEXTURE_2D,GLuint(previous));return valid;
+#else
+ return true;
+#endif
 }
 void Renderer::rebuild(const Game& g){
  clearPortAssets();clearMinorBodies();
  for(auto* model:{&groundModel,&rockModel})if(model->meshCount){UnloadModel(*model);*model={};}groundBody=-1;
  for(auto* list:{&planets,&distantPlanets,&atmospheres,&clouds}){for(auto& model:*list)if(model.meshCount)UnloadModel(model);list->clear();}
  for(auto* maps:{&surfaceMaps,&geologyMaps}){for(auto& map:*maps)if(map.id)UnloadRenderTexture(map);maps->clear();}
- for(const auto&p:g.planets){
+ surfaceMaps.resize(g.planets.size());geologyMaps.resize(g.planets.size());extremeDetailBody=extremeGraphics?g.nearestPlanet():-1;
+ const auto profile=flightQualityProfile(quality);
+ for(int body=0;body<int(g.planets.size());body++){const auto& p=g.planets[body];
   // Static geographic fields are baked once per world. Moving silk, waves,
   // cloud advection and the lighting remain live in their original shaders.
-  int mapWidth=lowGraphics?(p.giant?1024:2048):(p.giant?1536:3072),mapHeight=mapWidth/2;auto data=linearTarget(mapWidth,mapHeight);BeginTextureMode(data);ClearBackground(BLANK);set(surfaceBake,"resolution",Vector2{float(mapWidth),float(mapHeight)});set(surfaceBake,"seed",float(p.seed));set(surfaceBake,"kind",float(p.kind));set(surfaceBake,"water",float(p.water));set(surfaceBake,"generation",float(p.generation));set(surfaceBake,"worldParams",Vector4{float(p.worldSeed&65535),float(p.worldSeed>>16),float(p.landform),float(p.tectonic)});
-  rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(surfaceBake);texture(surfaceBake,"noiseTexture",noiseTexture);DrawRectangle(0,0,mapWidth,mapHeight,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
-  GenTextureMipmaps(&data.texture);SetTextureFilter(data.texture,TEXTURE_FILTER_TRILINEAR);SetTextureWrap(data.texture,TEXTURE_WRAP_REPEAT);surfaceMaps.push_back(data);
-  // The extra material field is small and mipmapped. Geological loops run
-  // once here rather than in every flight fragment, including on distant worlds.
-  int geologyWidth=lowGraphics?(p.giant?1024:1536):(p.giant?1536:2048),geologyHeight=geologyWidth/2;auto geology=linearTarget(geologyWidth,geologyHeight);
-  if(geology.id){
-   BeginTextureMode(geology);ClearBackground(BLANK);set(geologyBake,"resolution",Vector2{float(geologyWidth),float(geologyHeight)});
-   set(geologyBake,"seed",float(p.seed));set(geologyBake,"kind",float(p.kind));set(geologyBake,"water",float(p.water));set(geologyBake,"life",float(p.life));set(geologyBake,"atmosphere",float(p.atmosphere));set(geologyBake,"temperature",float(p.temperature));
-   rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(geologyBake);texture(geologyBake,"noiseTexture",noiseTexture);DrawRectangle(0,0,geologyWidth,geologyHeight,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
-   GenTextureMipmaps(&geology.texture);SetTextureFilter(geology.texture,TEXTURE_FILTER_TRILINEAR);SetTextureWrap(geology.texture,TEXTURE_WRAP_REPEAT);
-  }
-  geologyMaps.push_back(geology);
-  auto model=LoadModelFromMesh(globe(p));material(model,world,noiseTexture);model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture=data.texture;model.materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture=geology.texture;planets.push_back(model);
+  bakePlanetFields(g,body,body==extremeDetailBody);auto data=surfaceMaps[body],geology=geologyMaps[body];
+  auto model=LoadModelFromMesh(globe(p,profile.globeLongitude,profile.globeLatitude));material(model,world,noiseTexture);model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture=data.texture;model.materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture=geology.texture;planets.push_back(model);
   auto distant=LoadModelFromMesh(GenMeshSphere(float(p.radius+6),24,48));material(distant,world,noiseTexture);distant.materials[0].maps[MATERIAL_MAP_ALBEDO].texture=data.texture;distant.materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture=geology.texture;distantPlanets.push_back(distant);
-  auto air=LoadModelFromMesh(GenMeshSphere(float(p.radius+40),64,96));material(air,atmo,noiseTexture);atmospheres.push_back(air);
-  auto weather=LoadModelFromMesh(GenMeshSphere(float(p.radius+48),64,96));material(weather,cloud,noiseTexture);weather.materials[0].maps[MATERIAL_MAP_ALBEDO].texture=data.texture;clouds.push_back(weather);
+  auto air=LoadModelFromMesh(GenMeshSphere(float(p.radius+40),extremeGraphics?128:64,extremeGraphics?192:96));material(air,atmo,noiseTexture);atmospheres.push_back(air);
+  auto weather=LoadModelFromMesh(GenMeshSphere(float(p.radius+48),extremeGraphics?128:64,extremeGraphics?192:96));material(weather,cloud,noiseTexture);weather.materials[0].maps[MATERIAL_MAP_ALBEDO].texture=data.texture;clouds.push_back(weather);
  }
  detailedBodies.assign(g.planets.size(),-1);worldKey=g.worldKey;shadowBody=-1;
 }
@@ -252,7 +286,7 @@ void Renderer::shutdown(){
  for(auto* target:{&scene,&composite,&opaqueScene,&auroraScene,&cloudScene,&bloom[0],&bloom[1]})if(target->id){UnloadRenderTexture(*target);*target={};}
  for(auto* list:{&planets,&distantPlanets,&atmospheres,&clouds}){for(auto& model:*list)if(model.meshCount)UnloadModel(model);list->clear();}
  for(auto* model:{&ringModel,&cockpitModel,&groundModel,&rockModel})if(model->meshCount){UnloadModel(*model);*model={};}
- for(auto shader:{sky,world,groundShader,atmo,cloud,cloudResolve,ringShader,aurora,blur,post,cockpitShader,structure,surfaceBake,geologyBake,detailBake,planetDepth,sunDepth,dust,minorShader,minorBake})UnloadShader(shader);if(noiseTexture.id)UnloadTexture(noiseTexture);opaqueDepth={};uniforms.clear();
+ for(auto shader:{sky,world,groundShader,atmo,cloud,cloudResolve,ringShader,aurora,blur,post,supersampleResolve,cockpitShader,structure,surfaceBake,geologyBake,detailBake,planetDepth,sunDepth,dust,minorShader,minorBake})UnloadShader(shader);if(noiseTexture.id)UnloadTexture(noiseTexture);opaqueDepth={};uniforms.clear();
 }
 void Renderer::drawRings(const Planet&p,double now){
  set(ringShader,"centre",p.centre);set(ringShader,"eye",V3{camera.position.x,camera.position.y,camera.position.z});set(ringShader,"lightDirection",sunDirection);
@@ -296,7 +330,7 @@ void Renderer::drawClouds(const Game& g,const std::vector<int>& visible,V3 eye){
   set(cloud,"centre",body.centre);set(cloud,"eye",eye);set(cloud,"lightDirection",sunDirection);
   set(cloud,"weatherHours",float(presentation?presentation->hours:g.time/55));set(cloud,"weatherSeed",float(body.worldSeed%8191)*.013f);
   set(cloud,"time",float(visualTime));set(cloud,"seed",float(body.seed));set(cloud,"water",float(body.water));set(cloud,"kind",float(body.kind));
-  set(cloud,"ringed",i==2||body.giant?1.f:0.f);set(cloud,"radius",float(body.radius));set(cloud,"atmosphere",float(body.atmosphere));set(cloud,"sampleCount",reduced?10.f:lowGraphics?16.f:24.f);
+  set(cloud,"ringed",i==2||body.giant?1.f:0.f);set(cloud,"radius",float(body.radius));set(cloud,"atmosphere",float(body.atmosphere));set(cloud,"sampleCount",float(reduced?10:flightQualityProfile(quality).cloudSamples));
   set(cloud,"resolution",Vector2{float(cloudScene.texture.width),float(cloudScene.texture.height)});
   set(cloud,"useSurface",surfaceMaps[i].texture.format==PIXELFORMAT_UNCOMPRESSED_R16G16B16A16?1.f:0.f);
   clouds[i].materials[0].maps[MATERIAL_MAP_METALNESS].texture=opaqueDepth;DrawModel(clouds[i],vec(body.centre),1,WHITE);
@@ -380,18 +414,22 @@ void Renderer::drawMotion(const Game& g){
  }
  rlEnableDepthMask();EndBlendMode();
 }
-void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,bool lowGraphicsMode,bool psychedelicLook){
+void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,GraphicsQuality graphicsQuality,bool psychedelicLook){
  if(g.planets.empty()||g.ports.empty())return;
- if(lowGraphics!=lowGraphicsMode){shutdown();lowGraphics=lowGraphicsMode;worldKey.clear();bodiesKey.clear();cockpitWidth=cockpitHeight=0;groundBody=shadowBody=-1;if(!init())throw std::runtime_error("Graphics quality initialization failed");}
+ if(quality!=graphicsQuality){shutdown();quality=graphicsQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;worldKey.clear();bodiesKey.clear();cockpitWidth=cockpitHeight=0;groundBody=shadowBody=-1;if(!init(quality))throw std::runtime_error("Graphics quality initialization failed");}
  for(auto shader:{sky,world,groundShader,cloud,post})set(shader,"lowGraphics",lowGraphics?1.f:0.f);
+ const auto profile=flightQualityProfile(quality);
  psychedelic=psychedelicLook;
  for(auto shader:{sky,world,groundShader,cloud,atmo,ringShader,aurora,structure,cockpitShader,post})set(shader,"psychedelic",psychedelic?1.f:0.f);
+ for(auto shader:{world,groundShader,cloud,atmo,aurora,structure})set(shader,"extremeQuality",extremeGraphics?1.f:0.f);
+ set(atmo,"integrationSamples",float(reducedEffects?8:profile.atmosphereSamples));set(atmo,"sunSamples",float(reducedEffects?3:profile.atmosphereSunSamples));set(aurora,"integrationSamples",float(reducedEffects?6:profile.auroraSamples));
  presentation=&sceneView;reduced=reducedEffects;showCockpit=cockpitVisible;speed=g.speed();visualTime=fixedVisualTime>=0?fixedVisualTime:GetTime();
  if(worldKey!=g.worldKey){std::string key=g.star;for(const auto& p:g.planets)key+='|'+p.name+std::to_string(p.seed)+std::to_string(p.radius);
   if(key!=bodiesKey){rebuild(g);bodiesKey=key;}else{worldKey=g.worldKey;groundBody=-1;}
  }
- int renderH=std::min(reduced?810:lowGraphics?1080:1440,GetRenderHeight()),renderW=int(double(GetRenderWidth())*renderH/GetRenderHeight());
- const int cloudDivisor=(reduced||lowGraphics)?3:2;
+ preparePlanetDetail(g);
+ const auto renderSize=flightRenderSize(quality,reduced,GetRenderWidth(),GetRenderHeight());const int renderH=renderSize.height,renderW=renderSize.width;
+ const int cloudDivisor=reduced?3:profile.cloudDivisor,auroraDivisor=reduced?2:profile.auroraDivisor;
  if(scene.texture.width!=renderW||scene.texture.height!=renderH||cloudScene.texture.width!=std::max(1,renderW/cloudDivisor)){
  for(auto* target:{&scene,&composite,&opaqueScene,&auroraScene,&cloudScene,&bloom[0],&bloom[1]})if(target->id)UnloadRenderTexture(*target);
   scene=linearTarget(renderW,renderH);composite=linearTarget(renderW,renderH);opaqueScene=linearTarget(renderW,renderH,PIXELFORMAT_UNCOMPRESSED_R32);
@@ -399,14 +437,14 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
   if(!opaqueScene.id||opaqueScene.texture.format!=PIXELFORMAT_UNCOMPRESSED_R32)throw std::runtime_error("Flight weather distance target could not be allocated");
   opaqueDepth=opaqueScene.texture;SetTextureFilter(opaqueDepth,TEXTURE_FILTER_POINT);SetTextureWrap(opaqueDepth,TEXTURE_WRAP_CLAMP);
   std::printf("Weather depth: R32F / matched terrain / %dx%d\n",renderW,renderH);
-  auroraScene=linearTarget(std::max(1,renderW/2),std::max(1,renderH/2));
+  auroraScene=linearTarget(std::max(1,renderW/auroraDivisor),std::max(1,renderH/auroraDivisor));
   cloudScene=linearTarget(std::max(1,renderW/cloudDivisor),std::max(1,renderH/cloudDivisor));
   for(auto& target:bloom)target=linearTarget(std::max(1,renderW/3),std::max(1,renderH/3));
   hdr=scene.texture.format==PIXELFORMAT_UNCOMPRESSED_R16G16B16A16;
 #if defined(__APPLE__)
   GLint depthBits=0;glBindRenderbuffer(GL_RENDERBUFFER,scene.depth.id);glGetRenderbufferParameteriv(GL_RENDERBUFFER,GL_RENDERBUFFER_DEPTH_SIZE,&depthBits);glBindRenderbuffer(GL_RENDERBUFFER,0);std::printf("Flight depth buffer: %d bits\n",int(depthBits));
 #endif
-  std::printf("Flight renderer: %s / %s graphics / spectral silk / auroras / 3D cockpit / %dx%d\n",hdr?"HDR16F":"LDR fallback",lowGraphics?"LOW":"HIGH",renderW,renderH);
+  std::printf("Flight renderer: %s / %s graphics / spectral silk / auroras / 3D cockpit / %dx%d\n",hdr?"HDR16F":"LDR fallback",graphicsQualityName(quality),renderW,renderH);
   for(auto* target:{&scene,&composite,&auroraScene,&cloudScene,&bloom[0],&bloom[1]})SetTextureFilter(target->texture,TEXTURE_FILTER_BILINEAR);
  }
  // The ship position is its landing-gear origin; the pilot sits above the pad.
@@ -566,7 +604,11 @@ void Renderer::drawCockpit(const Game& g){
  DrawModel(cockpitModel,kick,1,WHITE);EndMode3D();rlSetClipPlanes(1.,60000.);
 }
 void Renderer::present(float width,float height){
- if(composite.id)DrawTexturePro(composite.texture,{0,0,float(composite.texture.width),-float(composite.texture.height)},{0,0,width,height},{0,0},0,WHITE);
+ if(!composite.id)return;
+ if(extremeGraphics&&!reduced){
+  set(supersampleResolve,"texel",Vector2{1.f/composite.texture.width,1.f/composite.texture.height});BeginShaderMode(supersampleResolve);
+  DrawTexturePro(composite.texture,{0,0,float(composite.texture.width),-float(composite.texture.height)},{0,0,width,height},{0,0},0,WHITE);EndShaderMode();
+ }else DrawTexturePro(composite.texture,{0,0,float(composite.texture.width),-float(composite.texture.height)},{0,0,width,height},{0,0},0,WHITE);
 
 }
 Vector2 Renderer::project(V3 p,float width,float height)const{return GetWorldToScreenEx(vec(p),camera,int(width),int(height));}

@@ -47,6 +47,14 @@ float nearSunVisibility(vec3 p,vec3 N,vec3 L){
  float c=step(depth+dot(gradient,base+vec2(0.,d.y)-q.xy),texture(sunShadowTexture,base+vec2(0.,d.y)).r);
  float e=step(depth+dot(gradient,base+d-q.xy),texture(sunShadowTexture,base+d).r);
  float visibility=mix(mix(a,b,f.x),mix(c,e,f.x),f.y);
+ if(extremeQuality>.5){
+  float sum=0.,total=0.;
+  for(int y=-2;y<=2;y++)for(int x=-2;x<=2;x++){
+   vec2 tap=(floor((q.xy+vec2(x,y)*d)*size)+.5)/size;float weight=exp(-float(x*x+y*y)*.48);
+   sum+=step(depth+dot(gradient,tap-q.xy),texture(sunShadowTexture,tap).r)*weight;total+=weight;
+  }
+  visibility=sum/total;
+ }
  float edge=smoothstep(.015,.085,min(min(q.x,q.y),min(1.-q.x,1.-q.y)));
  return mix(1.,visibility,useSunShadow*edge);
 }

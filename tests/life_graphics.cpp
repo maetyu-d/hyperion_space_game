@@ -55,6 +55,10 @@ int main(){try{
    for(size_t i=0;i<vertices[detailed];i+=3){V3 p[3],n{};for(int k=0;k<3;k++){p[k]={m.positions[(i+k)*3],m.positions[(i+k)*3+1],m.positions[(i+k)*3+2]};n+=V3{m.normals[(i+k)*3],m.normals[(i+k)*3+1],m.normals[(i+k)*3+2]};}auto face=cross(p[1]-p[0],p[2]-p[0]);require(length(face)>1e-10,"no degenerate anatomy triangles");if(dot(unit(face),unit(n))<=.01)std::cerr<<"Mesh "<<flora<<"/"<<plan<<"/"<<detailed<<" triangle "<<i/3<<" normal agreement "<<dot(unit(face),unit(n))<<"\n";require(dot(unit(face),unit(n))>.01,"surface winding agrees with outward tissue normals");}
    require(tissues.size()>=2&&flex.size()>3,"anatomy contains distinct tissue and graded appendage movement");
   }
+  auto extreme=lifeMesh(plan,flora,true,true);require(extreme.positions.size()>vertices[1]*3,"Extreme anatomy must refine the existing body");
+  V3 extremeBounds[2]={{1e9,1e9,1e9},{-1e9,-1e9,-1e9}};
+  for(size_t i=0;i<extreme.positions.size();i+=3){V3 p{extreme.positions[i],extreme.positions[i+1],extreme.positions[i+2]},n{extreme.normals[i],extreme.normals[i+1],extreme.normals[i+2]};require(finite(p)&&finite(n)&&std::abs(length(n)-1)<1e-5,"Extreme anatomical refinement has invalid normals/positions");extremeBounds[0]={std::min(extremeBounds[0].x,p.x),std::min(extremeBounds[0].y,p.y),std::min(extremeBounds[0].z,p.z)};extremeBounds[1]={std::max(extremeBounds[1].x,p.x),std::max(extremeBounds[1].y,p.y),std::max(extremeBounds[1].z,p.z)};}
+  require(length(extremeBounds[0]-bounds[1][0])<.18&&length(extremeBounds[1]-bounds[1][1])<.18,"Extreme refinement changes the creature's canonical footprint");
   require(vertices[1]>vertices[0],"near anatomy has more geometric detail than distant anatomy");
   require(length(bounds[0][0]-bounds[1][0])<.18&&length(bounds[0][1]-bounds[1][1])<.18,"LOD transitions preserve the same body footprint and silhouette");
  }

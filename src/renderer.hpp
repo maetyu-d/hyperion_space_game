@@ -15,7 +15,7 @@ inline Vector2 uiMouse(){return uiPoint(GetMousePosition());}
 struct UI : StrategyWorkspace {
  WorkspaceMemory workspaceMemory;
  ModeHandoff handoff;
- bool enhancedHUD=false,lowGraphics=false,psychedelic=false;
+ bool enhancedHUD=false,psychedelic=false;GraphicsQuality graphicsQuality=GraphicsQuality::High;
  bool help=false,settings=false,paused=false,sound=false,reduced=false;
  bool menu=false,sections=false;int destinationFilter=0,divePage=0;
  bool auditInterface=false;std::map<std::string,Rectangle> auditButtons;
@@ -60,6 +60,7 @@ class Renderer {
 public:
  hyperion::flight::Renderer::BreakupStats flightBreakupStats()const{return flightGraphics.breakupStats();}
  hyperion::flight::Renderer::QualityStats flightQualityStats()const{return flightGraphics.qualityStats();}
+ bool flightMaterialFilteringValid()const{return flightGraphics.materialFilteringValid();}
  void hideWildlifeForAudit(bool hidden){auditHideWildlife=hidden;}
  int flightMinorDetailFields()const{return flightGraphics.minorDetailFields();}
  int flightMinorMaterialWidth(const hyperion::flight::Game& g,int index)const{return flightGraphics.minorMaterialWidth(g,index);}
@@ -75,7 +76,7 @@ public:
  bool exportFlightDetail(const std::string& path)const{return flightGraphics.exportDetail(path);}
  hyperion::flight::GeometryStats flightArchitectureStats()const{return flightGraphics.architectureStats();}
  bool exportFlightShadow(const std::string& path)const{return flightGraphics.exportShadow(path);}
- bool init();void close();bool ready()const;
+ bool init(GraphicsQuality initialQuality=GraphicsQuality::High);void close();bool ready()const;
  void draw(Game&,UI&,double dt);bool screenshot(const std::string& path,bool centreCrop=false);bool makeIcon(const std::string& path);void pointer(Game&,UI&,Vector2,bool doubleClick);
  float oceanX()const{return UILayout::worldRight(w,ui->panel)*.48f;}float oceanY()const{return std::min(h*.46f,110.f+float(game->s.depth*.35*ui->oceanZoom));}
 };

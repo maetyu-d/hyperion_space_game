@@ -8,7 +8,7 @@
 // The same bounded, direction-anchored silk field colours space and materials.
 // It has no longitude seam and never moves geography or flight instruments.
 #define PRISM_PIGMENT_GLSL R"GLSL(
-uniform float psychedelic;
+uniform float psychedelic,extremeQuality;
 vec3 pigment(float h){return pow(.5+.5*cos(6.283185*(h+vec3(0.,.68,.34))),vec3(psychedelic>.5?1.85:1.35));}
 float thread(float p,float width){float span=fwidth(p),aa=clamp(span*.8,.002,.75),resolved=1.-smoothstep(.65,1.75,span);float line=1.-smoothstep(width,width+aa,abs(sin(p)));float coverage=2.*asin(clamp(width,0.,1.))/3.14159265;return mix(coverage,line,resolved);}
 vec3 silk(vec3 direction,float phase,float seconds){
@@ -465,7 +465,7 @@ void main(){
  // rather than evaluating three cosines and powers at every volume step.
  float cloudPalette=psychedelic>.5?dot(normalize(o+d*weatherDistance),vec3(.53,.71,.46))*.96:0.;
  vec3 opalLow=pigment(seed*.031+mu*.15+cloudPalette),opalMid=pigment(seed*.031+mu*.15+cloudPalette+.18),opalHigh=pigment(seed*.031+mu*.15+cloudPalette+.36);
- for(int i=0;i<24;i++){
+ for(int i=0;i<96;i++){
   if(float(i)>=count||transmission<.012)break;
   float along=(float(i)+.45+jitter*.10)*stepSize,t=along<first?start+along:bStart+along-first;
   vec3 p=o+d*t,n=normalize(p);float height=length(p)-radius,h=(height-22.)/18.;
@@ -480,6 +480,7 @@ void main(){
     h=(height-22.)/(11.+cover*8.+billow*4.);
     float profile=smoothstep(0.,.13,h)*(1.-smoothstep(.48,1.,h));
     float erosion=(1.-billow)*.39+(1.-detail)*.12;
+    if(extremeQuality>.5&&resolved>.05)erosion+=(noise(q*4.13+37.)-.5)*.045*resolved;
     density=max(0.,cover-erosion)*1.9*profile;
    }
   }
@@ -495,6 +496,12 @@ void main(){
   float top=clamp((40.-height)/18.,0.,1.);
   float lightBillow=resolved>.005?mix(.5,noise(q+L*.65),resolved):.5;float gradient=clamp(.5+(billow-lightBillow)*2.4,0.,1.);
   float selfShadow=exp(-cover*top*1.2/sunHeight)*(.22+.78*gradient);
+  if(extremeQuality>.5&&day>.01){
+   float optical=0.;for(int shadowStep=1;shadowStep<=4;shadowStep++){
+    float obscurer=noise(q+L*(float(shadowStep)*.8));optical+=max(0.,cover-(1.-obscurer)*.39)*top;
+   }
+   selfShadow*=exp(-optical*.24);
+  }
   // Powder scattering brightens the thin banks, while dense cores retain
   // their shadow. This reuses the existing density field and light sample.
   float powder=1.-exp(-density*stepSize*.28);
@@ -565,7 +572,7 @@ in vec4 tint;
 out vec4 finalColor;
 uniform vec3 centre,eye,lightDirection;
 uniform vec3 viewForward;uniform vec2 resolution;uniform sampler2D opaqueDepth;
-uniform float seed,atmosphere,kind,radius;
+uniform float seed,atmosphere,kind,radius,integrationSamples,sunSamples;
 vec2 sphere(vec3 o,vec3 d,float r){float b=dot(o,d);vec3 perpendicular=cross(o,d);float h=r*r-dot(perpendicular,perpendicular);if(h<0.)return vec2(-1e8);h=sqrt(h);return vec2(-b-h,-b+h);}
 )GLSL" PRISM_PIGMENT_GLSL R"GLSL(
 void main(){
@@ -574,13 +581,14 @@ void main(){
  float start=max(0.,span.x),end=span.y;vec2 ground=sphere(o,d,radius+5.);if(ground.x>0.)end=min(end,ground.x);
  float opaque=texture(opaqueDepth,gl_FragCoord.xy/resolution).r;
  if(opaque>0.)end=min(end,opaque/max(dot(d,viewForward),.0001));if(end<=start)discard;
- float stepSize=(end-start)/8.,optical=0.;vec3 sum=vec3(0.);vec3 beta=vec3(.0058,.0135,.029)*clamp(atmosphere,.12,1.4);
+ float stepSize=(end-start)/integrationSamples,optical=0.;vec3 sum=vec3(0.);vec3 beta=vec3(.0058,.0135,.029)*clamp(atmosphere,.12,1.4);
  if(kind>3.5&&kind<4.5)beta=vec3(.018,.026,.008);if(kind>4.5)beta=vec3(.022,.015,.009);
  float mu=dot(d,L),rayleigh=.05968*(1.+mu*mu),mie=.012*pow(max(.02,1.-.76*mu),-1.5);
- for(int i=0;i<8;i++){
+ for(int i=0;i<24;i++){
+  if(float(i)>=integrationSamples)break;
   vec3 p=o+d*(start+(float(i)+.5)*stepSize);float h=max(0.,length(p)-radius),density=exp(-h/9.);
   optical+=density*stepSize;vec2 sunSpan=sphere(p,L,outer);vec2 hit=sphere(p,L,radius+2.);float sunlight=hit.x>0.?0.:1.;
-  float sunOptical=0.;for(int j=0;j<3;j++){vec3 sp=p+L*sunSpan.y*(float(j)+.5)/3.;sunOptical+=exp(-max(0.,length(sp)-radius)/9.)*sunSpan.y/3.;}
+  float sunOptical=0.;for(int j=0;j<8;j++){if(float(j)>=sunSamples)break;vec3 sp=p+L*sunSpan.y*(float(j)+.5)/sunSamples;sunOptical+=exp(-max(0.,length(sp)-radius)/9.)*sunSpan.y/sunSamples;}
   vec3 transmission=exp(-beta*(optical+sunOptical));sum+=transmission*density*stepSize*sunlight;
  }
  vec3 scattering=sum*(beta*rayleigh+vec3(.0016)*mie)*7.;
@@ -611,7 +619,7 @@ inline constexpr const char* auroraFragment=R"GLSL(#version 330
 in vec3 worldPosition,normal;
 out vec4 finalColor;
 uniform vec3 centre,eye,lightDirection;
-uniform float seed,time,atmosphere,radius,strength;
+uniform float seed,time,atmosphere,radius,strength,integrationSamples;
 uniform vec3 viewForward;uniform vec2 resolution;uniform sampler2D opaqueDepth;
 )GLSL" PRISM_PIGMENT_GLSL R"GLSL(
 vec2 sphere(vec3 o,vec3 d,float r){float b=dot(o,d);vec3 perpendicular=cross(o,d);float h=r*r-dot(perpendicular,perpendicular);if(h<0.)return vec2(-1e8);h=sqrt(h);return vec2(-b-h,-b+h);}
@@ -622,8 +630,9 @@ void main(){
  vec3 o=eye-centre,d=normalize(worldPosition-eye);vec2 span=sphere(o,d,radius+70.);
  float start=max(0.,span.x),end=span.y;vec2 ground=sphere(o,d,radius+18.);if(ground.x>0.)end=min(end,ground.x);
  float opaque=texture(opaqueDepth,gl_FragCoord.xy/resolution).r;if(opaque>0.)end=min(end,opaque/max(dot(d,viewForward),.0001));if(end<=start)discard;
- float stepSize=(end-start)/6.,drift=sin(time*.027+seed);vec3 sum=vec3(0.);
- for(int i=0;i<6;i++){
+ float stepSize=(end-start)/integrationSamples,drift=sin(time*.027+seed);vec3 sum=vec3(0.);
+ for(int i=0;i<24;i++){
+  if(float(i)>=integrationSamples)break;
   vec3 p=o+d*(start+(float(i)+.5)*stepSize);float height=clamp((length(p)-radius-18.)/52.,0.,1.);n=normalize(p);
   float night=1.-smoothstep(-.25,.15,dot(n,lightDirection));
   float wave=sin(n.x*10.+n.z*7.+drift*.7)+.42*sin(n.z*21.-n.x*9.-drift*.4);
@@ -648,6 +657,19 @@ uniform float extractLight;
 vec3 sampleLight(vec2 p){vec3 c=texture(texture0,p).rgb;return extractLight>.5?max(c-.72,vec3(0.)):c;}
 void main(){vec3 c=sampleLight(fragTexCoord)*.227027;c+=(sampleLight(fragTexCoord+direction*1.384615)+sampleLight(fragTexCoord-direction*1.384615))*.316216;c+=(sampleLight(fragTexCoord+direction*3.230769)+sampleLight(fragTexCoord-direction*3.230769))*.070270;finalColor=vec4(c,1.);}
 )GLSL";
+// Extreme resolves its supersampled world in linear light. UI text is drawn
+// afterwards at the native output resolution and stays sharp.
+inline constexpr const char* supersampleResolveFragment=R"GLSL(#version 330
+in vec2 fragTexCoord;out vec4 finalColor;
+uniform sampler2D texture0;uniform vec2 texel;
+void main(){
+ vec3 sum=vec3(0.);float total=0.;
+ for(int y=-1;y<=1;y++)for(int x=-1;x<=1;x++){
+  float weight=float((x==0?2:1)*(y==0?2:1));vec3 c=texture(texture0,fragTexCoord+vec2(x,y)*texel*.75).rgb;
+  sum+=pow(max(c,vec3(0.)),vec3(2.2))*weight;total+=weight;
+ }
+ finalColor=vec4(pow(sum/total,vec3(1./2.2)),1.);
+})GLSL";
 inline constexpr const char* postFragment=R"GLSL(#version 330
 in vec2 fragTexCoord;
 out vec4 finalColor;

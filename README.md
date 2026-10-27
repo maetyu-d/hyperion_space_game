@@ -1,4 +1,4 @@
-# HYPERION 3.63
+# HYPERION 3.64
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,32 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Extreme graphics quality in 3.64
+
+Choose **Menu → Settings → Graphics: Extreme** for the fidelity preset. It adds:
+
+- 2× supersampling in each dimension, up to 7680×4320, with a linear-light resolve.
+- 8K nearby planet textures, 4K geology, and 4K ship/building materials with 16× anisotropic filtering.
+- Full-resolution clouds and auroras, 96 cloud samples, and finer atmospheric scattering and cloud shadows.
+- 4K sun shadows with 25-tap soft filtering, denser terrain/outcrops, smoother moons and asteroids, and refined creature anatomy.
+- Longer ranges for detailed settlements and wildlife, with the existing continuous fades.
+
+Extreme prioritizes image quality over frame rate. Its fidelity stays fixed;
+it does not lower settings to meet a performance target. One nearby world holds
+the 8K texture set, and that detail transfers as you travel between bodies.
+The existing High and Low presets remain available; **High remains the default**.
+Quality is remembered separately from the Standard/Psychedelic look and HUD.
+Campaigns, populations, collision geometry and the simulation clock are shared.
+
+![Extreme fidelity with the independent psychedelic look enabled](docs/screenshots/extreme-flight.jpg)
+
+[Extreme quality selected in the compact settings window](docs/screenshots/extreme-settings.jpg).
+
+Use `--graphics low|high|extreme` for command-line launches.
+`--extreme-quality-check` exercises all three choices through the actual settings
+controls, checks allocated texture/geometry resources, small/paused windows,
+travel between worlds and a return from strategy without changing campaign time.
 
 ## Optional psychedelic flight look in 3.63
 

@@ -8,8 +8,8 @@ namespace {
 Vector3 vec(V3 v){return{float(v.x),float(v.y),float(v.z)};}
 void uniform(Shader shader,const char* name,float x){int l=GetShaderLocation(shader,name);if(l>=0)SetShaderValue(shader,l,&x,SHADER_UNIFORM_FLOAT);}
 void uniform(Shader shader,const char* name,V3 x){auto v=vec(x);int l=GetShaderLocation(shader,name);if(l>=0)SetShaderValue(shader,l,&v,SHADER_UNIFORM_VEC3);}
-Mesh bodyMesh(const MinorBody& b){
- auto mesh=GenMeshSphere(1,b.kind==MinorKind::Moon?48:28,b.kind==MinorKind::Moon?72:40);
+Mesh bodyMesh(const MinorBody& b,bool extreme=false){
+ auto mesh=GenMeshSphere(1,extreme?(b.kind==MinorKind::Moon?128:80):(b.kind==MinorKind::Moon?48:28),extreme?(b.kind==MinorKind::Moon?192:120):(b.kind==MinorKind::Moon?72:40));
  auto point=[&](V3 n){n=unit(n);return n*minorRadius(b,{n.x,n.y,n.z});};
  for(int i=0;i<mesh.vertexCount;i++){
   auto n=unit(V3{mesh.vertices[i*3],mesh.vertices[i*3+1],mesh.vertices[i*3+2]});auto east=unit(cross({0,1,0},n),{1,0,0}),north=unit(cross(n,east));
@@ -31,19 +31,19 @@ RenderTexture2D Renderer::bakeMinorField(const MinorBody& body,int width){
  for(int i=0;i<12;i++){const auto& c=body.basins[i];basins[i]={float(c.axis.x),float(c.axis.y),float(c.axis.z),float(c.width)};depths[i]=float(c.depth);}
  SetShaderValueV(minorBake,GetShaderLocation(minorBake,"basins[0]"),basins.data(),SHADER_UNIFORM_VEC4,12);SetShaderValueV(minorBake,GetShaderLocation(minorBake,"basinDepth[0]"),depths.data(),SHADER_UNIFORM_FLOAT,12);
  BeginTextureMode(target);ClearBackground(BLANK);rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(minorBake);DrawRectangle(0,0,width,height,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
- GenTextureMipmaps(&target.texture);SetTextureFilter(target.texture,TEXTURE_FILTER_TRILINEAR);SetTextureWrap(target.texture,TEXTURE_WRAP_REPEAT);return target;
+ GenTextureMipmaps(&target.texture);SetTextureWrap(target.texture,TEXTURE_WRAP_REPEAT);SetTextureFilter(target.texture,TEXTURE_FILTER_TRILINEAR);if(extremeGraphics)SetTextureFilter(target.texture,TEXTURE_FILTER_ANISOTROPIC_16X);return target;
 }
 void Renderer::prepareMinorBodies(const Game& g){
  V3 eye{camera.position.x,camera.position.y,camera.position.z};std::vector<MinorDetailCandidate> candidates;
  for(int i=0;i<int(g.minorBodies.size());i++){const auto& b=g.minorBodies[i];if(b.destroyed)continue;auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
   if(dot(offset,g.ship.forward)<-b.source.radius*1.3||distance>58000||pixels<.65)continue;
-  if(!minorModels.count(b.source.id)){auto model=LoadModelFromMesh(bodyMesh(b.source));model.materials[0].shader=minorShader;minorModels.emplace(b.source.id,model);minorFields[b.source.id].base=bakeMinorField(b.source,256);}
+  if(!minorModels.count(b.source.id)){auto model=LoadModelFromMesh(bodyMesh(b.source,extremeGraphics));model.materials[0].shader=minorShader;minorModels.emplace(b.source.id,model);minorFields[b.source.id].base=bakeMinorField(b.source,256);}
   candidates.push_back({i,pixels,minorFields.at(b.source.id).detail.id!=0});
  }
  auto selected=minorDetailSelection(std::move(candidates));auto wanted=[&](const std::string& id){for(int index:selected)if(index>=0&&g.minorBodies[index].source.id==id)return true;return false;};
  float step=std::clamp(GetFrameTime(),0.f,.05f)*3.5f;int resident=0;
  for(auto& entry:minorFields)if(entry.second.detail.id){auto& field=entry.second;if(!wanted(entry.first))field.blend=std::max(0.f,field.blend-step);if(!wanted(entry.first)&&field.blend<=0){UnloadRenderTexture(field.detail);field.detail={};}else ++resident;}
- for(int index:selected)if(index>=0){const auto& b=g.minorBodies[index];auto& field=minorFields.at(b.source.id);if(!field.detail.id&&resident<2){field.detail=bakeMinorField(b.source,2048);++resident;}if(field.detail.id)field.blend=std::min(1.f,field.blend+step);}
+ for(int index:selected)if(index>=0){const auto& b=g.minorBodies[index];auto& field=minorFields.at(b.source.id);if(!field.detail.id&&resident<2){field.detail=bakeMinorField(b.source,flightQualityProfile(quality).minorWidth);++resident;}if(field.detail.id)field.blend=std::min(1.f,field.blend+step);}
 }
 int Renderer::minorDetailFields()const{int count=0;for(const auto& field:minorFields)count+=field.second.detail.id!=0;return count;}
 int Renderer::minorMaterialWidth(const Game& g,int index)const{if(index<0||index>=int(g.minorBodies.size()))return 0;auto it=minorFields.find(g.minorBodies[index].source.id);return it==minorFields.end()?0:it->second.detail.id?it->second.detail.texture.width:it->second.base.texture.width;}

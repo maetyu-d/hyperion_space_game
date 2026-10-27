@@ -7,11 +7,11 @@ namespace hyperion::flight {
 namespace {
 Vector3 vec(V3 v){return {float(v.x),float(v.y),float(v.z)};}
 double smooth(double a,double b,double v){v=std::clamp((v-a)/(b-a),0.,1.);return v*v*(3-2*v);}
-V3 coarsePoint(const Planet& p,V3 n){
- // Intersect the exact triangle plane of the existing 192 x 96 globe.
+V3 coarsePoint(const Planet& p,V3 n,int lon=192,int lat=96){
+ // Match the exact parent globe triangles at the selected quality.
  double u=std::atan2(n.z,n.x)/(2*pi);if(u<0)u+=1;double v=std::acos(std::clamp(n.y,-1.,1.))/pi;
- int x=std::min(191,int(u*192)),y=std::min(95,int(v*96));double fx=u*192-x,fy=v*96-y;
- auto point=[&](int a,int b){double t=b*pi/96,f=a*2*pi/192;V3 d{std::sin(t)*std::cos(f),std::cos(t),std::sin(t)*std::sin(f)};return d*(p.radius+terrain(p,d));};
+ int x=std::min(lon-1,int(u*lon)),y=std::min(lat-1,int(v*lat));double fx=u*lon-x,fy=v*lat-y;
+ auto point=[&](int a,int b){double t=b*pi/lat,f=a*2*pi/lon;V3 d{std::sin(t)*std::cos(f),std::cos(t),std::sin(t)*std::sin(f)};return d*(p.radius+terrain(p,d));};
  V3 a,b,c;if(fx+fy<=1){a=point(x,y);b=point(x+1,y);c=point(x,y+1);}else{a=point(x+1,y+1);b=point(x,y+1);c=point(x+1,y);}
  auto normal=cross(b-a,c-a);double den=dot(n,normal);return std::abs(den)>1e-9?n*(dot(a,normal)/den):n*(p.radius+terrain(p,n));
 }
@@ -28,7 +28,7 @@ struct MeshData {
 // Low, embedded bases and varied shoulders make outcrops read as part of
 // the ground. Ice and basalt retain their hard crystal/column facets.
 void outcrop(MeshData& mesh,V3 at,V3 up,V3 east,V3 north,double size,double height,double phase,int type,Color tint,double baseRadius,int quality=1){
- const int sides=type==2||type==3?6:quality==2?10:quality==1?8:6,ringCount=quality==2?4:quality==1?3:2;std::array<std::vector<V3>,4> rings;
+ const int sides=type==2||type==3?6:quality>=3?16:quality==2?10:quality==1?8:6,ringCount=quality>=2?4:quality==1?3:2;std::array<std::vector<V3>,4> rings;
  const double levels[]={-.10,.22,.68,.91},widths[]={.82,1.,.77,.38};
  V3 lean=(east*std::sin(phase*7.1)+north*std::cos(phase*5.3))*height*.15;
  for(int r=0;r<ringCount;r++)for(int i=0;i<sides;i++){
@@ -52,10 +52,10 @@ void Renderer::updateGround(const Game& g,int body){
  if(groundBody==body&&groundModel.meshCount&&groundDamageRevision==g.geometryRevision&&length(n-groundAnchor)*p.radius<22)return;
  if(groundDamageRevision!=g.geometryRevision)shadowBody=-1;groundDamageRevision=g.geometryRevision;
  groundBody=body;groundAnchor=n;if(groundModel.meshCount)UnloadModel(groundModel);if(rockModel.meshCount){UnloadModel(rockModel);rockModel={};}
- auto east=unit(cross({0,1,0},n),{1,0,0}),north=unit(cross(n,east));constexpr int side=97;constexpr double span=210;std::vector<V3> points;points.reserve(side*side);std::vector<double> coarse;coarse.reserve(side*side);
+ auto east=unit(cross({0,1,0},n),{1,0,0}),north=unit(cross(n,east));const auto profile=flightQualityProfile(quality);const int side=profile.groundSide;constexpr double span=210;std::vector<V3> points;points.reserve(side*side);std::vector<double> coarse;coarse.reserve(side*side);
  for(int y=0;y<side;y++)for(int x=0;x<side;x++){
   double u=(x/(side-1.)*2-1)*span,v=(y/(side-1.)*2-1)*span;auto d=unit(n+east*(u/p.radius)+north*(v/p.radius));double blend=smooth(128,169,std::hypot(u,v));
-  auto fine=d*(p.radius+terrain(p,d)+2),base=coarsePoint(p,d)+d*.015;points.push_back(mix(fine,base,blend));coarse.push_back(length(base));
+  auto fine=d*(p.radius+terrain(p,d)+2),base=coarsePoint(p,d,profile.globeLongitude,profile.globeLatitude)+d*.015;points.push_back(mix(fine,base,blend));coarse.push_back(length(base));
  }
  MeshData ground;for(int y=0;y<side;y++)for(int x=0;x<side;x++){
   auto dx=points[y*side+std::min(side-1,x+1)]-points[y*side+std::max(0,x-1)],dy=points[std::min(side-1,y+1)*side+x]-points[std::max(0,y-1)*side+x];ground.vertex(points[y*side+x],unit(cross(dx,dy),n),WHITE,coarse[y*side+x]);
@@ -67,7 +67,7 @@ void Renderer::updateGround(const Game& g,int body){
  for(const auto& rock:groundRocks(g,body)){
   if(objectIntegrity(g.worldDamage,rock.id)<=0)continue;
   double j=rock.j,k=rock.k;Color tint=p.kind==2?Color{164,220,236,255}:Color{static_cast<unsigned char>(155+j*70),static_cast<unsigned char>(153+k*65),static_cast<unsigned char>(159+j*68),255};
-  outcrop(rocks,rock.at,rock.normal,rock.a,rock.b,rock.size,rock.height,j+k*.31,rock.type,tint,length(rock.at),rock.detail);
+  outcrop(rocks,rock.at,rock.normal,rock.a,rock.b,rock.size,rock.height,j+k*.31,rock.type,tint,length(rock.at),extremeGraphics?3:rock.detail);
  }
  if(!rocks.positions.empty()){rockModel=rocks.model(groundShader,noiseTexture,surfaceMaps[body].texture,geologyMaps[body].texture,detailMap.texture);rockModel.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;}
 }

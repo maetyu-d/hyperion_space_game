@@ -41,10 +41,10 @@ void polygon(const std::vector<Vector2>& points,Color fill,Color rim){
  for(size_t i=0;i<points.size();i++){line(points[i],points[(i+1)%points.size()],{3,9,17,255},4.5f);line(points[i],points[(i+1)%points.size()],rim,1.25f);}
 }
 }
-bool Renderer::init(){auto assets=std::filesystem::path(GetApplicationDirectory())/"assets/fonts";
+bool Renderer::init(GraphicsQuality initialQuality){auto assets=std::filesystem::path(GetApplicationDirectory())/"assets/fonts";
  sans=LoadFontEx((assets/"Karla-Regular.ttf").c_str(),64,nullptr,0);mono=LoadFontEx((assets/"Cousine-Regular.ttf").c_str(),32,nullptr,0);
  SetTextureFilter(sans.texture,TEXTURE_FILTER_BILINEAR);SetTextureFilter(mono.texture,TEXTURE_FILTER_BILINEAR);
- scene=LoadShaderFromMemory(nullptr,sceneFragment);orb=LoadShaderFromMemory(nullptr,orbFragment);blur=LoadShaderFromMemory(nullptr,blurFragment);post=LoadShaderFromMemory(nullptr,postFragment);targets();return flightGraphics.init()&&ready();}
+ scene=LoadShaderFromMemory(nullptr,sceneFragment);orb=LoadShaderFromMemory(nullptr,orbFragment);blur=LoadShaderFromMemory(nullptr,blurFragment);post=LoadShaderFromMemory(nullptr,postFragment);targets();return flightGraphics.init(initialQuality)&&ready();}
 bool Renderer::ready()const{return scene.id>0&&orb.id>0&&blur.id>0&&post.id>0&&scene.id!=rlGetShaderIdDefault()&&orb.id!=rlGetShaderIdDefault()&&blur.id!=rlGetShaderIdDefault()&&post.id!=rlGetShaderIdDefault()&&IsRenderTextureValid(history[0])&&IsRenderTextureValid(history[1])&&IsRenderTextureValid(bloom[0])&&IsRenderTextureValid(bloom[1])&&IsRenderTextureValid(composite);}
 void Renderer::close(){flightGraphics.shutdown();for(auto& t:history)if(t.id)UnloadRenderTexture(t);for(auto& t:bloom)if(t.id)UnloadRenderTexture(t);if(terrain.id)UnloadTexture(terrain);if(composite.id)UnloadRenderTexture(composite);if(handoffFrame.id)UnloadRenderTexture(handoffFrame);UnloadShader(scene);UnloadShader(orb);UnloadShader(blur);UnloadShader(post);UnloadFont(sans);UnloadFont(mono);}
 void Renderer::targets(){int x=GetRenderWidth(),y=GetRenderHeight();if(x==width&&y==height)return;width=x;height=y;presentedMode=-1;
@@ -389,7 +389,9 @@ void Renderer::panel(){panelDrawing=true;float left=UILayout::panelLeft(w),x=lef
 void Renderer::modal(){modalDrawing=true;DrawRectangle(0,0,int(w),int(h),alpha(ink,.72f));float mw=std::min(820.f,w-60),mh=ui->settings?574.f:std::min(h-40,690.f);float x=(w-mw)/2,y=(h-mh)/2;
  DrawRectangleRounded({x,y,mw,mh},.025f,6,panelInk);DrawRectangleRoundedLinesEx({x,y,mw,mh},.025f,6,1,alpha(mint,.4f));float tx=x+34,ty=y+31;
  text(ui->settings?"DISPLAY / EXPEDITION":"NOMA / FIELD MANUAL",tx,ty,11,mint,true);ty+=36;text(ui->settings?"Your expedition":"Flight and survey",tx,ty,26,pearl);ty+=44;
- if(ui->settings){button("GRAPHICS: HIGH",{tx,ty,(mw-80)/2,32},"graphics","high",true,!ui->lowGraphics);button("GRAPHICS: LOW",{tx+(mw-68)/2+6,ty,(mw-80)/2,32},"graphics","low",true,ui->lowGraphics);ty+=44;button("LOOK: STANDARD",{tx,ty,(mw-80)/2,32},"look","standard",true,!ui->psychedelic);button("LOOK: PSYCHEDELIC",{tx+(mw-68)/2+6,ty,(mw-80)/2,32},"look","psychedelic",true,ui->psychedelic);ty+=44;wrapped("A seed defines a repeatable universe. Creating another universe first exports a backup of this expedition.",tx,ty,mw-68,16,muted);ty+=18;
+ if(ui->settings){float choiceWidth=(mw-80)/3;
+  for(int i=0;i<3;i++){const auto quality=std::array<GraphicsQuality,3>{GraphicsQuality::Low,GraphicsQuality::High,GraphicsQuality::Extreme}[i];const char* title=i==0?"GRAPHICS: LOW":i==1?"GRAPHICS: HIGH":"GRAPHICS: EXTREME";button(title,{tx+i*(choiceWidth+6),ty,choiceWidth,32},"graphics",graphicsQualityName(quality),true,ui->graphicsQuality==quality);}
+  ty+=44;button("LOOK: STANDARD",{tx,ty,(mw-80)/2,32},"look","standard",true,!ui->psychedelic);button("LOOK: PSYCHEDELIC",{tx+(mw-68)/2+6,ty,(mw-80)/2,32},"look","psychedelic",true,ui->psychedelic);ty+=44;wrapped("A seed defines a repeatable universe. Creating another universe first exports a backup of this expedition.",tx,ty,mw-68,16,muted);ty+=18;
   DrawRectangleRounded({tx,ty,mw-68,45},.05f,4,Color{16,30,39,255});text(ui->seedInput+((int(clock*2)%2)?"|":""),tx+12,ty+13,16,pearl,true);ty+=61;
   button("CREATE NEW UNIVERSE",{tx,ty,mw-68,40},"new","",!ui->seedInput.empty(),true);ty+=61;
   wrapped("Drop a native JSON save onto this window to import it. Export creates a portable file beside the automatic save.",tx,ty,mw-68,15,muted);ty+=15;
@@ -425,7 +427,7 @@ void Renderer::draw(Game& g,UI& state,double dt){g.ensureEconomy();game=&g;ui=&s
   BeginTextureMode(handoffFrame);ClearBackground(ink);DrawTexturePro(composite.texture,{0,0,float(width),-float(height)},{0,0,float(width),float(height)},{0,0},0,WHITE);EndTextureMode();
  }
  presentedMode=int(g.s.mode);
- if(g.s.mode==Mode::Flight){g.ensureFlight();flightPresentation=flightScene(g);if(auditHideWildlife)flightPresentation.organisms.clear();flightGraphics.prepare(g.s.flight,flightPresentation,state.reduced,!state.clean,state.lowGraphics,state.psychedelic);}else background(dt);BeginTextureMode(composite);ClearBackground(ink);rlPushMatrix();rlScalef(width/w,height/h,1);
+ if(g.s.mode==Mode::Flight){g.ensureFlight();flightPresentation=flightScene(g);if(auditHideWildlife)flightPresentation.organisms.clear();flightGraphics.prepare(g.s.flight,flightPresentation,state.reduced,!state.clean,state.graphicsQuality,state.psychedelic);}else background(dt);BeginTextureMode(composite);ClearBackground(ink);rlPushMatrix();rlScalef(width/w,height/h,1);
  if(g.s.mode==Mode::Flight)flightGraphics.present(w,h);else{BeginShaderMode(post);texture(post,"bloomTexture",bloom[1].texture);DrawTexturePro(history[current].texture,{0,0,float(width),-float(height)},{0,0,w,h},{0,0},0,WHITE);EndShaderMode();}
  switch(g.s.mode){case Mode::Galaxy:galaxy();break;case Mode::System:system();break;case Mode::Surface:surface();break;case Mode::Ocean:ocean();break;case Mode::Flight:break;}
  if(g.s.mode!=Mode::Flight)colonyMarkers();

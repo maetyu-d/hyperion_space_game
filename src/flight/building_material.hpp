@@ -26,7 +26,7 @@ inline std::array<double,4> buildingMaterial(double u,double v){
  return {std::clamp(alloy,.02,.98),std::clamp(enamel,.02,.98),std::clamp(aggregate,.02,.98),std::clamp(weather,.02,.98)};
 }
 inline std::vector<unsigned char> bakeBuildingMaterial(int size=buildingTextureSize){
- if(size<8||size>2048)throw std::invalid_argument("Building material size must be 8..2048");
+ if(size<8||size>4096)throw std::invalid_argument("Building material size must be 8..4096");
  std::vector<unsigned char> pixels(size_t(size)*size*4);
  for(int y=0;y<size;y++)for(int x=0;x<size;x++){auto value=buildingMaterial((x+.5)/size,(y+.5)/size);for(int c=0;c<4;c++)pixels[(size_t(y)*size+x)*4+c]=static_cast<unsigned char>(std::lround(value[c]*255));}
  return pixels;
@@ -59,7 +59,7 @@ inline std::array<double,4> buildingDetail(double u,double v){
  return {std::clamp(crack,0.,1.),std::clamp(weave,0.,1.),std::max(abrasion,pits),std::clamp(streak,0.,1.)};
 }
 inline std::vector<unsigned char> bakeBuildingDetail(int size=buildingTextureSize){
- if(size<8||size>2048)throw std::invalid_argument("Building detail size must be 8..2048");
+ if(size<8||size>4096)throw std::invalid_argument("Building detail size must be 8..4096");
  std::vector<unsigned char> pixels(size_t(size)*size*4);
  for(int y=0;y<size;y++)for(int x=0;x<size;x++){auto value=buildingDetail((x+.5)/size,(y+.5)/size);for(int c=0;c<4;c++)pixels[(size_t(y)*size+x)*4+c]=static_cast<unsigned char>(std::lround(value[c]*255));}
  return pixels;

@@ -1,0 +1,11 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Weather depth: R32F / matched terrain / 1440x900
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1440x900
+Flight benchmark: {"cloudSamples":24,"cloudWidth":720,"flightLook":"standard","fps":23.059142420531835,"graphics":"high","materialWidth":2048,"meanMs":43.36674719999999,"measuredFrames":30,"nearSurfaceWidth":3072,"outputHeight":900,"outputWidth":1440,"p50Ms":40.863167,"p95Ms":47.006875,"p99Ms":54.467375,"profileMs":{"auroras":1.5366875000000075,"bloomAndPost":1.8964666666666592,"cockpit":0.7430763888889302,"planetsAndAtmosphere":14.646405555555475,"portsAndTraffic":9.442352777777728,"sky":4.4379777777777765},"reducedEffects":false,"renderHeight":900,"renderWidth":1440,"scene":23,"vsync":false,"warmupFrames":60,"wildlifeBaseline":false,"wildlifeBodies":253}
+Hyperion native run: 90 frames / shaders OK / 1440x900
+Measured render rate: 17.847 frames/s
+Sun shadow cache: 1 updates / 90 active frames

@@ -1,0 +1,230 @@
+{
+  "version": "3.64.0",
+  "binarySHA256": "f557c8c32d83aebbeab602be4f559e373da2596cad15ce96d6c24637210b6f32",
+  "cpuSuites": {
+    "passed": 41,
+    "failed": 0
+  },
+  "nativeQualityAudit": {
+    "scenarios": 9,
+    "frames": 288,
+    "checks": [
+      "pointer-selected presets",
+      "paused and small settings",
+      "independent look and HUD",
+      "8K residency transfer between worlds",
+      "GPU texture filtering",
+      "strategy return"
+    ]
+  },
+  "weatherOcclusion": {
+    "scenarios": 12,
+    "frames": 216,
+    "observedCloudLeaks": 0,
+    "observedAuroraLeaks": 0,
+    "testedOpaquePixels": 3516459
+  },
+  "previousLooksPreserved": [
+    {
+      "case": "building-standard",
+      "reference": "3.63",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "enemy-standard",
+      "reference": "3.63",
+      "quality": "high",
+      "meanChannelDifference": 4.3402777777777785e-07,
+      "maximumChannelDifference": 1,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "asteroid-low-standard",
+      "reference": "3.63",
+      "quality": "low",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "building-psychedelic",
+      "reference": "psychedelic-lab",
+      "quality": "high",
+      "meanChannelDifference": 6.36574074074074e-06,
+      "maximumChannelDifference": 1,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    }
+  ],
+  "benchmarks": [
+    [
+      {
+        "cloudSamples": 24,
+        "cloudWidth": 720,
+        "flightLook": "standard",
+        "fps": 42.86332233985796,
+        "graphics": "high",
+        "materialWidth": 2048,
+        "meanMs": 23.329969433333336,
+        "measuredFrames": 30,
+        "nearSurfaceWidth": 3072,
+        "outputHeight": 900,
+        "outputWidth": 1440,
+        "p50Ms": 21.662083,
+        "p95Ms": 29.039542,
+        "p99Ms": 34.669667,
+        "profileMs": {
+          "auroras": 1.0209208333332793,
+          "bloomAndPost": 1.6773222222222552,
+          "cockpit": 0.6001416666666426,
+          "planetsAndAtmosphere": 10.205426388888899,
+          "portsAndTraffic": 1.5445319444444825,
+          "sky": 4.777193055555602
+        },
+        "reducedEffects": false,
+        "renderHeight": 900,
+        "renderWidth": 1440,
+        "scene": 0,
+        "vsync": false,
+        "warmupFrames": 60,
+        "wildlifeBaseline": false,
+        "wildlifeBodies": 0
+      },
+      {
+        "cloudSamples": 96,
+        "cloudWidth": 2880,
+        "flightLook": "standard",
+        "fps": 4.368989832723224,
+        "graphics": "extreme",
+        "materialWidth": 4096,
+        "meanMs": 228.8858611,
+        "measuredFrames": 30,
+        "nearSurfaceWidth": 8192,
+        "outputHeight": 900,
+        "outputWidth": 1440,
+        "p50Ms": 217.828833,
+        "p95Ms": 282.78425,
+        "p99Ms": 293.830291,
+        "profileMs": {
+          "auroras": 4.489020833333039,
+          "bloomAndPost": 4.706862500000142,
+          "cockpit": 1.195844444444442,
+          "planetsAndAtmosphere": 192.6082597222225,
+          "portsAndTraffic": 3.540727777777756,
+          "sky": 18.101427777777815
+        },
+        "reducedEffects": false,
+        "renderHeight": 1800,
+        "renderWidth": 2880,
+        "scene": 0,
+        "vsync": false,
+        "warmupFrames": 60,
+        "wildlifeBaseline": false,
+        "wildlifeBodies": 0
+      }
+    ],
+    [
+      {
+        "cloudSamples": 24,
+        "cloudWidth": 720,
+        "flightLook": "standard",
+        "fps": 23.059142420531835,
+        "graphics": "high",
+        "materialWidth": 2048,
+        "meanMs": 43.36674719999999,
+        "measuredFrames": 30,
+        "nearSurfaceWidth": 3072,
+        "outputHeight": 900,
+        "outputWidth": 1440,
+        "p50Ms": 40.863167,
+        "p95Ms": 47.006875,
+        "p99Ms": 54.467375,
+        "profileMs": {
+          "auroras": 1.5366875000000075,
+          "bloomAndPost": 1.8964666666666592,
+          "cockpit": 0.7430763888889302,
+          "planetsAndAtmosphere": 14.646405555555475,
+          "portsAndTraffic": 9.442352777777728,
+          "sky": 4.4379777777777765
+        },
+        "reducedEffects": false,
+        "renderHeight": 900,
+        "renderWidth": 1440,
+        "scene": 23,
+        "vsync": false,
+        "warmupFrames": 60,
+        "wildlifeBaseline": false,
+        "wildlifeBodies": 253
+      },
+      {
+        "cloudSamples": 96,
+        "cloudWidth": 2880,
+        "flightLook": "standard",
+        "fps": 2.6309140553833226,
+        "graphics": "extreme",
+        "materialWidth": 4096,
+        "meanMs": 380.0960346666667,
+        "measuredFrames": 30,
+        "nearSurfaceWidth": 8192,
+        "outputHeight": 900,
+        "outputWidth": 1440,
+        "p50Ms": 366.29275,
+        "p95Ms": 475.313625,
+        "p99Ms": 510.238958,
+        "profileMs": {
+          "auroras": 6.319541666667543,
+          "bloomAndPost": 8.720463888888949,
+          "cockpit": 2.809768055555395,
+          "planetsAndAtmosphere": 286.70595555555536,
+          "portsAndTraffic": 24.563370833332957,
+          "sky": 37.0512083333324
+        },
+        "reducedEffects": false,
+        "renderHeight": 1800,
+        "renderWidth": 2880,
+        "scene": 23,
+        "vsync": false,
+        "warmupFrames": 60,
+        "wildlifeBaseline": false,
+        "wildlifeBodies": 299
+      }
+    ]
+  ],
+  "benchmarkConditions": {
+    "outputPixels": [
+      1440,
+      900
+    ],
+    "warmupFrames": 60,
+    "measuredFrames": 30,
+    "vsync": false,
+    "thresholdEnforced": false
+  },
+  "installedChecks": 10,
+  "copiedCampaignsUnchanged": 9,
+  "playerSaveAndPreferencesUnchangedDuringInstallationVerification": true,
+  "previousApp": "releases/Hyperion 3.63.app",
+  "defaultGraphics": "high",
+  "graphicsAndLookIndependent": true,
+  "adaptiveQuality": false,
+  "finalBuild": "success",
+  "explicitReducedEffectsExtremeCheck": "passed"
+}
