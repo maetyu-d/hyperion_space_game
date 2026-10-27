@@ -568,16 +568,15 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
   BeginTextureMode(bloom[i]);ClearBackground(BLACK);set(blur,"direction",i==0?Vector2{2.f/source.width,0}:Vector2{0,2.f/source.height});set(blur,"extractLight",i==0?1.f:0.f);
   BeginShaderMode(blur);DrawTexturePro(source,{0,0,float(source.width),-float(source.height)},{0,0,float(bloom[i].texture.width),float(bloom[i].texture.height)},{0,0},0,WHITE);EndShaderMode();EndTextureMode();
  }
- auto sunScreen=GetWorldToScreenEx(vec(g.ship.position+sunDirection*40000),camera,renderW,renderH);float sunVisibility=dot(g.ship.forward,sunDirection)>0?1.f:0.f;
- for(const auto& body:g.planets){auto offset=body.centre-g.ship.position;double along=dot(offset,sunDirection);if(along>0&&length(offset-sunDirection*along)<body.radius+8)sunVisibility=0;}
- for(const auto& body:g.minorBodies){if(body.destroyed)continue;auto offset=body.centre-g.ship.position;double along=dot(offset,sunDirection);if(along>0&&length(offset-sunDirection*along)<body.source.radius)sunVisibility=0;}
+ auto sunImage=spaceSkyImage(ambient,sunDirection,skySunImage);skySunImage=sunImage.ray;
+ auto sunScreen=GetWorldToScreenEx(vec(ambient.eye+sunImage.ray*40000),camera,renderW,renderH);float sunVisibility=nilDrawn<0&&sunImage.error<.0002&&dot(g.ship.forward,sunImage.ray)>0?1.f:0.f;
  set(post,"sunPosition",Vector2{sunScreen.x/renderW,1-sunScreen.y/renderH});set(post,"sunVisibility",sunVisibility);
  set(post,"texel",Vector2{1.f/renderW,1.f/renderH});set(post,"hit",float(g.hitFlash));set(post,"effects",reduced?.12f:1.f);
  auto shipRight=unit(cross(g.ship.forward,g.ship.up));
  set(post,"impactColour",g.impactHull>.01?V3{.55,.075,.12}:V3{.075,.38,.60});
  set(post,"impactDirection",Vector2{float(dot(g.hitDirection,shipRight)),float(dot(g.hitDirection,g.ship.up))});
  set(post,"shieldBreak",float(g.feedback.shieldBreak));
- BeginTextureMode(composite);ClearBackground(ink);BeginShaderMode(post);texture(post,"bloomTexture",bloom[1].texture);
+ BeginTextureMode(composite);ClearBackground(ink);BeginShaderMode(post);texture(post,"bloomTexture",bloom[1].texture);texture(post,"sunDepth",opaqueDepth);
  DrawTexturePro(scene.texture,{0,0,float(renderW),-float(renderH)},{0,0,float(renderW),float(renderH)},{0,0},0,WHITE);EndShaderMode();EndTextureMode();
  elapsed(5);
 }

@@ -1,0 +1,30 @@
+{
+  "version": "3.71.0",
+  "binarySHA256": "21ec3412f2bd538e353f97f2f69d3f39a4f8023e4981349e321a75b24d22252d",
+  "cpuSuitesPassed": 44,
+  "curvedSpaceChecks": 6403,
+  "nativeGraphicsScenariosPassed": 16,
+  "interfaceChecksPassed": 4,
+  "cloudOcclusionScenariosPassed": 12,
+  "cloudAndAuroraLeaks": 0,
+  "offPalettePixels": 0,
+  "gpuMarkerErrorPixels": 0.06878885429704269,
+  "skyDirectionError": 1.4355806879332947e-07,
+  "nearMeshChangedPixels": 0,
+  "closeApproachMeanRGBDifference": 0,
+  "sunGlareLeak": 0,
+  "curvedEffectPhysicalForward": -1236.1370413575414,
+  "curvedEffectROIChange": 2.792236328125,
+  "liveFullscreenInspected": true,
+  "installedSmokeLooks": [
+    "Low Standard / campaign copy",
+    "High Psychedelic",
+    "Extreme EGA Wireframe"
+  ],
+  "copiedCampaignRoundtripExact": true,
+  "auditUsesNoSaveOrTemporaryCopies": true,
+  "playerPreferencesUnchanged": true,
+  "runningSessionKeptOpen": true,
+  "previousApp": "releases/Hyperion 3.70.app",
+  "correctedFullscreenChecked": true
+}

@@ -1,0 +1,6 @@
+[
+  "Cockpit survey fits small window",
+  "Strategy pointer survey resolves one hour; pause blocks it",
+  "Strategy pointer transit preserves mode and commits one hour",
+  "Planning and cockpit handoff preserve the same ship and time"
+]

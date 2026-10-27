@@ -47,8 +47,11 @@ inline double nilWeight(const NilRegion& n,V3 p){double t=std::clamp((n.radius-l
 // Symmetric Heisenberg coordinates. The orthonormal initial velocity has unit
 // metric length; t is intrinsic path length, not Euclidean coordinate distance.
 inline V3 nilGeodesic(V3 v,double t){
- if(std::abs(v.z)<1e-6)return {v.x*t,v.y*t,v.z*t};
- double s=std::sin(v.z*t),c=std::cos(v.z*t),w=v.z;
+ double a=v.z*t,a2=a*a;
+ // Avoid cancellation in cos(a)-1 and a-sin(a) as a ray crosses the axis.
+ if(std::abs(a)<.05){double sine=t*(1-a2/6+a2*a2/120),cosine=t*(-a/2+a*a2/24-a*a2*a2/720);
+  return {v.x*sine+v.y*cosine,-v.x*cosine+v.y*sine,a+(v.x*v.x+v.y*v.y)*v.z*t*t*t*(1./12-a2/240+a2*a2/10080)};}
+ double s=std::sin(a),c=std::cos(a),w=v.z;
  return {(v.x*s+v.y*(c-1))/w,(v.x*(1-c)+v.y*s)/w,w*t+(v.x*v.x+v.y*v.y)*(w*t-s)/(2*w*w)};
 }
 }

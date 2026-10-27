@@ -10,7 +10,7 @@ void Renderer::drawWorldDamage(const Game& game){
  int chunks=reduced?48:lowGraphics?96:180;
  for(const auto& [id,d]:game.worldDamage){if(d.integrity>0)continue;auto at=d.position;
   if(d.kind==MinorObjectKind||d.kind==ImpactObject)for(const auto& body:game.minorBodies)if("body:"+body.source.id==id||(d.kind==ImpactObject&&d.owner==body.source.id))at=body.centre+unit(d.normal)*body.source.radius;
-  double distance=length(at-game.ship.position);if(distance>900||dot(at-game.ship.position,game.ship.forward)<-d.scale*3)continue;
+  double distance=length(at-game.ship.position);if(distance>900||!inFront(at,d.scale*3))continue;
   auto up=unit(d.normal),right=unit(cross(up,{0,0,1}),{1,0,0}),back=unit(cross(right,up));uint32_t seed=sceneHash(id);
   if(d.kind==ImpactObject&&!game.planets.empty()){
    const auto& planet=game.planets[std::clamp(d.body,0,int(game.planets.size())-1)];double radius=d.scale;const MinorObject* minor=nullptr;if(d.owner.rfind("planet:",0)!=0)for(const auto& body:game.minorBodies)if(body.source.id==d.owner&&!body.destroyed){minor=&body;break;}

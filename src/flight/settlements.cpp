@@ -257,9 +257,9 @@ void Renderer::drawRemains(const HullRemains& hull,V3 at,double age){
  }
 }
 void Renderer::drawShipRemains(const Game& game){
- debrisHulls=debrisParts=0;for(const auto& [id,d]:game.worldDamage)if(d.recovery.valid&&d.recovery.shipModel>=0&&objectIntegrity(game.worldDamage,"wreck:world:"+id)>0&&length(d.position-game.ship.position)<1700&&dot(d.position-game.ship.position,game.ship.forward)>-50){const auto& r=d.recovery;HullRemains hull{true,r.faction,r.shipModel,r.shipSeed,d.scale,r.shipForward};drawRemains(hull,d.position,r.intact?0:std::max(0.,(presentation->hours-r.born)*55.));}
+ debrisHulls=debrisParts=0;for(const auto& [id,d]:game.worldDamage)if(d.recovery.valid&&d.recovery.shipModel>=0&&objectIntegrity(game.worldDamage,"wreck:world:"+id)>0&&length(d.position-game.ship.position)<1700&&inFront(d.position,50)){const auto& r=d.recovery;HullRemains hull{true,r.faction,r.shipModel,r.shipSeed,d.scale,r.shipForward};drawRemains(hull,d.position,r.intact?0:std::max(0.,(presentation->hours-r.born)*55.));}
  std::vector<const Wreck*> near;
- for(const auto& wreck:game.wrecks)if(std::none_of(game.worldDamage.begin(),game.worldDamage.end(),[&](const auto& pair){return pair.second.recovery.valid&&pair.second.recovery.shipId==wreck.id;})&&wreck.debrisKind==0&&wreck.id.rfind("world:",0)!=0&&objectIntegrity(game.worldDamage,"wreck:"+wreck.id)>0&&length(wreck.position-game.ship.position)<1700&&dot(wreck.position-game.ship.position,game.ship.forward)>-50)near.push_back(&wreck);
+ for(const auto& wreck:game.wrecks)if(std::none_of(game.worldDamage.begin(),game.worldDamage.end(),[&](const auto& pair){return pair.second.recovery.valid&&pair.second.recovery.shipId==wreck.id;})&&wreck.debrisKind==0&&wreck.id.rfind("world:",0)!=0&&objectIntegrity(game.worldDamage,"wreck:"+wreck.id)>0&&length(wreck.position-game.ship.position)<1700&&inFront(wreck.position,50))near.push_back(&wreck);
  std::stable_sort(near.begin(),near.end(),[&](auto a,auto b){return length(a->position-game.ship.position)<length(b->position-game.ship.position);});
  for(size_t i=0;i<std::min(size_t(12),near.size());i++){
   const auto& wreck=*near[i];auto hull=wreck.hull;
@@ -267,7 +267,7 @@ void Renderer::drawShipRemains(const Game& game){
   drawRemains(hull,wreck.position,std::max(0.,180-wreck.life));
  }
  // Civilian losses may have no salvage entry, but still retain their own hull.
- for(const auto& e:game.effects)if(e.kind==ShipExplosion&&e.hull.valid&&debrisHulls<12&&length(e.position-game.ship.position)<1700&&dot(e.position-game.ship.position,game.ship.forward)>-50){
+ for(const auto& e:game.effects)if(e.kind==ShipExplosion&&e.hull.valid&&debrisHulls<12&&length(e.position-game.ship.position)<1700&&inFront(e.position,50)){
   bool hasWreck=std::any_of(game.wrecks.begin(),game.wrecks.end(),[&](const auto&w){return w.id==e.actor;})||std::any_of(game.worldDamage.begin(),game.worldDamage.end(),[&](const auto& p){return p.second.recovery.valid&&p.second.recovery.shipId==e.actor;});if(!hasWreck)drawRemains(e.hull,e.position,e.age);
  }
 }
@@ -309,7 +309,7 @@ void Renderer::drawStructuralRemains(const Game& game,bool shadow){
  if(!shadow){structuralDraws=structuralParts=interiorDraws=0;}
  for(const auto& instance:structuralInstances){const auto& f=instance.shape;auto found=brokenStructures.find(instance.id);if(found==brokenStructures.end())continue;auto& asset=found->second;double age=structureAge(game,f);
   if(shadow&&(f.orbital||instance.body!=groundBody||length(f.origin-game.ship.position)>480))continue;
-  if(!shadow&&dot(f.origin-game.ship.position,game.ship.forward)<-220)continue;
+  if(!shadow&&!inFront(f.origin,220))continue;
   if(!shadow){structureState(structure,factionStyle(f.faction),{camera.position.x,camera.position.y,camera.position.z},sunDirection,visualTime,nullptr);uniform(structure,"fractureHeat",reduced?0.f:float(std::exp(-age*.8)*std::clamp(age/.12,0.,1.)));uniform(structure,"condition",float(.15+.7*std::exp(-age*.65)));uniform(structure,"powerOn",float(std::exp(-age*1.3)));uniform(structure,"pollution",.7f);uniform(structure,"useSunShadow",shadowActive&&shadowBody==instance.body?groundBlend:0.f);uniform(structure,"shadowCentre",instance.body>=0?game.planets[instance.body].centre:V3{});uniform(structure,"skyRadial",f.up);uniform(structure,"structureAir",!f.orbital&&instance.body>=0?float(game.planets[instance.body].atmosphere):0.f);int loc=GetShaderLocation(structure,"sunShadowMatrix");if(loc>=0)SetShaderValueMatrix(structure,loc,sunMatrix);structuralDraws++;}
   for(int part=0;part<int(asset.parts.size());part++){int cell=asset.indices[part],section=f.localized?structureCellSection(cell,structureRows(f)):0;if(f.localized&&(f.cleared&(1u<<cell)))continue;bool intact=f.localized&&f.sections[section]>0;double partAge=f.localized?sectionAge(f,section,age):age;auto motionBounds=f.localized?structureCell(f,cell):asset.bounds[part];auto pose=structurePose(f,motionBounds,cell,partAge);auto modelPivot=pose.centre+pose.right*(asset.bounds[part].centre().x-motionBounds.centre().x)+pose.up*(asset.bounds[part].centre().y-motionBounds.centre().y)+pose.back*(asset.bounds[part].centre().z-motionBounds.centre().z);auto at=structurePoint(f,modelPivot);
    if(!shadow){uniform(structure,"fractureHeat",reduced||intact?0.f:float(std::exp(-partAge*.8)));uniform(structure,"condition",intact?.8f:float(.15+.7*std::exp(-partAge*.65)));uniform(structure,"powerOn",intact?1.f:float(std::exp(-partAge*1.3)));}

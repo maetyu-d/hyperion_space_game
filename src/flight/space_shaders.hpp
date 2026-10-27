@@ -1,9 +1,18 @@
 #pragma once
 #include <string>
 #include <stdexcept>
+#define HYPERION_NIL_RAY_GLSL R"GLSL(
+vec3 hxRay(vec3 v,float t){
+ float w=v.z,a=w*t,a2=a*a;
+ if(abs(a)<.05){float sine=t*(1.-a2/6.+a2*a2/120.),cosine=t*(-a/2.+a*a2/24.-a*a2*a2/720.);
+  return vec3(v.x*sine+v.y*cosine,-v.x*cosine+v.y*sine,a+dot(v.xy,v.xy)*w*t*t*t*(1./12.-a2/240.+a2*a2/10080.));}
+ return vec3((v.x*sin(a)+v.y*(cos(a)-1.))/w,(v.x*(1.-cos(a))+v.y*sin(a))/w,a+dot(v.xy,v.xy)*(a-sin(a))/(2.*w*w));
+}
+)GLSL"
 namespace hyperion::flight {
 inline constexpr const char* spaceGLSL=R"GLSL(
 uniform vec3 hxEye,hxX,hxY,hxZ;uniform float hxRadius,hxStrength;uniform mat4 hxWorldToClip;
+)GLSL" HYPERION_NIL_RAY_GLSL R"GLSL(
 vec3 hxLocal(vec3 v){return vec3(dot(v,hxX),dot(v,hxY),dot(v,hxZ));}
 vec3 hxWorld(vec3 v){return hxX*v.x+hxY*v.y+hxZ*v.z;}
 vec3 hxLog(vec3 q){
@@ -19,9 +28,7 @@ vec3 hxPoint(vec3 point){
  return hxEye+mix(d,hxWorld(hxLog(q))*hxRadius,blend);
 }
 vec3 hxSky(vec3 direction){
- if(hxStrength<=0.)return direction;vec3 v=hxLocal(direction),p=hxLocal(hxEye)/hxRadius,q;float t=3.8,w=v.z;
- if(abs(w)<.00001)q=v*t;
- else{float a=w*t;q=vec3((v.x*sin(a)+v.y*(cos(a)-1.))/w,(v.x*(1.-cos(a))+v.y*sin(a))/w,a+dot(v.xy,v.xy)*(a-sin(a))/(2.*w*w));}
+ if(hxStrength<=0.)return direction;vec3 v=hxLocal(direction),p=hxLocal(hxEye)/hxRadius,q=hxRay(v,3.8);
  q.z+=.5*(p.x*q.y-p.y*q.x);vec3 result=mix(direction,normalize(hxWorld(q)),hxStrength);return length(result)>.000001?normalize(result):direction;
 }
 )GLSL";

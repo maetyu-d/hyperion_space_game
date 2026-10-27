@@ -685,7 +685,7 @@ void main(){
 inline constexpr const char* postFragment=R"GLSL(#version 330
 in vec2 fragTexCoord;
 out vec4 finalColor;
-uniform sampler2D texture0,bloomTexture;
+uniform sampler2D texture0,bloomTexture,sunDepth;
 uniform vec2 texel;
 uniform float hit,effects,sunVisibility,lowGraphics,psychedelic,wireframe;uniform vec2 sunPosition;
 uniform vec3 impactColour;uniform vec2 impactDirection;uniform float shieldBreak;
@@ -725,7 +725,9 @@ void main(){
  vec2 v=(uv-.5)*2.;vec2 sun=uv-sunPosition;
  float streak=exp(-abs(sun.y)*950.)*exp(-abs(sun.x)*3.5);
  vec2 ghost=uv-(.5-(sunPosition-.5)*.38);float halo=exp(-abs(length(ghost)-.13)*190.);
- c+=vec3(.30,.18,.065)*(streak*.09+halo*.018)*sunVisibility*effects;
+ float visibleSun=sunVisibility;
+ if(all(greaterThanEqual(sunPosition,vec2(0.)))&&all(lessThanEqual(sunPosition,vec2(1.)))&&texture(sunDepth,sunPosition).r>0.)visibleSun=0.;
+ c+=vec3(.30,.18,.065)*(streak*.09+halo*.018)*visibleSun*effects;
  c*=1.-.10*dot(v,v);
  float rim=smoothstep(.60,1.25,length(v));
  float side=.24+.76*max(0.,dot(normalize(v+vec2(.0001)),normalize(impactDirection+vec2(.0001))));

@@ -28,6 +28,23 @@ inline V3 spaceSky(const SpaceView& s,V3 direction){
  if(s.strength<=0)return direction;auto v=s.local(unit(direction)),p=s.local(s.eye)/s.radius,q=nilGeodesic(v,3.8);q.z+=.5*(p.x*q.y-p.y*q.x);
  return unit(mix(direction,unit(s.world(q)),s.strength),direction);
 }
+struct SkyImage {V3 ray;double error=0;};
+// Invert the actual sky lookup, so glare follows the visible sun. Retaining
+// the previous solution avoids choosing another image while the camera moves.
+inline SkyImage spaceSkyImage(const SpaceView& s,V3 source,V3 previous){
+ source=unit(source);if(s.strength<=0)return {source,0};
+ SkyImage best{source,length(spaceSky(s,source)-source)};
+ auto refine=[&](V3 ray){ray=unit(ray);for(int i=0;i<20;i++){
+  auto mapped=spaceSky(s,ray),residual=source-mapped;double error=length(residual);if(error<best.error)best={ray,error};if(error<1e-7)break;
+  auto x=unit(cross(ray,{0,1,0}),{1,0,0}),y=unit(cross(ray,x));constexpr double e=.0001;
+  auto dx=(spaceSky(s,unit(ray+x*e))-mapped)/e,dy=(spaceSky(s,unit(ray+y*e))-mapped)/e;
+  double a=dot(dx,dx),b=dot(dx,dy),c=dot(dy,dy),det=a*c-b*b;if(det<1e-12)break;
+  double u=dot(dx,residual),v=dot(dy,residual);auto step=x*((u*c-v*b)/det)+y*((v*a-u*b)/det);double size=length(step);if(size>.5)step=step*(.5/size);
+  bool improved=false;for(int j=0;j<6;j++){auto next=unit(ray+step);if(length(spaceSky(s,next)-source)<error){ray=next;improved=true;break;}step=step*.5;}if(!improved)break;
+ }};
+ refine(previous);if(best.error<1e-5)return best;refine(source);if(best.error<1e-5)return best;
+ refine(unit(spacePoint(s,s.eye+source*s.radius*3.8)-s.eye));return best;
+}
 inline SpaceView spaceView(V3 eye,uint32_t seed){
  SpaceView s;s.eye=eye;s.radius=12000+seed%5001;
  s.z=unit({.2+std::sin(seed*.017)*.3,1.,.2+std::cos(seed*.013)*.3});s.x=unit(cross({0,0,1},s.z));s.y=unit(cross(s.z,s.x));return s;

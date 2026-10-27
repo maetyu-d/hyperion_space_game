@@ -13,7 +13,7 @@ namespace hyperion::flight {
 struct GeometryStats {int models=0,closeTriangles=0,closePorts=0,detailedTriangles=0,distantTriangles=0,degenerateTriangles=0,invalidVertices=0,invalidNormals=0;};
 struct CloudOcclusionStats {int testedPixels=0,leakingPixels=0;float maxLeakAlpha=0,maxCloudAlpha=0;};
 class Renderer {
- SpaceView ambient;bool ambientEnabled=true;double ambientOverride=-1;
+ SpaceView ambient;V3 skySunImage{.6,.7,-.4};bool ambientEnabled=true;double ambientOverride=-1;
  Shader spacePrimitive{};void prepareSpace(const Game&,bool);void applySpace(Shader,bool enabled=true);void beginSpace();void resumeSpace();
  Shader spaceShader(const char*,const char*,const char* position="worldPosition");
 

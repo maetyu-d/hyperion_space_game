@@ -1,0 +1,93 @@
+Test project /Users/user/Documents/SC tutorial/Hyperion/build-folds
+      Start 35: frontier_integration
+      Start  6: tactical_recovery
+      Start 12: submersible_survey_expeditions
+      Start  5: recovery_society
+ 1/44 Test #12: submersible_survey_expeditions .......   Passed    5.17 sec
+      Start 37: strategy_handoff
+ 2/44 Test  #5: recovery_society .....................   Passed    6.41 sec
+      Start 39: review_regressions
+ 3/44 Test  #6: tactical_recovery ....................   Passed    7.34 sec
+      Start  8: persistent_world_destruction
+ 4/44 Test #39: review_regressions ...................   Passed    2.92 sec
+      Start 34: economy
+ 5/44 Test #37: strategy_handoff .....................   Passed    4.25 sec
+      Start  7: structural_fracture
+ 6/44 Test  #8: persistent_world_destruction .........   Passed    3.88 sec
+      Start 23: persistent_ecosystems
+ 7/44 Test #34: economy ..............................   Passed    3.31 sec
+      Start 38: turn_based
+ 8/44 Test  #7: structural_fracture ..................   Passed    3.60 sec
+      Start 26: shipyards
+ 9/44 Test #23: persistent_ecosystems ................   Passed    1.94 sec
+      Start 28: combat_tactics
+10/44 Test #38: turn_based ...........................   Passed    1.66 sec
+      Start 11: persistent_wreck_expeditions
+11/44 Test #26: shipyards ............................   Passed    1.93 sec
+      Start 27: faction_security
+12/44 Test #28: combat_tactics .......................   Passed    2.03 sec
+      Start 33: simulation
+13/44 Test #11: persistent_wreck_expeditions .........   Passed    2.30 sec
+      Start 15: event_aware_turn_planner
+14/44 Test #27: faction_security .....................   Passed    1.70 sec
+      Start 29: combat
+15/44 Test #33: simulation ...........................   Passed    2.38 sec
+      Start 25: procedural_generation
+16/44 Test #15: event_aware_turn_planner .............   Passed    1.28 sec
+      Start 22: visible_wildlife
+17/44 Test #29: combat ...............................   Passed    1.55 sec
+      Start  2: folded_space_and_nil_optics
+18/44 Test #35: frontier_integration .................   Passed   18.42 sec
+      Start 18: minor_bodies
+19/44 Test #25: procedural_generation ................   Passed    1.10 sec
+      Start 20: procedural_operations
+20/44 Test #22: visible_wildlife .....................   Passed    1.16 sec
+      Start 36: planning_briefing
+21/44 Test  #2: folded_space_and_nil_optics ..........   Passed    1.31 sec
+      Start 14: fieldwork_play_loop
+22/44 Test #18: minor_bodies .........................   Passed    1.39 sec
+      Start 13: strategy_continuity
+23/44 Test #20: procedural_operations ................   Passed    1.71 sec
+      Start 42: ship_handling
+24/44 Test #36: planning_briefing ....................   Passed    1.72 sec
+      Start 24: procedural_life
+25/44 Test #14: fieldwork_play_loop ..................   Passed    2.23 sec
+      Start 41: precision_helm
+26/44 Test #13: strategy_continuity ..................   Passed    2.23 sec
+      Start 44: landing_and_departure
+27/44 Test #42: ship_handling ........................   Passed    2.02 sec
+      Start 40: living_world
+28/44 Test #24: procedural_life ......................   Passed    2.09 sec
+      Start 43: branding_and_save_continuity
+29/44 Test #41: precision_helm .......................   Passed    1.43 sec
+      Start  9: ship_destruction
+30/44 Test #44: landing_and_departure ................   Passed    1.59 sec
+      Start 21: life_graphics
+31/44 Test #40: living_world .........................   Passed    1.56 sec
+      Start 16: optional_flight_hud
+32/44 Test #43: branding_and_save_continuity .........   Passed    1.50 sec
+      Start 31: architecture_geometry
+33/44 Test  #9: ship_destruction .....................   Passed    1.47 sec
+      Start  1: ordinary_curved_space
+34/44 Test  #1: ordinary_curved_space ................   Passed    0.02 sec
+      Start 30: building_material
+35/44 Test #30: building_material ....................   Passed    0.02 sec
+      Start 10: combat_audio_signals
+36/44 Test #10: combat_audio_signals .................   Passed    0.10 sec
+      Start 19: screen_layout
+37/44 Test #19: screen_layout ........................   Passed    0.01 sec
+      Start 17: minor_material_layout
+38/44 Test #17: minor_material_layout ................   Passed    0.01 sec
+      Start 32: pointer_input
+39/44 Test #32: pointer_input ........................   Passed    0.01 sec
+      Start  4: graphics_quality_profiles
+40/44 Test  #4: graphics_quality_profiles ............   Passed    0.01 sec
+      Start  3: wireframe_geometry_and_preferences
+41/44 Test  #3: wireframe_geometry_and_preferences ...   Passed    0.01 sec
+42/44 Test #21: life_graphics ........................   Passed    1.44 sec
+43/44 Test #16: optional_flight_hud ..................   Passed    1.37 sec
+44/44 Test #31: architecture_geometry ................   Passed    1.32 sec
+
+100% tests passed, 0 tests failed out of 44
+
+Total Test time (real) =  25.70 sec

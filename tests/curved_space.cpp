@@ -12,6 +12,14 @@ int main(){int checks=0;auto require=[&](bool b,const char* why){checks++;if(!b)
  }
  auto view=hf::spaceView({4000,1000,9000},42);auto point=view.eye+hf::V3{13000,7000,11000};require(hf::length(hf::spacePoint(view,point)-point)>1000,"Ordinary flight lacks visible curvature away from rifts");
  auto left=hf::spacePoint(view,point-hf::V3{.01,0,0}),right=hf::spacePoint(view,point+hf::V3{.01,0,0});require(hf::length(left-right)<.1,"Optical motion is discontinuous");
+
+ for(int i=0;i<200;i++){
+  double w=(i-100)*.00001;auto v=hf::unit(hf::V3{.6,.8,w});auto a=hf::nilGeodesic(v,3.8),b=hf::nilGeodesic(hf::unit(hf::V3{.6,.8,w+.0000001}),3.8);
+  require(hf::finite(a)&&hf::length(a-b)<.00001,"Axis-crossing light rays jump or become non-finite");
+  auto s=hf::spaceView({std::sin(i*.2)*18000,1000,std::cos(i*.2)*18000},42+i%4);s.strength=(i%4)*.25+.25;
+  auto ray=hf::unit(hf::V3{std::cos(i*.31),std::sin(i*.17),std::sin(i*.31)}),source=hf::spaceSky(s,ray);auto image=hf::spaceSkyImage(s,source,hf::unit(ray+hf::V3{.02,-.01,.01}));
+  require(image.error<.00001&&hf::length(hf::spaceSky(s,image.ray)-source)<.00001,"Sky-source image inversion misses the visible light source");
+ }
  Game game;game.enterFlight();auto position=game.s.flight.ship.position,velocity=game.s.flight.ship.velocity;auto fuel=game.s.fuel,hour=game.s.hours;for(int i=0;i<100;i++)hf::spacePoint(view,point+hf::V3{double(i),0,0});require(hf::length(game.s.flight.ship.position-position)==0&&hf::length(game.s.flight.ship.velocity-velocity)==0&&game.s.fuel==fuel&&game.s.hours==hour,"View calculations changed flight handling or time");
  std::cout<<checks<<" curved-space checks passed\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

@@ -39,7 +39,7 @@ void Renderer::prepareFoldViews(const Game& g,const Scene& sceneView,bool reduce
  foldDrawn=0;if(foldViewPass)return;
  std::vector<std::pair<double,int>> visible;auto eye=g.ship.position+(cockpitVisible?g.ship.up*3:V3{});
  for(int i=0;i<int(g.folds.size());i++){const auto& gate=g.folds[i];auto offset=gate.position-eye;double d=length(offset);
-  if(gate.peer<0||gate.peer>=int(g.folds.size())||d>3800||dot(eye-gate.position,gate.normal)<.03||dot(offset,g.ship.forward)<-gate.radius)continue;
+  if(gate.peer<0||gate.peer>=int(g.folds.size())||d>3800||dot(eye-gate.position,gate.normal)<.03||dot(spacePoint(ambient,gate.position)-eye,g.ship.forward)<-gate.radius)continue;
   visible.push_back({gate.radius/std::max(1.,d),i});
  }
  std::sort(visible.rbegin(),visible.rend());if(visible.size()>2)visible.resize(2);

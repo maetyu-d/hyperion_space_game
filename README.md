@@ -1,4 +1,4 @@
-# HYPERION 3.70
+# HYPERION 3.71
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,24 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Graphics display audit in 3.71
+
+A fresh display audit checked ordinary flight, close meshes, rift crossings,
+Nil pockets, minimal UI, clouds and both wireframe palettes. It also corrected
+three gaps in the curved-space presentation:
+
+- Explosions, debris and rift previews use their curved direction when checking
+  visibility, so visible effects are not discarded by the old flat-space test.
+- Lens glare follows the sun's actual curved sky image and is suppressed behind
+  opaque planets and minor bodies using the rendered depth field.
+- Ordinary and anomaly sky rays share a stable analytic expansion at the
+  curvature axis, avoiding cancellation as the view turns through it.
+
+The GPU regressions include an explosion whose physical direction is behind the
+camera but whose optical image is visible, a blocked-glare comparison, and
+CPU/GPU sky agreement through the axis. Physical flight handling is retained.
+The previous 3.70 app is preserved under `releases/`.
 
 ## Ordinary curved space in 3.70
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "space_shaders.hpp"
 namespace hyperion::flight {
 inline constexpr const char* foldWindowFragment=R"GLSL(#version 330
 uniform sampler2D texture0;uniform vec2 resolution;out vec4 finalColor;
@@ -10,10 +11,9 @@ uniform vec3 observer,centre,forward,up,right,worldRight,worldUp,worldAxis,sun;
 uniform float radius,weight,wireframe,ega,water,seed,psychedelic;
 uniform sampler2D surfaceMap,geologyMap;
 out vec4 finalColor;
+)GLSL" HYPERION_NIL_RAY_GLSL R"GLSL(
 vec3 rayPoint(vec3 v,float t){
- float w=v.z;vec3 q;
- if(abs(w)<.00001)q=vec3(v.xy*t,w*t);
- else{float s=sin(w*t),c=cos(w*t);q=vec3((v.x*s+v.y*(c-1.))/w,(v.x*(1.-c)+v.y*s)/w,w*t+dot(v.xy,v.xy)*(w*t-s)/(2.*w*w));}
+ vec3 q=hxRay(v,t);
  return observer+q+vec3(0.,0.,.5*(observer.x*q.y-observer.y*q.x));
 }
 vec3 velocity(vec3 v,float t){float s=sin(v.z*t),c=cos(v.z*t);return vec3(v.x*c-v.y*s,v.x*s+v.y*c,v.z);}

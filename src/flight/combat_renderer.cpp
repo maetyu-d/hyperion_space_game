@@ -49,7 +49,7 @@ void Renderer::drawCombat(const Game& g){
  // Cool smoke and solid fragments remain visible between the very short hot flashes.
  rlDisableDepthMask();
  for(const auto& e:g.effects){
-  double distance=length(e.position-g.ship.position);if(distance>1800||dot(e.position-g.ship.position,g.ship.forward)<-40)continue;
+  double distance=length(e.position-g.ship.position);if(distance>1800||!inFront(e.position,40))continue;
   if(e.kind!=ShipExplosion&&e.kind!=HullImpact)continue;
   double t=e.age/e.duration,fade=1-t;
   auto a=unit(cross(e.normal,{0,1,0}),{1,0,0}),b=unit(cross(a,e.normal));
@@ -104,7 +104,7 @@ void Renderer::drawCombat(const Game& g){
   }
  }
  for(const auto& e:g.effects){
-  if(length(e.position-g.ship.position)>3000||dot(e.position-g.ship.position,g.ship.forward)<-40)continue;
+  if(length(e.position-g.ship.position)>3000||!inFront(e.position,40))continue;
   double t=std::clamp(e.age/e.duration,0.,1.),fade=1-t;
   auto a=unit(cross(e.normal,{0,1,0}),{1,0,0}),b=unit(cross(a,e.normal));Color c=pigment(e.weapon);
   if(e.kind==ChainDischarge){
