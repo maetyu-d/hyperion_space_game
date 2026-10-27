@@ -31,7 +31,7 @@ void hyperion::Renderer::flightDirector(const flight::LandingInfo& landing,doubl
    }
   }
  }
- const V3 target=enemy?f.traffic[selected].position:m.navigation,offset=target-f.ship.position;
+ const V3 target=enemy?f.apparentPosition(f.ship.position,f.traffic[selected].position):m.navigation,offset=target-f.ship.position;
  const Color targetTint=enemy?(f.traffic[selected].hostile?pink:ice):mint;
  if(length(offset)>1){const bool ahead=dot(offset,f.ship.forward)>0;Vector2 q{};if(ahead)q=flightGraphics.project(target,w,h);
   if(ahead&&hudContains(layout.bearing,{q.x,q.y})){if(!enemy&&f.lineOfSight(f.ship.position,target)){stroke({q.x,q.y-5},{q.x+5,q.y},mint);stroke({q.x+5,q.y},{q.x,q.y+5},mint);stroke({q.x,q.y+5},{q.x-5,q.y},mint);stroke({q.x-5,q.y},{q.x,q.y-5},mint);}}

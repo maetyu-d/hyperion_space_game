@@ -1,0 +1,62 @@
+[
+  {
+    "centreVariance": 1784.1520560041313,
+    "crossingMeanAbsoluteError": -1.0,
+    "destinationViews": 2,
+    "mouths": 2,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "trade-fold-high",
+    "wireframe": false
+  },
+  {
+    "centreVariance": 1101.9793806996229,
+    "crossingMeanAbsoluteError": -1.0,
+    "destinationViews": 2,
+    "mouths": 2,
+    "nilBody": -1,
+    "quality": "high",
+    "scene": "trade-fold-cga",
+    "wireframe": true
+  },
+  {
+    "centreVariance": 394.0122862692042,
+    "crossingMeanAbsoluteError": -1.0,
+    "destinationViews": 0,
+    "mouths": 1,
+    "nilBody": 5,
+    "quality": "high",
+    "scene": "nil-pocket-high",
+    "wireframe": false
+  },
+  {
+    "centreVariance": 4663.671941122701,
+    "crossingMeanAbsoluteError": -1.0,
+    "destinationViews": 0,
+    "mouths": 1,
+    "nilBody": 5,
+    "quality": "high",
+    "scene": "nil-pocket-cga",
+    "wireframe": true
+  },
+  {
+    "centreVariance": 816.338540111823,
+    "crossingMeanAbsoluteError": -1.0,
+    "destinationViews": 1,
+    "mouths": 2,
+    "nilBody": -1,
+    "quality": "low",
+    "scene": "crossing-before",
+    "wireframe": false
+  },
+  {
+    "centreVariance": 816.5270134268421,
+    "crossingMeanAbsoluteError": 2.9554233217592594,
+    "destinationViews": 1,
+    "mouths": 1,
+    "nilBody": -1,
+    "quality": "low",
+    "scene": "crossing-after",
+    "wireframe": false
+  }
+]

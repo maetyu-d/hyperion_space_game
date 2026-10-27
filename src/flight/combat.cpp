@@ -54,7 +54,7 @@ double Game::terrainHit(V3 a,V3 b)const{
 bool Game::lineOfSight(V3 a,V3 b)const{return !std::isfinite(terrainHit(a,b));}
 int Game::combatTargetIndex()const{if(combatTarget.empty())return -1;for(int i=0;i<int(traffic.size());i++)if(traffic[i].id==combatTarget&&!traffic[i].dead)return i;return -1;}
 void Game::cycleCombatTarget(){
- int old=combatTargetIndex();for(int n=1;n<=int(traffic.size());n++){int i=(old+n)%int(traffic.size());const auto& t=traffic[i];if(t.kind==1&&t.hostile&&!t.dead&&length(t.position-ship.position)<2400*sensorFactor(ship.vessel)){combatTarget=t.id;lock=0;message(std::string("Target / ")+enemyDef(t).name);return;}}
+ int old=combatTargetIndex();for(int n=1;n<=int(traffic.size());n++){int i=(old+n)%int(traffic.size());const auto& t=traffic[i];if(t.kind==1&&t.hostile&&!t.dead&&length(apparentPosition(ship.position,t.position)-ship.position)<2400*sensorFactor(ship.vessel)){combatTarget=t.id;lock=0;message(std::string("Target / ")+enemyDef(t).name);return;}}
  combatTarget.clear();lock=0;message("No hostile contacts in sensor range.");
 }
 bool Game::selectWeapon(int type){if(type<0||type>4||type==Seeker)return false;ship.combat.weapon=type;fireClock=std::max(fireClock,.12);message(std::string("Weapon / ")+weaponDef(type).name);return true;}
@@ -141,11 +141,11 @@ void Game::prepareCombat(double dt,Input& input){
  damageCue=std::max(0.,damageCue-dt);hitConfirm=std::max(0.,hitConfirm-dt);for(auto& e:effects){e.age+=dt;e.position+=e.velocity*dt;if(e.kind==ShipExplosion)e.velocity=e.velocity*std::exp(-dt*.2);}effects.erase(std::remove_if(effects.begin(),effects.end(),[](const auto& e){return e.age>=e.duration;}),effects.end());
  for(auto& w:wrecks){w.life-=dt;w.position+=w.velocity*dt;w.velocity=w.velocity*std::exp(-dt*.2);}wrecks.erase(std::remove_if(wrecks.begin(),wrecks.end(),[](const auto& w){return w.life<=0;}),wrecks.end());
  for(int i=0;i<int(traffic.size());i++){auto& t=traffic[i];if(t.id.empty())t.id="local:"+std::to_string(t.home)+":"+std::to_string(t.kind)+":"+std::to_string(t.role)+":"+std::to_string(i);}
- if(combatTargetIndex()<0&&!docked){combatTarget.clear();double best=.45;for(auto& t:traffic)if(t.kind==1&&t.hostile&&!t.dead&&length(t.position-ship.position)<1800){double score=dot(unit(t.position-ship.position),ship.forward);if(score>best){best=score;combatTarget=t.id;}}}
- int selected=combatTargetIndex();
- if(strategicCombat&&combatOrder==1&&selected>=0&&traffic[selected].hostile&&!docked){auto& t=traffic[selected];cancelNavigation();double lead=interceptTime(t.position-ship.position,t.velocity-ship.velocity,weaponDef(c.weapon).speed);auto direction=unit(t.position+(t.velocity-ship.velocity)*std::min(3.,lead)-ship.position);orient(turn(ship.forward,direction,dt*1.4),ship.up);ship.assist=true;ship.cruise=false;ship.throttle=length(t.position-ship.position)>350?.8:.2;input.fire=dot(direction,ship.forward)>.985;}
- bool tracking=selected>=0&&!docked&&length(traffic[selected].position-ship.position)<(800+1000*c.systems[Sensors]/100)*sensorFactor(ship.vessel)&&dot(unit(traffic[selected].position-ship.position),ship.forward)>.965;
- if(tracking&&lineOfSight(ship.position,traffic[selected].position))lock=std::min(1.,lock+dt*(.35+.65*c.systems[Sensors]/100)*sensorFactor(ship.vessel));else lock=std::max(0.,lock-dt*3);
+ if(combatTargetIndex()<0&&!docked){combatTarget.clear();double best=.45;for(auto& t:traffic)if(t.kind==1&&t.hostile&&!t.dead&&length(apparentPosition(ship.position,t.position)-ship.position)<1800){double score=dot(unit(apparentPosition(ship.position,t.position)-ship.position),ship.forward);if(score>best){best=score;combatTarget=t.id;}}}
+ int selected=combatTargetIndex();int through=-1;V3 image=selected>=0?apparentPosition(ship.position,traffic[selected].position,&through):V3{};V3 targetVelocity=selected>=0?apparentVelocity(through,traffic[selected].velocity):V3{};
+ if(strategicCombat&&combatOrder==1&&selected>=0&&traffic[selected].hostile&&!docked){cancelNavigation();double lead=interceptTime(image-ship.position,targetVelocity-ship.velocity,weaponDef(c.weapon).speed);auto direction=unit(image+(targetVelocity-ship.velocity)*std::min(3.,lead)-ship.position);orient(turn(ship.forward,direction,dt*1.4),ship.up);ship.assist=true;ship.cruise=false;ship.throttle=length(image-ship.position)>350?.8:.2;input.fire=dot(direction,ship.forward)>.985;}
+ bool tracking=selected>=0&&!docked&&length(image-ship.position)<(800+1000*c.systems[Sensors]/100)*sensorFactor(ship.vessel)&&dot(unit(image-ship.position),ship.forward)>.965;
+ if(tracking&&sighted(ship.position,traffic[selected].position))lock=std::min(1.,lock+dt*(.35+.65*c.systems[Sensors]/100)*sensorFactor(ship.vessel));else lock=std::max(0.,lock-dt*3);
 }
 void Game::updateCombat(double dt,const Input& input){
  auto& c=ship.combat;bool weaponsClear=!docked;
@@ -174,8 +174,8 @@ void Game::updateCombat(double dt,const Input& input){
   const auto& type=enemyDef(t);t.fireClock-=dt;t.stateClock=std::max(0.,t.stateClock-dt);t.shieldDelay=std::max(0.,t.shieldDelay-dt);t.decoyClock=std::max(0.,t.decoyClock-dt);t.evadeClock=std::max(0.,t.evadeClock-dt);
   t.energy=std::min(100.,t.energy+dt*8*type.reactor);t.heat=std::max(0.,t.heat-dt*6*type.cooling);if(t.heat>=85)t.venting=true;if(t.heat<38)t.venting=false;
   double shieldCapacity=type.shield*t.modules[2]/100;t.shield=std::min(t.shield,shieldCapacity);if(t.shieldDelay<=0)t.shield=std::min(shieldCapacity,t.shield+dt*2.5*t.modules[2]/100);
-  V3 victim=ship.position,victimVelocity=ship.velocity;std::string victimId="NOMA";bool attack=t.hostile&&!docked&&(!protectedPort(ship.position)||portCombat>0)&&length(t.position-ship.position)<1800;
-  if(!attack){double closest=1200;for(const auto& contact:traffic)if(!contact.dead&&enemiesOf(t,contact)){double range=length(contact.position-t.position);if(range<closest&&!protectedPort(contact.position)){victim=contact.position;victimVelocity=contact.velocity;victimId=contact.id;attack=true;closest=range;}}}
+  V3 actualVictim=ship.position;int via=-1;V3 victim=apparentPosition(t.position,actualVictim,&via),victimVelocity=apparentVelocity(via,ship.velocity);std::string victimId="NOMA";bool attack=t.hostile&&!docked&&(!protectedPort(ship.position)||portCombat>0)&&length(t.position-victim)<1800;
+  if(!attack){double closest=1200;for(const auto& contact:traffic)if(!contact.dead&&enemiesOf(t,contact)){int contactVia=-1;auto contactImage=apparentPosition(t.position,contact.position,&contactVia);double range=length(contactImage-t.position);if(range<closest&&!protectedPort(contact.position)){actualVictim=contact.position;victim=contactImage;victimVelocity=apparentVelocity(contactVia,contact.velocity);victimId=contact.id;attack=true;closest=range;}}}
   bool incoming=false,lockedSeeker=false;
   for(auto& b:bolts)if(b.life>0&&b.owner!=t.id){bool threat=!b.hostile&&t.hostile;for(const auto& owner:traffic)if(owner.id==b.owner)threat=enemiesOf(t,owner);if(!threat)continue;double distance=length(b.position-t.position);if(distance>500)continue;
    if(b.weapon==Seeker&&b.target==t.id&&distance<380){lockedSeeker=true;incoming=true;}
@@ -201,19 +201,21 @@ void Game::updateCombat(double dt,const Input& input){
    else if(distance<70||(t.state==3&&t.stateClock>0)){t.state=3;desired=(-toward+side*.7)*speed;if(t.stateClock<=0)t.stateClock=1.8;}
    else{t.state=distance<type.range?2:1;double standOff=type.range*(type.standOff>0?type.standOff:t.role==1?.58:t.role==2?.83:.72);double radial=std::clamp((distance-standOff)/100.,-.6,1.);desired=(toward*radial+side*(type.strafe>0?type.strafe:t.role==1?.8:t.role==2?.18:.38))*speed;}
   }else{t.state=0;t.serviceClock=0;double a=time*.035+t.phase;V3 patrol=home.position+V3{std::cos(a)*360,std::sin(a*1.5)*160,std::sin(a)*360};
+   if(t.managed&&!t.pirate&&!t.escortDuty)for(const auto& gate:folds)if(!gate.nil&&gate.authority==t.faction){patrol=gate.position+gate.normal*180+foldRight(gate)*(std::cos(a+t.phase)*95)+gate.up*(std::sin(a+t.phase)*65);break;}
    if(t.managed&&t.pirate){double closest=10000;for(const auto& convoy:traffic)if((convoy.kind==2||convoy.kind==3)&&!convoy.dead&&enemiesOf(t,convoy)&&!protectedPort(convoy.position)){double d=length(convoy.position-t.position);if(d<closest){closest=d;patrol=convoy.position;}}}
    if(t.managed&&!t.pirate&&t.escortDuty)for(const auto& convoy:traffic)if(convoy.kind==2&&!convoy.dead&&convoy.reason=="Commissioned escort"&&!t.enemies[convoy.faction]){patrol=convoy.position+home.normal*90;break;}
    desired=unit(patrol-t.position,t.forward)*std::min(speed,length(patrol-t.position));}
+  if(attack&&!withdrawing&&distance>500){double best=distance*.75;for(const auto& gate:folds)if(gate.peer>=0&&gate.peer<int(folds.size())){const auto& exit=folds[gate.peer];double approach=length(t.position-gate.position),remaining=length(actualVictim-exit.position);if(approach<2500&&remaining<1500&&approach+remaining<best&&dot(t.position-gate.position,gate.normal)>0){best=approach+remaining;desired=unit(gate.position-gate.normal*60-t.position)*speed;t.state=1;}}}
   // Separated wing slots stop all four roles collapsing into the same firing line.
   for(int j=0;j<int(traffic.size());j++)if(j!=i&&traffic[j].kind==1&&!traffic[j].dead){auto away=t.position-traffic[j].position;double gap=length(away);if(gap<80)desired+=unit(away,side)*(speed*(1-gap/80)*.7);}
-  if(t.modules[0]>2)t.velocity=mix(t.velocity,desired,1-std::exp(-dt*(t.state==5?3.5:1.3)));else t.state=8;t.position+=t.velocity*dt;
+  if(t.modules[0]>2)t.velocity=mix(t.velocity,desired,1-std::exp(-dt*(t.state==5?3.5:1.3)));else t.state=8;t.position+=t.velocity*dt;foldTraffic(t);
   for(const auto& p:planets){auto local=t.position-p.centre;double floor=p.radius+terrain(p,unit(local))+27;if(length(local)<floor){auto n=unit(local);t.position=p.centre+n*floor;t.velocity+=n*std::max(0.,-dot(t.velocity,n));}}
   for(int j=0;j<int(worldObjects.size())&&!t.dead;j++){const auto& o=worldObjects[j];if((o.kind!=hyperion::DebrisObject&&o.kind!=hyperion::SalvageObject)||length(o.position-t.position)>o.scale+type.radius+12)continue;auto hitbox=o;hitbox.half+=V3{type.radius*.3,type.radius*.3,type.radius*.3};if(std::isfinite(worldObjectHit(t.previous,t.position,hitbox))){auto impact=length(t.velocity);t.position=t.previous;t.velocity=t.velocity*-.15;if(impact>2){damageTraffic(i,std::min(30.,impact*.25),CollisionDamage,o.position,false,0,"debris");damageWorld(j,std::min(35.,impact*.4),CollisionDamage,t.position,false,t.id);}break;}}
   if(t.dead)continue;
   // Thrusters allow the nose to track independently of sideways movement.
   double lead=interceptTime(victim-t.position,victimVelocity,weaponDef(type.weapon).speed*.8);V3 aim=unit(victim+victimVelocity*std::min(2.,lead)-t.position);
   t.forward=turn(t.forward,attack&&!withdrawing?aim:unit(t.velocity,t.forward),dt*(t.role==1?2.8:1.6)*type.agility);
-  bool canAttack=attack&&!withdrawing&&t.state!=5&&!t.venting&&t.fireClock<=0&&t.modules[1]>5&&distance<type.range+140&&dot(aim,t.forward)>.92&&lineOfSight(t.position,victim);
+  bool canAttack=attack&&!withdrawing&&t.state!=5&&!t.venting&&t.fireClock<=0&&t.modules[1]>5&&distance<type.range+140&&dot(aim,t.forward)>.92&&sighted(t.position,actualVictim);
   if(canAttack){
    int weapon=t.chargeWeapon>=0?t.chargeWeapon:t.role==2&&t.missiles>0&&t.salvos%3==0&&distance>180?Seeker:type.weapon;
    const auto& w=weaponDef(weapon);double warmup=weapon==Seeker?1.0:weapon==Plasma?.65:weapon==Resonance?.4:0;
@@ -233,15 +235,18 @@ void Game::updateCombat(double dt,const Input& input){
  for(auto& b:bolts){
   if(b.life<=0)continue;
   if(b.weapon==3&&!b.target.empty()){V3 target,velocity;bool found=false;if(b.target=="NOMA"&&!docked){target=ship.position;velocity=ship.velocity;found=true;}else for(const auto& t:traffic)if(t.id==b.target&&!t.dead){target=t.position;velocity=t.velocity;found=true;break;}
-   if(found){double speed=length(b.velocity);b.velocity=turn(b.velocity,target+velocity*.2-b.position,dt*1.65)*speed;}else b.target.clear();}
-  double step=std::min(dt,b.life),fraction=dt>0?step/dt:1;b.previous=b.position;b.position+=b.velocity*step;b.life-=dt;double nearest=terrainHit(b.previous,b.position);int hit=-3;int worldHit=-1;
+   if(found){int via=-1;target=apparentPosition(b.position,target,&via);velocity=apparentVelocity(via,velocity);double speed=length(b.velocity);b.velocity=turn(b.velocity,target+velocity*.2-b.position,dt*1.65)*speed;}else b.target.clear();}
+  double step=std::min(dt,b.life),fraction=dt>0?step/dt:1;b.previous=b.position;b.position+=b.velocity*step;b.life-=dt;double sweepStart=0;for(int foldPass=0;foldPass<5;foldPass++){double nearest=terrainHit(b.previous,b.position);int hit=-3;int worldHit=-1;
   for(int i=0;i<int(worldObjects.size());i++){if(worldObjects[i].kind==MinorObjectKind)continue;double h=worldObjectHit(b.previous,b.position,worldObjects[i]);if(h<nearest){nearest=h;worldHit=i;}}
   if(worldHit<0){int body=-1;double h=minorHit(b.previous,b.position,0,&body);if(body>=0&&h<=nearest+1e-7)for(int i=0;i<int(worldObjects.size());i++)if(worldObjects[i].kind==MinorObjectKind&&worldObjects[i].slot==body){worldHit=i;nearest=h;break;}}
   const Traffic* shooter=nullptr;for(const auto& t:traffic)if(t.id==b.owner){shooter=&t;break;}
-  if(b.hostile&&(!shooter||shooter->hostile)&&!docked){double h=sphereHit(b.previous-ship.previous,b.position-mix(ship.previous,ship.position,fraction),{},3);if(h<nearest){nearest=h;hit=-2;worldHit=-1;}}
+  if(b.hostile&&(!shooter||shooter->hostile)&&!docked){double h=sphereHit(b.previous-mix(ship.previous,ship.position,sweepStart),b.position-mix(ship.previous,ship.position,fraction),{},3);if(h<nearest){nearest=h;hit=-2;worldHit=-1;}}
   for(int i=0;i<int(traffic.size());i++){auto& t=traffic[i];if(t.dead||t.id==b.owner||(b.hostile&&(shooter?!enemiesOf(*shooter,t):t.kind!=2)))continue;double radius=t.kind==1?enemyDef(t).radius:t.kind==2?9:5;
-   double h=sphereHit(b.previous-(dt>0?t.previous:t.position),b.position-mix(dt>0?t.previous:t.position,t.position,fraction),{},radius);if(h<nearest){nearest=h;hit=i;worldHit=-1;}}
+   double h=sphereHit(b.previous-mix(dt>0?t.previous:t.position,t.position,sweepStart),b.position-mix(dt>0?t.previous:t.position,t.position,fraction),{},radius);if(h<nearest){nearest=h;hit=i;worldHit=-1;}}
+  double gateFraction;int gate=firstFold(folds,b.previous,b.position,gateFraction);
+  if(gate>=0&&gateFraction<nearest&&foldPass<4){const auto& entry=folds[gate];const auto& exit=folds[entry.peer];auto crossing=mix(b.previous,b.position,gateFraction);b.previous=foldPoint(entry,exit,crossing)+exit.normal*.0001;b.position=foldPoint(entry,exit,b.position);b.velocity=foldVector(entry,exit,b.velocity);sweepStart+=(fraction-sweepStart)*gateFraction;continue;}
   if(std::isfinite(nearest)){auto at=mix(b.previous,b.position,nearest);double damage=b.damage>0?b.damage:(b.hostile?12:34);if(worldHit>=0){damageWorld(worldHit,damage,b.weapon,at,!b.hostile,b.owner);}else if(hit==-2){lastAttacker=b.owner;damageShip(damage,b.weapon,b.previous);}else if(hit>=0){damageTraffic(hit,damage,b.weapon,at,!b.hostile,b.target==traffic[hit].id?b.module:0,b.owner);if(b.weapon==Resonance&&!b.hostile)chainArc(hit,damage);}else {effect(at,HullImpact,{}, {},-unit(b.velocity),b.weapon,std::clamp(damage/28.,.35,1.8));int struckMinor=-1;double minorFraction=minorHit(b.previous,b.position,0,&struckMinor);Event impact{struckMinor>=0&&minorFraction<=nearest+1e-7?"minorGroundHit":"groundHit",struckMinor>=0&&minorFraction<=nearest+1e-7?struckMinor:nearestPlanet(),0,"",b.owner};if(impact.kind=="groundHit"){double best=1e30;for(int p=0;p<int(planets.size());p++){double d=std::abs(length(at-planets[p].centre)-planets[p].radius);if(d<best){best=d;impact.port=p;}}}impact.amount=damage;impact.weapon=b.weapon;impact.position=at;impact.normal=impact.kind=="minorGroundHit"?unit(at-minorBodies[impact.port].centre):unit(at-planets[impact.port].centre);events.push_back(impact);}if(b.weapon==Seeker||b.weapon==Plasma)splashWorld(*this,at,damage*.6,b.weapon==Seeker?24:8,b.weapon,!b.hostile,worldHit,b.owner);b.life=0;}
+  break;}
  }
  for(auto& t:traffic)if(t.kind==2)t.previous=t.position;
  bolts.erase(std::remove_if(bolts.begin(),bolts.end(),[](const auto& b){return b.life<=0;}),bolts.end());

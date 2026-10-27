@@ -28,12 +28,12 @@ int main(){try{
  Game g;g.ensureEconomy();g.enterFlight();auto& f=g.s.flight;
  check(f.planets.size()==g.universe.planets("HOME").size(),"all home planets share flight world");
  for(int i=0;i<int(f.planets.size());i++){auto actual=g.universe.planet("HOME",i);const auto& visual=f.planets[i];check(close(visual.water,actual.water)&&close(visual.life,actual.life)&&close(visual.atmosphere,actual.pressure),"flight materials derive from the actual surveyed world");check((visual.kind==5)==actual.giant,"gas giant material follows real planet type");}
- check(f.ports.size()==f.planets.size()+g.s.economy.settlements.size()*2+g.s.economy.pirates.size()+f.minorBodies.size(),"every settlement has surface and orbit gateways");
+ check(f.ports.size()==f.planets.size()+g.s.economy.settlements.size()*2+g.s.economy.pirates.size()+f.minorBodies.size()+f.folds.size(),"every settlement has surface and orbit gateways alongside independent fold mouths");
  for(V2 p:std::vector<V2>{{0,0},{3200,1800},{-17400,-9300},{9000000,-8000000}}){auto restored=g.surfacePosition(g.surfaceNormal(p));check(close(restored.x,p.x,.01)&&close(restored.y,p.y,.01),"surface chart reversibility");}
  auto home=g.s.economy.settlements.front().id;int surface=g.flightPort(home,false),orbit=g.flightPort(home,true);
  check(surface>=0&&orbit>=0,"live settlement flight links");
  // Visit every surface, orbital and uncrewed port, including the gas giant relay.
- for(int i=0;i<int(f.ports.size());i++)if(f.ports[i].minor<0)navigate(g,i);
+ for(int i=0;i<int(f.ports.size());i++)if(f.ports[i].minor<0&&f.ports[i].fold<0)navigate(g,i);
  f.dockAt(surface);g.processFlightEvents();check(g.canDock(*findSettlement(g.s.economy,home)),"physical dock authorizes strategy trade");
  auto beforeStock=g.shipStock();auto& port=*findSettlement(g.s.economy,home);port.stock[Rations]=100;port.treasury=5000;g.s.economy.credits=5000;
  g.action("buy",home+"|4");check(g.shipStock()[Rations]==beforeStock[Rations]+5,"flight exchange loads canonical cargo");

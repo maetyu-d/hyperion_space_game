@@ -1,0 +1,18 @@
+Building material storage: RGBA8 / 4096 / 13 mip levels
+Building detail storage: RGBA8 / 4096 / 13 mip levels
+Building detail mean: 0.07767 / 0.45515 / 0.21553 / 0.49768
+Sun shadow storage: R32F / 4096
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Weather depth: R32F / matched terrain / 1440x900
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1440x900
+Weather depth: R32F / matched terrain / 2880x1800
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / extreme graphics / spectral silk / auroras / 3D cockpit / 2880x1800
+Hyperion native run: 2 frames / shaders OK / 1440x900
+Measured render rate: 0.211872 frames/s
+Sun shadow cache: 0 updates / 0 active frames
+Sun shadow cache: 0 updates / 0 active frames

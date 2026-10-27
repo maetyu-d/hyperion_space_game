@@ -76,7 +76,7 @@ void Renderer::combatPanel(float x,float& y,float width){
  if(game->turnBased()){wrapped("Orders resolve on Wait 1h / N. K takes the helm in real time.",x,y,width,12,mint);y+=12;}
  const char* orders[]={"Hold","Engage","Evade"};for(int i=0;i<3;i++)button(orders[i],{x+i*(width+6)/3,y,(width-12)/3,29},"combatOrder",std::to_string(i),!f.docked,f.combatOrder==i);y+=39;
  if(game->turnBased()){wrapped(f.autopilot?"Navigator continues on turns; K resumes the same route.":f.combatOrder==0?"Hold damps thrust during turns. Your cockpit helm settings are retained.":"Combat orders act during the committed hour. Planning time stays frozen.",x,y,width,11,muted);y+=14;}
- fitted(selected>=0?(f.traffic[selected].name.empty()?std::string(hyperion::flight::enemyDef(f.traffic[selected].role).name):f.traffic[selected].name)+" / "+n(hyperion::flight::length(f.traffic[selected].position-f.ship.position))+" km":"No hostile target",x,y,width-95,12,selected>=0?(f.traffic[selected].hostile?pink:mint):muted);button("Target / T",{x+width-91,y-6,91,27},"combatTarget");y+=33;
+ fitted(selected>=0?(f.traffic[selected].name.empty()?std::string(hyperion::flight::enemyDef(f.traffic[selected].role).name):f.traffic[selected].name)+" / "+n(hyperion::flight::length(f.apparentPosition(f.ship.position,f.traffic[selected].position)-f.ship.position))+" km":"No hostile target",x,y,width-95,12,selected>=0?(f.traffic[selected].hostile?pink:mint):muted);button("Target / T",{x+width-91,y-6,91,27},"combatTarget");y+=33;
  const char* names[]={"1 Pulse","2 Kinetic","3 Plasma","4 Resonance"};for(int i=0;i<4;i++)button(names[i],{x+(i%2)*(width+6)/2,y+(i/2)*33,(width-6)/2,28},"weapon",std::to_string(hyperion::flight::primaryWeapon(i)),true,c.weapon==hyperion::flight::primaryWeapon(i));y+=76;
  button(std::string("Focus / U / ")+hyperion::flight::focusName(f.aimSystem),{x,y,width,28},"combatFocus");y+=39;
  if(selected>=0){const auto& enemy=f.traffic[selected];if(enemy.managed){wrapped(enemy.allegiance+" / "+enemy.reason,x,y,width,12,enemy.hostile?pink:mint);y+=12;if(enemy.pirate){auto* band=findPirates(game->s.economy,enemy.band);if(band&&!(band->truceUntil>game->s.hours&&band->grievance<10)){button("Settle feud / "+std::to_string(pirateTrucePrice(*band))+" cr",{x,y,width,28},"pirateTruce",band->id);y+=39;}}}row(std::string(enemy.hostile?"Hostile / ":"Contact / ")+hyperion::flight::enemyStateName(enemy),n(enemy.health)+" hull",x,y,width);row("Drive / weapons / shields",n(enemy.modules[0])+" / "+n(enemy.modules[1])+" / "+n(enemy.modules[2]),x,y,width);}
@@ -135,7 +135,8 @@ void Renderer::flightHUD(){
  const float contextY=std::max(74.f,ui->noticeBottom+8);
  if(game->toastTime<=0&&compact){
   const float limit=compact?std::min(330.f,edge-48):350.f;
-  const auto description=f.planets[f.nearestPlanet()].name+(f.atmosphereDensity()>.001?" / ATMOSPHERE / ":" / SPACE / ")+hyperion::flight::vesselDef(f.ship.vessel.model).name;
+  bool nil=false;for(const auto& region:f.nilRegions)nil|=hyperion::flight::nilWeight(region,f.ship.position)>.01;
+  const auto description=(nil?std::string("NIL OPTICS / "):std::string{})+f.planets[f.nearestPlanet()].name+(f.atmosphereDensity()>.001?" / ATMOSPHERE / ":" / SPACE / ")+hyperion::flight::vesselDef(f.ship.vessel.model).name;
   const auto value=elide(description,limit-24,10,true);
   const float railWidth=MeasureTextEx(mono,value.c_str(),10,.1f).x+24;
   hudCard({24,74,railWidth,26},ice);text(value,36,82,10,muted,true);
@@ -197,18 +198,18 @@ void Renderer::flightHUD(){
  auto& c=f.ship.combat;
  const int selected=f.combatTargetIndex();
  if(!f.docked&&selected>=0&&!compact){
-  const auto& enemy=f.traffic[selected];const auto offset=enemy.position-f.ship.position;
-  const double range=hyperion::flight::length(offset);const auto q=flightGraphics.project(enemy.position,w,h);
+  const auto& enemy=f.traffic[selected];int through=-1;auto image=f.apparentPosition(f.ship.position,enemy.position,&through);const auto offset=image-f.ship.position;
+  const double range=hyperion::flight::length(offset);const auto q=flightGraphics.project(image,w,h);
   const Color tint=!enemy.hostile?ice:f.lock>=1?mint:pink;
-  if(hyperion::flight::dot(offset,f.ship.forward)>0&&f.lineOfSight(f.ship.position,enemy.position)&&q.x>60&&q.x<edge-80&&q.y>180&&q.y<markerBottom){
+  if(hyperion::flight::dot(offset,f.ship.forward)>0&&f.sighted(f.ship.position,enemy.position)&&q.x>60&&q.x<edge-80&&q.y>180&&q.y<markerBottom){
    const float size=float(clamp(1550/range,14.,46.));
    for(int a:{-1,1})for(int b:{-1,1}){
     DrawLineEx({q.x+a*size,q.y+b*size},{q.x+a*(size-7),q.y+b*size},1.5f,tint);
     DrawLineEx({q.x+a*size,q.y+b*size},{q.x+a*size,q.y+b*(size-7)},1.5f,tint);
    }
    if(enemy.charge>.05)hudBar({q.x-size,q.y+size+6,size*2,3},enemy.charge,pink);
-   const double lead=hyperion::flight::interceptTime(offset,enemy.velocity-f.ship.velocity,hyperion::flight::weaponDef(c.weapon).speed);
-   const auto pip=flightGraphics.project(enemy.position+(enemy.velocity-f.ship.velocity)*std::min(3.,lead),w,h);
+   const double lead=hyperion::flight::interceptTime(offset,f.apparentVelocity(through,enemy.velocity)-f.ship.velocity,hyperion::flight::weaponDef(c.weapon).speed);
+   const auto pip=flightGraphics.project(image+(f.apparentVelocity(through,enemy.velocity)-f.ship.velocity)*std::min(3.,lead),w,h);
    if(lead>0&&lead<hyperion::flight::weaponDef(c.weapon).life&&pip.x>40&&pip.x<edge-40&&pip.y>170&&pip.y<markerBottom){hudDiamond(pip,4,Color{153,255,218,190});}
   }
  }
@@ -367,13 +368,34 @@ void Renderer::flightHUD(){
  }
  flightDirector(landing,stoppingDistance);
 }
+void Renderer::foldPanel(float x,float& y,float width){
+ if(game->hasExpedition()||(game->s.mode==Mode::System&&game->s.viewStar!=game->s.currentStar))return;
+ game->ensureFlight();auto& f=game->s.flight;
+ if(!disclosure("Folded connections / "+std::to_string(f.folds.size()/2),"folds",x,y,width))return;
+ for(int i=0;i<int(f.folds.size());i++){const auto& gate=f.folds[i];const auto& record=game->s.economy.folds.at(gate.link);
+  bool selected=f.target>=0&&f.target<int(f.ports.size())&&f.ports[f.target].fold==i;
+  button(gate.name,{x,y,width,28},"flightTarget",gate.id,true,selected);y+=36;
+  if(!selected)continue;
+  wrapped(game->s.economy.factions[record.authority].name+" / "+n(hyperion::flight::length(gate.position-f.ship.position))+" km / "+(record.surveyed?"Charted":"Uncharted"),x,y,width,11,mint);y+=10;
+  bool near=!f.deployed&&!f.docked&&f.speed()<=40&&hyperion::flight::length(gate.position-f.ship.position)<=600;
+  button(record.surveyed?"Connection charted":"Survey / 6 battery",{x,y,width,28},"foldSurvey",gate.id,near&&!record.surveyed&&game->s.battery>=6);y+=36;
+  button(game->turnBased()?"Traverse / 1 h":"Fly through / J",{x,y,width,28},"foldTraverse",gate.id,near&&(!game->turnBased()||record.surveyed));y+=36;
+  wrapped(record.nil?"Far mouth / Nil optical region / instruments retain one real contact per object":"Charted freight uses this shortcut. Authority restrictions can hold convoys at the mouth.",x,y,width,11,muted);y+=12;
+ }
+}
 void Renderer::flightPanel(float x,float& y,float width){
  auto& f=game->s.flight;combatPanel(x,y,width);const auto& target=f.ports[f.target];bool debris=target.minor>=0&&f.minorBodies[target.minor].destroyed;if(target.disabled||debris){wrapped(debris?"Fractured body / finite salvage remains":"Berth destroyed / reconstruction required",x,y,width,12,pink);y+=14;}
- fitted(target.name,x,y,width,21,pearl);y+=31;fitted((target.minor>=0?"Fly-by / ":target.planet>=0?"Surface / ":"Orbit / ")+n(f.targetDistance())+" km",x,y,width,11,mint,true);y+=23;
+ fitted(target.name,x,y,width,21,pearl);y+=31;fitted((target.fold>=0?"Spatial fold / ":target.minor>=0?"Fly-by / ":target.planet>=0?"Surface / ":"Orbit / ")+n(f.targetDistance())+" km",x,y,width,11,mint,true);y+=23;
  if(auto* site=flightPresentation.settlement(target.settlement)){fitted(site->factionName+" / "+n(site->residents)+" residents",x,y,width,12,muted);y+=22;if(site->alerts){fitted(site->status,x,y,width,12,pink);y+=24;}}
  button(f.autopilot?"Take control / J":"Navigate / J",{x,y,width,32},"navigate","",!(f.docked&&f.dockedPort==f.target),true);y+=44;
  if(target.minor>=0){const auto& b=f.minorBodies[target.minor];bool surveyed=game->s.scanned.count(b.source.id);wrapped(b.source.composition,x,y,width,12,mint);y+=12;
   button(surveyed?"Survey archived":"Survey / 6 battery",{x,y,width,30},"surveyMinor","",!surveyed&&!b.destroyed&&game->s.battery>=6&&f.speed()<=20&&hyperion::flight::length(b.centre-f.ship.position)-b.source.radius<=600);y+=40;
+ }
+ if(target.fold>=0){const auto& gate=f.folds[target.fold];const auto& record=game->s.economy.folds.at(gate.link);bool near=f.targetDistance()<=600&&f.speed()<=40&&!f.docked;
+  std::string toll=record.authority==0?" / free passage":!foldAccess(game->s.economy,record,0)?" / restricted / 60 cr restitution":game->s.economy.credits<12?" / 12 cr required / 60 cr if unpaid":" / transit toll 12 cr";
+  wrapped(game->s.economy.factions[gate.authority].name+" / "+(record.nil?"Nil optical pocket":"Freight connection")+toll,x,y,width,12,mint);y+=12;
+  button(record.surveyed?"Connection charted":"Survey / 6 battery",{x,y,width,29},"foldSurvey",gate.id,near&&!record.surveyed&&game->s.battery>=6);y+=37;
+  wrapped("Fly through the luminous aperture. Your position, momentum and attitude follow its visible connection.",x,y,width,11,muted);y+=12;
  }
  const char* filters[]={"All","Surface","Orbit","Bodies"};for(int i=0;i<4;i++)button(filters[i],{x+i*(width+6)/4,y,(width-18)/4,28},"filterDestinations",std::to_string(i),true,ui->destinationFilter==i);y+=40;
  std::vector<int> order(f.ports.size());std::iota(order.begin(),order.end(),0);std::stable_sort(order.begin(),order.end(),[&](int a,int b){return hyperion::flight::length(f.ports[a].position-f.ship.position)<hyperion::flight::length(f.ports[b].position-f.ship.position);});

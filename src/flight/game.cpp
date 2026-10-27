@@ -70,6 +70,7 @@ void Game::dockAt(int index,bool preserveAttitude){
  if(index>=0&&index<int(ports.size())&&ports[index].recovery){cancelNavigation();ship.throttle=0;ship.velocity={};docked=false;dockedPort=-1;savedDock.clear();message("Recovery approach / hold outside the wreck and close below 5 km/s");return;}
  if(index>=0&&index<int(ports.size())&&ports[index].disabled){index=-1;for(int i=0;i<int(ports.size());i++)if(!ports[i].disabled&&ports[i].minor<0){index=i;break;}if(index<0){docked=false;dockedPort=-1;savedDock.clear();return;}}
   if(index<0||index>=int(ports.size()))return;
+  if(ports[index].fold>=0){message("Fold aperture / fly through the opening; docking clamps cannot attach");return;}
   if(ports[index].minor>=0){message("Fly-by destination / no docking facilities. Survey from the destination panel.");return;}
   ship.position=ports[index].position+ports[index].normal*(ports[index].planet<0?90:.25);
   ship.velocity={};ship.throttle=0;ship.cruise=false;docked=true;dockedPort=index;lastBerth=index;autopilot=false;route.clear();
@@ -84,7 +85,7 @@ bool Game::dock(){
   if(ports.empty())return false;
   if(docked){launch();return true;}
   int nearest=-1;double best=1e30;
-  for(int i=0;i<int(ports.size());i++)if(ports[i].minor<0&&!ports[i].disabled&&!ports[i].recovery){double d=length(ship.position-ports[i].position);if(d<best){best=d;nearest=i;}}
+  for(int i=0;i<int(ports.size());i++)if(ports[i].minor<0&&ports[i].fold<0&&!ports[i].disabled&&!ports[i].recovery){double d=length(ship.position-ports[i].position);if(d<best){best=d;nearest=i;}}
   if(nearest<0)return false;
   double limit=ports[nearest].planet>=0?55:95;
   if(best<limit&&speed()<55){
@@ -145,7 +146,9 @@ void Game::navigate(bool resume){
   if(ship.fuel<1&&!resume){message("Refuel before engaging the navigator.");return;}
   if(docked)launch();
   launchAssist=0;ship.assistCaptureTime=0;ship.assistCapture={};
-  route=transferRoute(navigationBodies(),ship.position,ports[target]);
+  if(ports[target].fold>=0){const auto& gate=folds[ports[target].fold];auto approach=ports[target];approach.position=gate.position+gate.normal*140;route=transferRoute(navigationBodies(),ship.position,approach);route.push_back(gate.position+gate.normal*90);route.push_back(gate.position-gate.normal*90);}
+  else route=transferRoute(navigationBodies(),ship.position,ports[target]);
+  route=avoidFoldRoute(folds,ship.position,route,ports[target].fold);
   autopilot=true;ship.cruise=true;ship.gear=false;
   message("Navigator engaged: "+ports[target].name+". J cancels / steering returns manual control.");
 }
@@ -162,7 +165,7 @@ void Game::update(double dt,const Input& supplied){
   // Integrate forces, contacts and RCS in steps of at most 10 ms.
   int steps=std::max(1,int(std::ceil(dt/.01)));double step=dt/steps;
   if(dt>0)for(int i=0;i<steps&&!docked;i++)stepHandling(step,in);
-  worldContacts(*this);updateCombat(dt,in);
+  foldContacts();worldContacts(*this);updateCombat(dt,in);
   if(ship.hull<=0){events.push_back({"rescue",lastBerth,0,"",lastAttacker,"NOMA"});bolts.clear();combatTarget.clear();lock=0;ship.combat.energy=25;ship.combat.heat=0;ship.combat.overheated=false;ship.hull=25;ship.shield=0;ship.fuel=std::max(5.,ship.fuel);dockAt(std::clamp(lastBerth,0,int(ports.size())-1));message("Emergency rescue to the last berth. Cargo lost; repair before departure.");}
   recordIds();
 }

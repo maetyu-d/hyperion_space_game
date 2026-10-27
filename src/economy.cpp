@@ -321,6 +321,8 @@ void updateRoute(Economy& e,TradeRoute& route,double dt,const std::unordered_map
     Settlement* from=fromIt==index.end()?nullptr:fromIt->second;Settlement* to=toIt==index.end()?nullptr:toIt->second;
     if (!from||!to) {route.status="Endpoint unavailable";return;}
     if (route.outbound) {
+        auto fold=e.folds.find(route.fold);
+        if(fold!=e.folds.end()&&route.remaining>route.duration*.5&&!foldAccess(e,fold->second,route.owner==0?0:from->owner)){route.status="Holding at fold / authority embargo";return;}
         route.remaining=std::max(0.,route.remaining-dt);
         if (route.remaining>1e-8) {route.status="In transit / "+std::to_string(int(std::ceil(route.remaining)))+" h";return;}
                 if(objectIntegrity(e.worldDamage,"port:orbit:"+to->id)<=0&&objectIntegrity(e.worldDamage,"port:surface:"+to->id)<=0){route.status="Holding cargo / destination berths destroyed";return;}
@@ -335,6 +337,11 @@ void updateRoute(Economy& e,TradeRoute& route,double dt,const std::unordered_map
     if (route.owner==0&&(from->owner!=0||to->owner!=0)) {route.status="Charter changed / route blocked";return;}
     if (route.commercial&&e.factions[from->owner].relations[to->owner]<-50) {route.status="Faction embargo";return;}
     if(objectIntegrity(e.worldDamage,"port:orbit:"+from->id)<=0&&objectIntegrity(e.worldDamage,"port:surface:"+from->id)<=0){route.status="Departure berths destroyed / rebuild required";return;}
+    if(route.conventionalDuration<=0)route.conventionalDuration=route.duration;
+    const auto* shortcut=freightFold(e,*from,*to,route.owner);
+    route.fold=shortcut?shortcut->id:std::string{};route.duration=shortcut?std::max(1.5,route.conventionalDuration*.32):route.conventionalDuration;
+    double toll=shortcut&&shortcut->authority!=(route.owner==0?0:from->owner)?4:0;
+    if(toll>0&&((route.owner==0&&e.credits<2+toll)||(route.owner!=0&&from->treasury<toll))){route.status="Fold handling fee unavailable";return;}
     double available=std::max(0.,from->stock[route.good]-reserveFor(*from,route.good));
     double need=route.commercial?std::max(0.,reserveFor(*to,route.good)*1.6-to->stock[route.good]):route.capacity;
     int capacity=route.owner==0&&e.researched[3]?32:route.capacity;
@@ -349,6 +356,8 @@ void updateRoute(Economy& e,TradeRoute& route,double dt,const std::unordered_map
         if (e.credits<2) {route.status="Freight fees unpaid";return;}
         e.credits-=2;e.factions[3].treasury+=2;
     }
+    if(toll>0){if(route.owner==0)e.credits-=int64_t(toll);else from->treasury-=int64_t(toll);e.factions[shortcut->authority].treasury+=int64_t(toll);}
+    if(shortcut){auto& fold=e.folds.at(shortcut->id);fold.freight=std::min(1e12,fold.freight+amount);}
     from->stock[Propellant]-=1;from->stock[route.good]-=amount;route.cargo[route.good]=amount;
     route.outbound=true;route.remaining=route.duration;route.status="In transit";
 }
@@ -357,6 +366,7 @@ void advanceEconomy(Economy& e,Universe& u,double targetHour) {
     if (!e.initialized) initializeEconomy(e,u,targetHour);
     // A fixed quarter-hour clock makes results independent of drawing frame rate.
     // Long imports are bounded; ordinary travel and waiting use the same clock.
+    for(const auto& star:e.systems)discoverFoldSpace(e,u,star);
     initializeEcosystems(e,u);targetHour=std::max(targetHour,e.hour);
     int steps=0;
     if(e.hour+.25>targetHour+1e-8)return;

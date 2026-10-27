@@ -1,0 +1,8 @@
+{
+  "firstLaunchDifferences": [
+    "/economy/folds"
+  ],
+  "secondFrozenRoundtripExact": true,
+  "binarySHA256": "1279f5b5efdcc86c226302426d29a8a7a868049e34173d6b4626d934007b6512",
+  "version": "3.69.0"
+}

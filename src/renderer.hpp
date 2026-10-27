@@ -60,7 +60,7 @@ class Renderer {
  void nextMoves(float,float&,float);void oceanOverlay();void oceanDrawer();void oceanOperations(float,float&,float);void diveReportDetails(float,float&,float);void wreckDeliveries(float,float&,float,bool);
  void turnPlanner(float,float&,float);void turnReport(float,float&,float);
  void missionPanel(float,float&,float);void economyPanel(float,float&,float);void civicResearchPanel(float,float&,float);void shipyardPanel(const Settlement&,float,float&,float);void colonyMarkers();
- void flightDirector(const hyperion::flight::LandingInfo&,double);void flightHUD();void flightPanel(float,float&,float);void combatPanel(float,float&,float);void boardingPanel(float,float&,float);void recoveryPanel(float,float&,float);
+ void flightDirector(const hyperion::flight::LandingInfo&,double);void flightHUD();void flightPanel(float,float&,float);void foldPanel(float,float&,float);void combatPanel(float,float&,float);void boardingPanel(float,float&,float);void recoveryPanel(float,float&,float);
  void overlay();void panel();void modal();void notification();void menus();void heading(const std::string&,float,float);void row(const std::string&,const std::string&,float,float&,float);
 public:
  struct PaletteStats {bool active;WirePalette mode=WirePalette::CGA;int pixels=0,outside=0;std::array<int,16> colours{};};PaletteStats paletteStats()const;

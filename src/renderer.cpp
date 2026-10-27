@@ -124,6 +124,7 @@ void Renderer::system(){State& s=game->s;Star star=game->universe.star(s.viewSta
  for(int i=0;i<180;i++){double x=game->universe.rnd(i,1),y=game->universe.rnd(i,2);DrawCircleV(v(float(x*w),float(y*h)),.65f,alpha(pearl,.19f));}
  for(size_t i=0;i<planets.size();i++){float r=first+(reach-first)*float(i+1)/float(planets.size());float yr=r*.64f;
  Vector2 prev{center.x+r,center.y};for(int j=1;j<=160;j++){float a=float(tau*j/160);Vector2 next{center.x+std::cos(a)*r,center.y+std::sin(a)*yr};line(prev,next,alpha(i==size_t(s.selectedPlanet)?mint:pearl,i==size_t(s.selectedPlanet)?.28f:.10f));prev=next;}}
+ for(const auto& [id,fold]:s.economy.folds)if(fold.star==s.viewStar&&fold.surveyed){auto point=[&](int i){const auto& p=planets[i];float r=first+(reach-first)*float(i+1)/float(planets.size()),a=float(p.phase+s.hours*.015/std::pow(p.orbit,.6));return Vector2{center.x+std::cos(a)*r,center.y+std::sin(a)*r*.64f};};auto a=point(fold.a),b=point(fold.b);for(int k=0;k<16;k+=2){Vector2 p{a.x+(b.x-a.x)*k/16,a.y+(b.y-a.y)*k/16},q{a.x+(b.x-a.x)*(k+1)/16,a.y+(b.y-a.y)*(k+1)/16};line(p,q,alpha(fold.nil?Color{232,96,255,255}:mint,.65f),1.5f);}}
  glow(center,115,Color{255,163,87,255},.25f);orbDraw(center,47*glyph,star.seed,.0f,true);text(star.name,center.x-28,center.y+47*glyph+12,11,pearl,true);
  for(size_t i=0;i<planets.size();i++){const auto& p=planets[i];float r=first+(reach-first)*float(i+1)/float(planets.size());float a=float(p.phase+s.hours*.015/std::pow(p.orbit,.6));Vector2 pos{center.x+std::cos(a)*r,center.y+std::sin(a)*r*.64f};float radius=float(10+p.size*5.5)*glyph;bool selected=int(i)==s.selectedPlanet&&!game->minorSelection();if(selected)radius*=1.25f;
  planet(p,pos,radius,selected);if(selected||!compact||CheckCollisionPointCircle(uiMouse(),pos,radius+10))fitted(p.name,pos.x+radius+15,pos.y-15,edge-pos.x-radius-29,selected?18:12,selected?pearl:alpha(pearl,.7f));if(selected)fitted(p.dominant+" / "+num(p.water*100)+"% WATER",pos.x+radius+15,pos.y+8,edge-pos.x-radius-29,10,mint,true);
@@ -341,6 +342,7 @@ void Renderer::panel(){panelDrawing=true;float left=UILayout::panelLeft(w),x=lef
  if(game->turnBased()&&game->lastTurn.valid&&disclosure("Recent resolutions / "+std::to_string(game->recentTurns.size()),"turn-report",x,y,contentWidth))turnReport(x,y,contentWidth);
  if(ui->tab>=4){economyPanel(x,y,contentWidth);}
  else if(ui->tab==0){
+  if(game->turnBased())foldPanel(x,y,contentWidth);
   if(s.mode==Mode::Flight){flightPanel(x,y,contentWidth);}
   else if(s.mode==Mode::Galaxy){Star star=game->selectedStar();double d=distance(star.pos,game->currentStar().pos);text(star.name,x,y,34,pearl);y+=44;wrapped(star.type+"-CLASS STAR / "+std::to_string(star.numPlanets)+" MAJOR BODIES",x,y,contentWidth,11,mint,true);y+=22;
    row("Distance",num(d)+" ly",x,y,contentWidth);row("Drive aperture",num(game->range())+" ly",x,y,contentWidth);row("Transit fuel",std::to_string(game->fuelCost(d))+" units",x,y,contentWidth);row("Luminosity",num(star.luminosity,2)+" solar",x,y,contentWidth);row("Stellar age",num(star.age,1)+" Gyr",x,y,contentWidth);y+=18;

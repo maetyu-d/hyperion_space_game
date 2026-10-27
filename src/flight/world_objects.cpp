@@ -4,7 +4,7 @@ namespace hyperion::flight {
 std::vector<hyperion::WorldObject> portObjects(const Game& game,const Scene& scene,const Port& port){
  std::vector<hyperion::WorldObject> out;
  auto append=[&](WorldObject object){object.integrity=objectIntegrity(game.worldDamage,object.id);out.push_back(std::move(object));};
- if(port.minor<0&&!port.recovery){auto* site=scene.settlement(port.settlement);auto n=port.normal,a=unit(cross({1,0,0},n),{0,0,1}),b=unit(cross(a,n));
+ if(port.minor<0&&port.fold<0&&!port.recovery){auto* site=scene.settlement(port.settlement);auto n=port.normal,a=unit(cross({1,0,0},n),{0,0,1}),b=unit(cross(a,n));
   auto point=[&](V3 local){return port.position+a*local.x+n*local.y+b*local.z;};
   auto prop=[&](std::string id,int kind,V3 local,V3 half,double hp,int slot=-1,int good=-1){WorldObject o;o.id=id;o.owner=port.settlement.empty()?port.id:port.settlement;o.kind=kind;o.body=port.body;o.position=point(local);o.half=half;o.right=a;o.up=n;o.back=b;o.capacity=hp;o.slot=slot;o.good=good;o.faction=site?site->faction:port.id.rfind("den:",0)==0?0:3;o.scale=std::max({half.x,half.y,half.z});o.structureFaction=site?site->faction:0;o.structureOrigin=port.position;
    if(kind==PortObject){o.structureProfile=port.planet>=0?LandingPad:StationCore;o.structureVariant=site?std::min(8,site->facilities[Warehouse]):((int(game.planets.at(port.body).worldSeed%5)+1)<<4);}

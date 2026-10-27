@@ -2,6 +2,7 @@
 #include "../world_damage.hpp"
 #include "vessel.hpp"
 #include "threat.hpp"
+#include "fold.hpp"
 #include "../minor_bodies.hpp"
 #include <algorithm>
 #include <array>
@@ -18,7 +19,7 @@ struct SurfaceScar {V3 normal;double radius=1,depth=.2;};
 struct Planet {std::string name,biome;V3 centre;double radius,seed;V3 portNormal;bool giant=false;
  double water=.35,life=.25,temperature=289,atmosphere=1;int kind=0;uint32_t worldSeed=0;int generation=1,landform=0;double tectonic=.5;std::vector<SurfaceScar> scars{};
 };
-struct Port {std::string name,description;V3 position,normal;int planet;std::string id,settlement;int body=-1;int minor=-1;bool disabled=false,recovery=false;};
+struct Port {std::string name,description;V3 position,normal;int planet;std::string id,settlement;int body=-1;int minor=-1;bool disabled=false,recovery=false;int fold=-1;};
 struct MinorObject {hyperion::MinorBody source;V3 centre;bool destroyed=false;};
 std::vector<V3> transferRoute(const std::vector<Planet>& planets,V3 start,const Port& destination);
 struct RoutePose {V3 position,forward;};
@@ -46,7 +47,7 @@ struct Ship {Vessel vessel;V3 angularVelocity,thrusters,assistCapture;double boo
 // Missing weapon metadata denotes a pulse already in flight in a legacy save.
 struct Bolt {V3 position,previous,velocity;double life;bool hostile;int weapon=-1;double damage=0;std::string owner,target;int module=0;};
 struct Traffic {V3 position,previous,forward;double phase=0,health=100,fireClock=0;int kind=0;bool dead=false;double respawn=0;int home=0,faction=3;std::string routeId;int trip=-1;
- std::vector<V3> transitPath;std::string transitKey;
+ std::vector<V3> transitPath,transitAfter;std::string transitKey;int transitLeg=0;
  V3 velocity;std::string id;int role=0,state=0;double shield=0,armour=100,shieldDelay=0,stateClock=0,hitFlash=0;bool positioned=false;
  std::array<double,3> modules{100,100,100};double energy=100,heat=0,charge=0,decoyClock=0,evadeClock=0,serviceClock=0;
  int ammunition=180,missiles=2,countermeasures=2,chargeWeapon=-1,salvos=0;bool venting=false;
@@ -77,6 +78,7 @@ struct Game {
   hyperion::WorldDamageMap worldDamage;std::vector<hyperion::WorldObject> worldObjects;int worldBlastDepth=0;double portCombat=0;V3 scarAnchor{1e10,0,0};uint64_t scarKey=0;uint64_t geometryRevision=0,damageRevision=0;std::string damageStar;
   std::vector<Planet> planets;
   std::vector<MinorObject> minorBodies;
+  std::vector<FoldGate> folds;std::vector<NilRegion> nilRegions;
   std::vector<Port> ports;
   Ship ship;
   std::vector<Bolt> bolts;
@@ -85,7 +87,7 @@ struct Game {
   std::string lastAttacker;
   std::string combatTarget;double lock=0,hitConfirm=0;int combatOrder=0,aimSystem=0;V3 hitDirection;double damageCue=0;
   double weatherHours=-1,impactShield=0,impactHull=0;int impactSystem=-1;
-  bool strategicCombat=false,missileHeld=false,decoyHeld=false;
+ bool strategicCombat=false,missileHeld=false,decoyHeld=false,foldTransitAllowed=true;
   std::vector<V3> route;
   Courier courier;
   std::vector<Event> events;
@@ -100,6 +102,7 @@ struct Game {
   std::string notice="NOMA flight deck ready. Select a destination in I; J engages navigation.";
   Game()=default;
   void update(double dt,const Input& input={});
+  bool crossFold(int gate);void foldContacts();void foldTraffic(Traffic&);
   void stepHandling(double dt,const Input&);
   double inertialMass()const;
   V3 gravity()const;
@@ -132,6 +135,7 @@ struct Game {
   void damageWorld(int,double,int,V3,bool,const std::string& attacker="");
   void damageShip(double,int,V3);void damageTraffic(int,double,int,V3,bool credited,int module=0,const std::string& attacker="");void chainArc(int,double);
   bool enemiesOf(const Traffic&,const Traffic&)const;
+  V3 apparentPosition(V3 from,V3 to,int* through=nullptr)const;V3 apparentVelocity(int gate,V3 velocity)const;bool sighted(V3 from,V3 to)const;
   bool lineOfSight(V3,V3)const;double terrainHit(V3,V3)const;bool protectedPort(V3)const;
   void effect(V3,int,V3 velocity={},V3 end={},V3 normal={0,0,1},int weapon=Pulse,double strength=1,double size=1);
 };

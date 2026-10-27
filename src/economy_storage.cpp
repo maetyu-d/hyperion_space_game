@@ -33,10 +33,12 @@ J encodeEconomy(const Economy& e) {
         {"diplomaticClock",s.diplomaticClock},{"mortality",s.mortality},{"alerts",s.alerts},{"bottleneck",s.bottleneck}});
     for(size_t i=0;i<e.settlements.size();i++)if(!e.settlements[i].facilityIntegrity.empty()){auto damaged=J::array();for(const auto& [slot,hp]:e.settlements[i].facilityIntegrity)damaged.push_back({slot,hp});j["settlements"][i]["facilityDamage"]=damaged;}
     if(!e.worldDamage.empty())j["destruction"]=encodeWorldDamage(e.worldDamage);
+    if(!e.folds.empty()){j["folds"]=J::array();for(const auto& [id,f]:e.folds)j["folds"].push_back({{"id",id},{"star",f.star},{"anchor",f.anchor},{"surveyed",f.surveyed},{"passages",f.passages},{"freight",f.freight}});}
     j["routes"]=J::array();for (const auto& r:e.routes) j["routes"].push_back({
         {"id",r.id},{"from",r.from},{"to",r.to},{"status",r.status},{"good",r.good},{"owner",r.owner},
         {"capacity",r.capacity},{"enabled",r.enabled},{"outbound",r.outbound},{"commercial",r.commercial},
         {"remaining",r.remaining},{"duration",r.duration},{"nextDeparture",r.nextDeparture},{"cargo",r.cargo},{"trips",r.trips},{"escortUntil",r.escortUntil}});
+    for(size_t i=0;i<e.routes.size();i++)if(e.routes[i].conventionalDuration>0||!e.routes[i].fold.empty()){j["routes"][i]["fold"]=e.routes[i].fold;j["routes"][i]["conventionalDuration"]=e.routes[i].conventionalDuration;}
     j["contracts"]=J::array();for (const auto& c:e.contracts) j["contracts"].push_back({
         {"id",c.id},{"settlement",c.settlement},{"good",c.good},{"requested",c.requested},{"delivered",c.delivered},
         {"rewardPerUnit",c.rewardPerUnit},{"escrow",c.escrow},{"deadline",c.deadline},{"accepted",c.accepted},{"closed",c.closed}});
@@ -78,12 +80,19 @@ Economy decodeEconomy(const J& j,Universe& u,double hour) {
         s.power=n(v,"power",0,0,1e6);s.demand=n(v,"demand",0,0,1e6);s.labor=n(v,"labor",0,0,1e6);s.productivity=n(v,"productivity",1,0,2);s.researchRate=n(v,"researchRate",0,0,1000);
         s.nextContract=n(v,"nextContract",hour,0,1e12);s.nextMigration=n(v,"nextMigration",hour,0,1e12);s.medicineUsed=n(v,"medicineUsed",0,0,1e12);s.reactorUse=n(v,"reactorUse",0,0,1e12);s.upkeep=n(v,"upkeep",0,0,1e12);s.diplomaticClock=n(v,"diplomaticClock",0,0,24);s.mortality=n(v,"mortality",0,0,24);s.alerts=int(n(v,"alerts",0,0,31));s.bottleneck=t(v,"bottleneck");e.settlements.push_back(s);
     }
+    if(j.contains("folds")){const auto& records=j.at("folds");array(records,80000);std::set<std::string> seen;
+      for(const auto& v:records){auto id=t(v,"id","",240),star=t(v,"star","",100);if(!e.systems.count(star)||!seen.insert(id).second)throw std::runtime_error("Invalid fold system or duplicate reference");discoverFoldSpace(e,u,star);auto it=e.folds.find(id);if(it==e.folds.end()||it->second.star!=star)throw std::runtime_error("Unknown spatial connection");auto& f=it->second;f.anchor=t(v,"anchor","",240);if(!f.anchor.empty()){auto* site=findSettlement(e,f.anchor);if(!site||site->star!=star||(site->planet!=f.a&&site->planet!=f.b))throw std::runtime_error("Invalid fold authority anchor");f.authority=site->owner;}
+        f.surveyed=v.value("surveyed",false);double passages=n(v,"passages",0,0,1e9);if(std::floor(passages)!=passages)throw std::runtime_error("Fractional fold passage count");f.passages=int(passages);f.freight=n(v,"freight",0,0,1e12);
+      }
+    }
     const auto& routes=j.at("routes");array(routes,160000);std::set<std::string> routeIds;
     for (const auto& v:routes) {
         TradeRoute r;r.id=t(v,"id");r.from=t(v,"from");r.to=t(v,"to");r.status=t(v,"status");
         if (!routeIds.insert(r.id).second||!ids.count(r.from)||!ids.count(r.to)||r.from==r.to) throw std::runtime_error("Invalid freight endpoint");
         r.good=int(n(v,"good",0,0,goodCount-1));r.owner=int(n(v,"owner",0,0,4));r.capacity=int(n(v,"capacity",20,1,1000));r.enabled=v.value("enabled",true);r.outbound=v.value("outbound",false);r.commercial=v.value("commercial",false);
-        r.remaining=n(v,"remaining",0,0,1e8);r.duration=n(v,"duration",6,.25,1e8);r.nextDeparture=n(v,"nextDeparture",0,0,1e12);r.cargo=a<double,goodCount>(v,"cargo",0,1000);r.trips=int(n(v,"trips",0,0,1e9));r.escortUntil=n(v,"escortUntil",0,0,1e12);e.routes.push_back(r);
+        r.remaining=n(v,"remaining",0,0,1e8);r.duration=n(v,"duration",6,.25,1e8);r.nextDeparture=n(v,"nextDeparture",0,0,1e12);r.cargo=a<double,goodCount>(v,"cargo",0,1000);r.trips=int(n(v,"trips",0,0,1e9));r.escortUntil=n(v,"escortUntil",0,0,1e12);r.fold=t(v,"fold","",240);r.conventionalDuration=n(v,"conventionalDuration",0,0,1e8);
+        if(!r.fold.empty()){auto it=e.folds.find(r.fold);auto* from=findSettlement(e,r.from);auto* to=findSettlement(e,r.to);if(it==e.folds.end()||it->second.nil||from->star!=it->second.star||to->star!=it->second.star||!((from->planet==it->second.a&&to->planet==it->second.b)||(from->planet==it->second.b&&to->planet==it->second.a))||r.conventionalDuration<.25)throw std::runtime_error("Freight fold disagrees with its endpoints");}
+        e.routes.push_back(r);
     }
     const auto& contracts=j.at("contracts");array(contracts,100000);std::set<std::string> contractIds;
     for (const auto& v:contracts) {

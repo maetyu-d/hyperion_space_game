@@ -2,6 +2,7 @@
 #include "universe.hpp"
 #include "ecosystem.hpp"
 #include "missions.hpp"
+#include "fold_space.hpp"
 #include "flight/game.hpp"
 #include <set>
 
@@ -75,6 +76,7 @@ struct Settlement {
 inline double workingBuildings(const Settlement& site,int kind){double count=site.built[kind];for(const auto& [slot,hp]:site.facilityIntegrity)if(slot/24==kind)count-=1-hp;return std::max(0.,count);}
 inline double facilityIntegrity(const Settlement& site,int kind,int ordinal){auto it=site.facilityIntegrity.find(kind*24+ordinal);return it==site.facilityIntegrity.end()?1:it->second;}
 struct TradeRoute {
+    std::string fold;double conventionalDuration=0;
     std::string id, from, to, status = "Awaiting departure";
     int good = Rations, owner = 0, capacity = 20;
     bool enabled = true, outbound = false, commercial = false;
@@ -118,6 +120,7 @@ struct VesselService {double fuel=0,hull=0,work=0;int64_t price=0;hyperion::flig
 VesselService quoteVesselService(const ShipOffer&,const Stock&);
 struct EconomicEvent { double hour = 0; std::string place, cause; };
 struct Economy {
+    std::map<std::string,FoldSurvey> folds;
     WorldDamageMap worldDamage;uint64_t damageRevision=1,geometryRevision=1;
     std::vector<RecoveryCrew> recoveryCrews;std::map<std::string,Boarding> boardings;std::vector<PrizeShip> prizes;
     std::vector<OceanWreck> oceanWrecks;
@@ -155,6 +158,9 @@ void discoverSecurity(Economy&,Universe&,const std::string&);
 void initializeActorProfiles(Economy&,Universe&);
 void advanceSecurity(Economy&);
 bool factionsAtWar(const Economy&,int,int);
+void discoverFoldSpace(Economy&,Universe&,const std::string&);
+const FoldSurvey* freightFold(const Economy&,const Settlement&,const Settlement&,int owner);
+bool foldAccess(const Economy&,const FoldSurvey&,int faction);
 int64_t pirateTrucePrice(const PirateBand&);
 Settlement* findSettlement(Economy&, const std::string&);
 const Settlement* findSettlement(const Economy&, const std::string&);

@@ -7,10 +7,16 @@
 #include <unordered_map>
 #include <map>
 #include <tuple>
+#include <memory>
 namespace hyperion::flight {
 struct GeometryStats {int models=0,closeTriangles=0,closePorts=0,detailedTriangles=0,distantTriangles=0,degenerateTriangles=0,invalidVertices=0,invalidNormals=0;};
 struct CloudOcclusionStats {int testedPixels=0,leakingPixels=0;float maxLeakAlpha=0,maxCloudAlpha=0;};
 class Renderer {
+ std::unique_ptr<Renderer> foldRenderer;bool foldViewPass=false;V3 foldClipPosition{},foldClipNormal{0,0,1};
+ struct FoldPreview {int gate=-1;RenderTexture2D image{};};std::vector<FoldPreview> foldPreviews;
+ Shader foldWindow{},nilOptics{};
+ int foldDrawn=0,nilDrawn=-1;
+ void prepareFoldViews(const Game&,const Scene&,bool,bool,bool,bool,bool);void drawFolds(const Game&);void clipFoldView();void clearFolds();void drawNil(const Game&,V3);int nilBody(const Game&)const;
  Texture2D combatGlow{};int minorDrawn=0;Texture2D cometGlow{};Shader minorShader{},minorBake{};std::unordered_map<std::string,Model> minorModels;
  struct MinorField {RenderTexture2D base{},detail{};float blend=0;};std::unordered_map<std::string,MinorField> minorFields;
  RenderTexture2D bakeMinorField(const MinorBody&,int);void prepareMinorBodies(const Game&);
@@ -42,13 +48,15 @@ class Renderer {
  void drawSunShadows(const Game&,V3);
  void updateGround(const Game&,int);void drawGroundEffects(const Game&);
  std::string worldKey;int cockpitWidth=0,cockpitHeight=0,cockpitKind=-1;bool cockpitDocked=false,hdr=false;
- GraphicsQuality quality=GraphicsQuality::High;bool reduced=false,lowGraphics=false,extremeGraphics=false,psychedelic=false,wireframe=false,egaGraphics=false,showCockpit=true;double visualTime=0,speed=0,fixedVisualTime=-1;V3 sunDirection{.6,.7,-.4};
+ GraphicsQuality quality=GraphicsQuality::High;bool reduced=false,lowGraphics=false,extremeGraphics=false,psychedelic=false,wireframe=false,egaGraphics=false,showCockpit=true;double visualTime=0,speed=0,fixedVisualTime=-1,worldNearPlane=1;V3 sunDirection{.6,.7,-.4};
  void drawRings(const Planet&,double);
  void clearPortAssets();PortAsset buildPort(const Port&,const SettlementView*,const Game&);void drawSettlement(const Port&,const SettlementView*,const Game&);void drawPortActivity(const Port&,const Scene&);Model buildCraft(int,int,int,int);void drawFactionCraft(const Traffic&,const Scene&);
  void rebuild(const Game&);void rebuildCockpit(int,int,bool,int);void drawCockpit(const Game&);void drawMotion(const Game&);
  void drawPlanetDepth(const Game&,const std::vector<int>&,V3);void drawAuroras(const Game&,const std::vector<int>&,V3);void drawClouds(const Game&,const std::vector<int>&,V3);
  bool auditClouds=false;CloudOcclusionStats cloudStats{},auroraStats{};void measureCloudOcclusion(const Game&,int,V3,bool emission=false);void resolveWeather(const Game&,V3,Texture2D,bool emission=false);
 public:
+ struct FoldStats {int windows=0,mouths=0,nilBody=-1;};
+ FoldStats foldStats()const{FoldStats stats;for(const auto& p:foldPreviews)if(p.gate>=0)stats.windows++;stats.mouths=foldDrawn;stats.nilBody=nilDrawn;return stats;}
  struct StructuralStats {int objects=0,parts=0,cached=0,interiors=0,sourceTriangles=0,triangles=0,caps=0;double sourceArea=0,partArea=0;};
  StructuralStats structuralStats()const{StructuralStats s;s.objects=structuralDraws;s.parts=structuralParts;s.cached=int(brokenStructures.size());s.interiors=interiorDraws;for(const auto& [id,a]:brokenStructures){s.sourceTriangles+=a.sourceTriangles;s.triangles+=a.triangles;s.caps+=a.caps;s.sourceArea+=a.sourceArea;s.partArea+=a.partArea;}return s;}
  struct BreakupStats {int hulls,parts,cached;};BreakupStats breakupStats()const{return {debrisHulls,debrisParts,int(fracturedHulls.size())};}

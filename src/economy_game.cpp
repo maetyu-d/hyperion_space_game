@@ -6,6 +6,7 @@ void Game::ensureEconomy() {
     bool initial=!s.economy.initialized;
     initializeEconomy(s.economy,universe,s.hours);
     if (!s.economy.systems.count(s.currentStar)) discoverEconomy(s.economy,universe,s.currentStar,s.hours);
+    discoverFoldSpace(s.economy,universe,s.currentStar);
     for(const auto& star:s.economy.systems)discoverSecurity(s.economy,universe,star);
     initializeActorProfiles(s.economy,universe);s.lifeRevision=1;
     initializeShipyards(s.economy);initializeEcosystems(s.economy,universe);

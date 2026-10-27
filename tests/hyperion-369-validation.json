@@ -1,0 +1,27 @@
+{
+  "version": "3.69.0",
+  "binarySHA256": "1279f5b5efdcc86c226302426d29a8a7a868049e34173d6b4626d934007b6512",
+  "cpuSuitesPassed": 43,
+  "foldedSpaceChecks": 2990,
+  "nativeScenesPassed": 6,
+  "nativeInterfaceChecksPassed": 4,
+  "interfaceWindow": [
+    720,
+    450
+  ],
+  "crossingMeanAbsoluteRGBError": 2.9554233217592594,
+  "offPalettePixels": 0,
+  "installedSmokeLooks": [
+    "Extreme Psychedelic",
+    "Low EGA wireframe"
+  ],
+  "saveMigrationAddsOnly": "economy.folds",
+  "secondFrozenRoundtripExact": true,
+  "playerSaveAndPreferencesUnchanged": true,
+  "installedAndPreviousSignaturesVerified": true,
+  "previousApp": "releases/Hyperion 3.68.app",
+  "scope": {
+    "folds": "paired local-system connections; one-level live destination views",
+    "nil": "bounded optical pockets using real planetary fields; normal ship physics"
+  }
+}

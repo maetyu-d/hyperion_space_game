@@ -1,4 +1,4 @@
-# HYPERION 3.68
+# HYPERION 3.69
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,54 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Folded connections and Nil optics in 3.69
+
+Procedural spatial folds connect locations **within each star system**. Each
+luminous aperture shows a live view of its actual destination. Fly through and
+the ship's position, velocity and attitude follow that same connection. Enemy
+ships and all five weapons can cross too; targeting follows the visible remote
+contact. Ordinary navigation plots around unintended mouths.
+
+Open **Destinations / I**, select a **Trade fold** or **Archive fold**, and use
+**J** to approach and cross. The starting system has both kinds near NACRE.
+Survey within **600 km**, below **40 km/s**, for **6 scanner battery**; a first
+survey charts both mouths and yields Research if the cargo hold has room. A
+first physical crossing also charts the connection.
+
+In strategy, open **Inspect → Folded connections**. Surveying and traversing
+resolve **one hour per order**; planning and returning to the cockpit retain the
+same ship and clock. Strategic traversal requires a charted nearby mouth.
+Recover a boarding party and release any wreck tow before crossing.
+
+Charted trade connections shorten matching player freight routes. NPC commerce
+also uses the network. The same finite cargo travels on a visible freighter,
+with separate paths on either side of the seam. Faction ownership follows the
+anchoring settlement: patrols guard mouths, hostile authorities hold outbound
+convoys, and passage fees enter the authority's treasury. Player passage costs
+**12 cr**, freight passage **4 cr**, and the controlling faction travels free.
+Unauthorized or unpaid player passage incurs **60 cr restitution** and a
+standing penalty.
+
+Rare archive connections lead to bounded **Nil optical pockets**. Curved light
+paths turn the source planet's real generated geography into distorted sheets
+and separated ring images as you look around. These are local optical regions;
+ship physics and tactical instruments retain one physical object per contact.
+The HOME archive connection provides an accessible example. Standard,
+Psychedelic and CGA/EGA Wireframe looks all support the new rendering.
+
+![A live planetary destination through a spatial fold](docs/screenshots/fold-destination.png)
+
+![Curved Nil light paths through real planetary coastlines in CGA](docs/screenshots/nil-optics-cga.png)
+
+Destination windows render one level deep, with at most two nearby previews.
+Low quality uses Low destination rendering; High and Extreme use High previews.
+The previous 3.68 app is preserved under `releases/`.
+
+Build `hyperion_fold_tests` for geometry, navigation, combat, freight and save
+checks. The optional `hyperion_fold_check` captures real GPU output and checks
+CGA pixels, nonblank windows and crossing continuity. `hyperion_fold_ui_check`
+checks small-window pointer controls, pause, turn resolution and the helm return.
 
 ## Restored gear control in 3.68
 

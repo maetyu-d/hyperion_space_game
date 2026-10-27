@@ -103,6 +103,7 @@ public:
  void clearFieldContact(const Contact&);void syncWorldDamage();void prepareWorldObjects();void processWorldHit(const hyperion::flight::Event&);
  void parkFlight(int,V2,bool orbital=false);bool disembark();void processFlightEvents();
  bool flightAction(const std::string&,const std::string&);int flightPort(const std::string&,bool orbital=false);
+ bool foldAction(const std::string&,const std::string&);void configureFoldFlight();void foldEvent(const hyperion::flight::Event&);
  hyperion::flight::V3 surfaceNormal(V2)const;V2 surfacePosition(hyperion::flight::V3)const;
 private:
  bool commitMove(const MovePlan&,bool follow,double battery=0,double wear=0);void followFieldRoute(const std::string& approach="");
