@@ -347,7 +347,7 @@ void Renderer::drawSunShadows(const Game& g,V3 eye){
   else if(it->second.key!=key||length(it->second.at-port.position)>1e-5||length(it->second.up-port.normal)>1e-8){UnloadModel(it->second.close);UnloadModel(it->second.detailed);UnloadModel(it->second.distant);it->second=buildPort(port,view,g);}
   casterKey^=it->second.key+0x9e3779b97f4a7c15ULL+(casterKey<<6)+(casterKey>>2);ports.push_back(i);
  }
- for(const auto& instance:structuralInstances)if(!instance.shape.orbital&&instance.body==groundBody){double age=structureAge(g,instance.shape);casterKey^=sceneHash(instance.id)+uint64_t(std::min(age,7.)*30)*0x9e3779b9u;}
+ for(const auto& instance:structuralInstances)if(!instance.shape.orbital&&instance.body==groundBody){double age=structureAge(g,instance.shape);if(instance.shape.localized){casterKey^=instance.shape.cleared;for(int sector=0;sector<6;sector++)if(instance.shape.sections[sector]<=0)casterKey^=uint64_t(std::min(7.,sectionAge(instance.shape,sector,age))*30)*(0x9e3779b9u+sector*17u); }casterKey^=sceneHash(instance.id)+uint64_t(std::min(age,7.)*30)*0x9e3779b9u;}
  shadowActive=true;++shadowFrames;
  if(shadowBody==groundBody&&length(shadowAnchor-groundAnchor)<1e-8&&length(shadowEye-localEye)<4&&std::abs(shadowBlend-groundBlend)<.002&&shadowCasters==casterKey)return;
  V3 forward=-sunDirection,right=unit(cross(forward,{0,1,0})),up=unit(cross(right,forward));
@@ -471,7 +471,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  EndBlendMode();BeginMode3D(camera);
  drawCometTails(g);
  for(int i=0;i<int(g.ports.size());i++){
-  const auto&port=g.ports[i];if(port.minor>=0)continue;double d=length(port.position-g.ship.position);
+  const auto&port=g.ports[i];if(port.minor>=0||port.recovery)continue;double d=length(port.position-g.ship.position);
   if(d<8500&&(dot(port.position-g.ship.position,g.ship.forward)>-380)&&(port.planet<0||dot(port.normal,g.ship.position-port.position)>-160)){
    drawSettlement(port,sceneView.settlement(port.settlement),g);if(d<1500)drawPortActivity(port,sceneView);
   }

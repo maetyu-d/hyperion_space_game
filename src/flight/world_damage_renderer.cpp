@@ -4,6 +4,9 @@ namespace hyperion::flight {
 namespace {Vector3 vec(V3 p){return {float(p.x),float(p.y),float(p.z)};}double random(uint32_t seed,int n){uint32_t h=seed^uint32_t(n+1)*0x9e3779b9u;h^=h>>16;h*=0x7feb352du;h^=h>>15;return double(h>>8)/16777215.;}}
 void Renderer::drawWorldDamage(const Game& game){
  drawStructuralRemains(game);
+ int fields=0;rlDisableDepthMask();BeginBlendMode(BLEND_ADDITIVE);for(const auto& [id,d]:game.worldDamage)if(d.recovery.valid&&length(d.position-game.ship.position)<1000&&fields<12){const auto& r=d.recovery;double charge=recoveryHazard(r,presentation->hours);if(r.towed){auto previous=game.ship.position;for(int i=1;i<=12;i++){double t=i/12.;auto at=mix(game.ship.position,d.position,t)+d.normal*(std::sin(t*pi)*(.6+std::sin(game.time*3)*.2));DrawLine3D(vec(previous),vec(at),Color{129,231,231,160});previous=at;}}
+  if(charge<.02)continue;fields++;auto right=unit(cross(d.normal,{0,0,1}),{1,0,0}),back=unit(cross(right,d.normal));int strands=reduced?2:lowGraphics?4:7;for(int i=0;i<strands;i++){double phase=game.time*1.7+i*2.399963,reach=(3+std::min(12.,d.scale*.3))*(.6+.4*std::sin(phase*2));auto a=d.position+right*(std::cos(phase)*reach)+back*(std::sin(phase)*reach);auto b=a+d.normal*(1.3+std::sin(phase*3)*.8)+right*(std::sin(phase*5)*1.4);DrawLine3D(vec(a),vec(b),i%2?Color{113,255,203,static_cast<unsigned char>(charge*190)}:Color{203,125,255,static_cast<unsigned char>(charge*190)});if(combatGlow.id&&!reduced)DrawBillboard(camera,combatGlow,vec(a),float(2+charge*4),Color{161,115,255,static_cast<unsigned char>(charge*65)});}}
+ EndBlendMode();rlEnableDepthMask();
  int chunks=reduced?48:lowGraphics?96:180;
  for(const auto& [id,d]:game.worldDamage){if(d.integrity>0)continue;auto at=d.position;
   if(d.kind==MinorObjectKind||d.kind==ImpactObject)for(const auto& body:game.minorBodies)if("body:"+body.source.id==id||(d.kind==ImpactObject&&d.owner==body.source.id))at=body.centre+unit(d.normal)*body.source.radius;

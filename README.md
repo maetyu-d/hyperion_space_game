@@ -1,4 +1,4 @@
-# HYPERION 3.60
+# HYPERION 3.61
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,55 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Damage and recovery in 3.61
+
+Aimed hits can sever individual sides and decks of buildings and stations while
+undamaged sections remain assembled and the surviving facility keeps working.
+Detached sections have persistent collision and damage: they can obstruct ships,
+be struck again and be destroyed. Precision attacks can disable an enemy drive,
+leaving its surviving hull adrift. Electrical arcs, cooling spectral seams and
+the original procedural materials retain the psychedelic appearance.
+
+New wrecks hold finite equipment, sealed recorders and actual stranded residents.
+Leaking fuel and live circuits make close approaches dangerous; uncontained
+reactors can fail again, consume their fuel and damage nearby infrastructure.
+Emergency life support expires after twelve world hours. Destroying a wreck
+loses its remaining contents and stranded people, with faction consequences.
+
+Approach a wreck and use **Plan recovery**, or open **Market → Recovery**.
+Planning is free and pauses the world. Quench hazards, rescue survivors, cut
+out equipment, recover its black box, attach or release a tow, and reconstruct
+the original site through one-hour orders. Close work requires an undocked ship
+within 55 km, below 5 km/s, with navigation disengaged. Equipment cutting costs
+one component; hazard containment costs two components and one crystal.
+Collect released supplies with the ordinary salvage order.
+
+Rescue berths are shared with underwater expeditions: twelve people in total.
+Deliver evacuees at a friendly inhabited settlement before rebuilding their
+wreck. Detached orbital equipment and ship wrecks can be towed if the hull and
+drive can bear their size. Towing slows the ship and burns fuel continuously;
+release the tow before FTL. Wreck position and finite contents persist in saves.
+
+Factions issue funded evacuation, recorder and reconstruction commissions for
+actual losses. Acceptance reserves the issuer's money; reconstruction consumes
+real construction materials and restores the original lot. Player-caused losses
+do not create these contracts. Debrief at the issuer for payment.
+
+The **Recovery** disclosure presents the next useful order, with other orders
+collapsed. The turn planner warns about impending failures and life support.
+High, Low and Reduced effects share the same physical recovery simulation.
+Older saved ruins keep their existing appearance and salvage rules.
+
+![A precision breach opens one side of a reactor while the remaining architecture stays assembled](docs/screenshots/localized-damage.jpg)
+
+![Turn-based recovery orders and funded reconstruction missions](docs/screenshots/recovery-planning.jpg)
+
+`hyperion_recovery_tests` covers partial breaches, physical fragment damage,
+disabled drives, conserved people and stock, funded commissions, towing,
+secondary failures, paused planning and saved recovery approaches. The optional
+native `hyperion_recovery_check` renders seven recovery scenarios in all graphics
+profiles; the existing structural check retains its twenty-five scenarios.
 
 ## Architectural destruction in 3.60
 

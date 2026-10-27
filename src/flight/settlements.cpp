@@ -255,8 +255,9 @@ void Renderer::drawRemains(const HullRemains& hull,V3 at,double age){
  }
 }
 void Renderer::drawShipRemains(const Game& game){
- debrisHulls=debrisParts=0;std::vector<const Wreck*> near;
- for(const auto& wreck:game.wrecks)if(wreck.debrisKind==0&&wreck.id.rfind("world:",0)!=0&&objectIntegrity(game.worldDamage,"wreck:"+wreck.id)>0&&length(wreck.position-game.ship.position)<1700&&dot(wreck.position-game.ship.position,game.ship.forward)>-50)near.push_back(&wreck);
+ debrisHulls=debrisParts=0;for(const auto& [id,d]:game.worldDamage)if(d.recovery.valid&&d.recovery.shipModel>=0&&objectIntegrity(game.worldDamage,"wreck:world:"+id)>0&&length(d.position-game.ship.position)<1700&&dot(d.position-game.ship.position,game.ship.forward)>-50){const auto& r=d.recovery;HullRemains hull{true,r.faction,r.shipModel,r.shipSeed,d.scale,r.shipForward};drawRemains(hull,d.position,std::max(0.,(presentation->hours-r.born)*55.));}
+ std::vector<const Wreck*> near;
+ for(const auto& wreck:game.wrecks)if(std::none_of(game.worldDamage.begin(),game.worldDamage.end(),[&](const auto& pair){return pair.second.recovery.valid&&pair.second.recovery.shipId==wreck.id;})&&wreck.debrisKind==0&&wreck.id.rfind("world:",0)!=0&&objectIntegrity(game.worldDamage,"wreck:"+wreck.id)>0&&length(wreck.position-game.ship.position)<1700&&dot(wreck.position-game.ship.position,game.ship.forward)>-50)near.push_back(&wreck);
  std::stable_sort(near.begin(),near.end(),[&](auto a,auto b){return length(a->position-game.ship.position)<length(b->position-game.ship.position);});
  for(size_t i=0;i<std::min(size_t(12),near.size());i++){
   const auto& wreck=*near[i];auto hull=wreck.hull;
@@ -274,8 +275,8 @@ double Renderer::structureAge(const Game& game,const StructureRemains& shape)con
 Renderer::BrokenStructure Renderer::buildBrokenStructure(const StructureRemains& shape){
  Builder source;structuralSource(source,shape,false);std::vector<FractureVertex> vertices;vertices.reserve(source.vertices.size()/3);
  for(size_t i=0;i<source.vertices.size()/3;i++){FractureVertex v;v.position={source.vertices[i*3],source.vertices[i*3+1],source.vertices[i*3+2]};v.normal={source.normals[i*3],source.normals[i*3+1],source.normals[i*3+2]};v.uv={source.uv[i*2],source.uv[i*2+1]};for(int k=0;k<4;k++)v.colour[k]=source.colours[i*4+k];vertices.push_back(v);}
- auto fracture=fractureStructure(vertices,shape.profile,shape.seed);BrokenStructure asset;asset.sourceTriangles=fracture.sourceTriangles;asset.sourceArea=fracture.sourceArea;asset.partArea=fracture.fracturedArea;
- for(const auto& part:fracture.parts){if(part.vertices.empty())continue;Builder m;auto pivot=part.bounds.centre();for(const auto& v:part.vertices){auto p=v.position-pivot;for(double n:{p.x,p.y,p.z})m.vertices.push_back(float(n));for(double n:{v.normal.x,v.normal.y,v.normal.z})m.normals.push_back(float(n));for(float n:v.uv)m.uv.push_back(n);for(auto n:v.colour)m.colours.push_back(n);}
+ auto fracture=fractureStructure(vertices,shape.profile,shape.seed,shape.localized?&shape:nullptr);BrokenStructure asset;asset.sourceTriangles=fracture.sourceTriangles;asset.sourceArea=fracture.sourceArea;asset.partArea=fracture.fracturedArea;
+ for(int cell=0;cell<int(fracture.parts.size());cell++){const auto& part=fracture.parts[cell];if(part.vertices.empty())continue;asset.indices.push_back(cell);Builder m;auto pivot=part.bounds.centre();for(const auto& v:part.vertices){auto p=v.position-pivot;for(double n:{p.x,p.y,p.z})m.vertices.push_back(float(n));for(double n:{v.normal.x,v.normal.y,v.normal.z})m.normals.push_back(float(n));for(float n:v.uv)m.uv.push_back(n);for(auto n:v.colour)m.colours.push_back(n);}
   auto model=m.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;
   asset.parts.push_back(model);asset.bounds.push_back(part.bounds);asset.triangles+=int(part.vertices.size()/3);asset.caps+=part.capTriangles;
  }return asset;
@@ -283,9 +284,10 @@ Renderer::BrokenStructure Renderer::buildBrokenStructure(const StructureRemains&
 void Renderer::prepareStructures(const Game& game){
  // Geometry is rebuilt only for changed damage, location or mesh quality. The
  // per-frame path evaluates bounded analytic fragment poses without allocation.
+ for(auto& instance:structuralInstances){auto it=game.worldDamage.find(instance.id);if(it!=game.worldDamage.end()&&it->second.structure.valid)instance.shape=it->second.structure;}
  if(structureRevision==game.geometryRevision&&length(structureAnchor-game.ship.position)<200&&structureLow==lowGraphics)return;
  structureRevision=game.geometryRevision;structureAnchor=game.ship.position;structureLow=lowGraphics;structuralInstances.clear();
- for(const auto& [id,d]:game.worldDamage)if(d.integrity<=0&&d.structure.valid&&length(d.structure.origin-game.ship.position)<3500)structuralInstances.push_back({id,d.structure,d.body});
+ for(const auto& [id,d]:game.worldDamage)if((d.integrity<=0||hasDetachedSections(d.structure))&&d.structure.valid&&length(d.structure.origin-game.ship.position)<3500)structuralInstances.push_back({id,d.structure,d.body});
  for(const auto& port:game.ports)if(length(port.position-game.ship.position)<3000)for(const auto& object:portObjects(game,*presentation,port)){
   if(object.integrity>0||object.structureProfile<0)continue;auto record=game.worldDamage.find(object.id);if(record!=game.worldDamage.end()&&record->second.structure.valid)continue;
   StructureRemains shape;shape.valid=true;shape.profile=object.structureProfile;shape.variant=object.structureVariant;shape.ordinal=object.kind==FacilityObject?object.slot%24:0;shape.faction=object.structureFaction;shape.orbital=shape.profile==StationCore||shape.profile==StationWing;shape.origin=object.structureOrigin;shape.right=object.right;shape.up=object.up;shape.back=object.back;shape.seed=sceneHash(object.id);structuralInstances.push_back({object.id,shape,object.body});
@@ -295,7 +297,7 @@ void Renderer::prepareStructures(const Game& game){
  // returning to a culled district reconstructs exactly the same saved pieces.
  if(structuralInstances.size()>48)structuralInstances.resize(48);
  for(auto it=brokenStructures.begin();it!=brokenStructures.end();){bool keep=std::any_of(structuralInstances.begin(),structuralInstances.end(),[&](const auto& s){return s.id==it->first;});if(!keep){for(auto& m:it->second.parts)UnloadModel(m);it=brokenStructures.erase(it);}else ++it;}
- for(const auto& instance:structuralInstances){const auto& f=instance.shape;uint64_t key=f.seed;for(auto n:{f.profile,f.variant,f.ordinal,f.faction,int(lowGraphics)})key=key*1099511628211ull+uint64_t(n+1);auto it=brokenStructures.find(instance.id);
+ for(const auto& instance:structuralInstances){const auto& f=instance.shape;uint64_t key=f.seed;for(auto n:{f.profile,f.variant,f.ordinal,f.faction,int(lowGraphics),int(f.localized)})key=key*1099511628211ull+uint64_t(n+1);auto it=brokenStructures.find(instance.id);
   if(it!=brokenStructures.end()&&it->second.key!=key){for(auto& m:it->second.parts)UnloadModel(m);brokenStructures.erase(it);it=brokenStructures.end();}
   if(it==brokenStructures.end()){auto asset=buildBrokenStructure(f);asset.key=key;brokenStructures.emplace(instance.id,std::move(asset));}
  }
@@ -306,18 +308,19 @@ void Renderer::drawStructuralRemains(const Game& game,bool shadow){
   if(shadow&&(f.orbital||instance.body!=groundBody||length(f.origin-game.ship.position)>480))continue;
   if(!shadow&&dot(f.origin-game.ship.position,game.ship.forward)<-220)continue;
   if(!shadow){structureState(structure,factionStyle(f.faction),{camera.position.x,camera.position.y,camera.position.z},sunDirection,visualTime,nullptr);uniform(structure,"fractureHeat",reduced?0.f:float(std::exp(-age*.8)*std::clamp(age/.12,0.,1.)));uniform(structure,"condition",float(.15+.7*std::exp(-age*.65)));uniform(structure,"powerOn",float(std::exp(-age*1.3)));uniform(structure,"pollution",.7f);uniform(structure,"useSunShadow",shadowActive&&shadowBody==instance.body?groundBlend:0.f);uniform(structure,"shadowCentre",instance.body>=0?game.planets[instance.body].centre:V3{});uniform(structure,"skyRadial",f.up);uniform(structure,"structureAir",!f.orbital&&instance.body>=0?float(game.planets[instance.body].atmosphere):0.f);int loc=GetShaderLocation(structure,"sunShadowMatrix");if(loc>=0)SetShaderValueMatrix(structure,loc,sunMatrix);structuralDraws++;}
-  for(int part=0;part<int(asset.parts.size());part++){auto pose=structurePose(f,asset.bounds[part],part,age);auto at=structurePoint(f,pose.centre);
+  for(int part=0;part<int(asset.parts.size());part++){int cell=asset.indices[part],section=f.localized?structureCellSection(cell,structureRows(f)):0;if(f.localized&&(f.cleared&(1u<<cell)))continue;bool intact=f.localized&&f.sections[section]>0;double partAge=f.localized?sectionAge(f,section,age):age;auto motionBounds=f.localized?structureCell(f,cell):asset.bounds[part];auto pose=structurePose(f,motionBounds,cell,partAge);auto modelPivot=pose.centre+pose.right*(asset.bounds[part].centre().x-motionBounds.centre().x)+pose.up*(asset.bounds[part].centre().y-motionBounds.centre().y)+pose.back*(asset.bounds[part].centre().z-motionBounds.centre().z);auto at=structurePoint(f,modelPivot);
+   if(!shadow){uniform(structure,"fractureHeat",reduced||intact?0.f:float(std::exp(-partAge*.8)));uniform(structure,"condition",intact?.8f:float(.15+.7*std::exp(-partAge*.65)));uniform(structure,"powerOn",intact?1.f:float(std::exp(-partAge*1.3)));}
    // Follow local terrain instead of letting wide toppled sections sink through
    // curved ground. Preserve the exact source pose at the moment of release.
-   if(!f.orbital&&instance.body>=0&&age>.3){const auto& planet=game.planets[instance.body];double lift=0;auto half=asset.bounds[part].half();for(int x:{-1,1})for(int z:{-1,1}){auto foot=structurePoint(f,fragmentPoint(pose,{x*half.x,-half.y,z*half.z}));auto radial=unit(foot-planet.centre);auto floor=planet.centre+radial*(planet.radius+terrain(planet,radial)+2.02);lift=std::max(lift,dot(floor-foot,f.up));}at+=f.up*(lift*std::clamp((age-.3)/.5,0.,1.));}
+   if(!f.orbital&&instance.body>=0&&!intact&&partAge>.3){const auto& planet=game.planets[instance.body];double lift=0;auto half=asset.bounds[part].half();for(int x:{-1,1})for(int z:{-1,1}){auto foot=structurePoint(f,fragmentPoint(pose,{x*half.x,-half.y,z*half.z}));auto radial=unit(foot-planet.centre);auto floor=planet.centre+radial*(planet.radius+terrain(planet,radial)+2.02);lift=std::max(lift,dot(floor-foot,f.up));}at+=f.up*(lift*std::clamp((partAge-.3)/.5,0.,1.));}
    auto rotateBasis=[&](V3 n){return f.right*n.x+f.up*n.y+f.back*n.z;};auto r=rotateBasis(pose.right),u=rotateBasis(pose.up),b=rotateBasis(pose.back);auto& model=asset.parts[part];model.transform={float(r.x),float(u.x),float(b.x),0,float(r.y),float(u.y),float(b.y),0,float(r.z),float(u.z),float(b.z),0,0,0,0,1};
    if(shadow){auto original=model.materials[0].shader;model.materials[0].shader=sunDepth;uniform(sunDepth,"groundPass",0.f);DrawModel(model,vec(at-game.planets[groundBody].centre),1,WHITE);model.materials[0].shader=original;}
    else{uniform(structure,"fracturePivot",asset.bounds[part].centre());DrawModel(model,vec(at),1,WHITE);structuralParts++;}
-   if(shadow||age<.08||age>7)continue;
+   if(shadow||intact||partAge<.08||partAge>7)continue;
    // Cold mineral dust and spectral arcs originate on the moving architecture,
    // including delayed secondary failures after the main fireball has faded.
-   double pulse=std::exp(-std::pow((age-(.6+fractureNoise(f.seed,part+80)*2.4))/.35,2));auto tint=colour(factionStyle(f.faction).accent,255);
-   if(!reduced&&combatGlow.id&&part%(lowGraphics?3:2)==0){rlDisableDepthMask();auto dustAt=f.orbital?at:at-f.up*asset.bounds[part].half().y+f.up*(age*.35);double fade=std::sin(std::clamp(age/7.,0.,1.)*pi);DrawBillboard(camera,combatGlow,vec(dustAt),float((2+age)*std::min(5.,asset.bounds[part].half().x*.5)),Color{44,33,60,static_cast<unsigned char>(fade*62)});rlEnableDepthMask();}
+   double pulse=std::exp(-std::pow((partAge-(.6+fractureNoise(f.seed,part+80)*2.4))/.35,2));auto tint=colour(factionStyle(f.faction).accent,255);
+   if(!reduced&&combatGlow.id&&part%(lowGraphics?3:2)==0){rlDisableDepthMask();auto dustAt=f.orbital?at:at-f.up*asset.bounds[part].half().y+f.up*(age*.35);double fade=std::sin(std::clamp(partAge/7.,0.,1.)*pi);DrawBillboard(camera,combatGlow,vec(dustAt),float((2+age)*std::min(5.,asset.bounds[part].half().x*.5)),Color{44,33,60,static_cast<unsigned char>(fade*62)});rlEnableDepthMask();}
    if(pulse>.02&&part%(reduced?4:lowGraphics?2:1)==0){BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();if(combatGlow.id)DrawBillboard(camera,combatGlow,vec(at),float(1.5+asset.bounds[part].half().x*.22),Color{tint.r,tint.g,tint.b,static_cast<unsigned char>(pulse*180)});
     int sparks=reduced?2:lowGraphics?4:7;for(int j=0;j<sparks;j++){double phase=age*3+j*2.399963,reach=(.4+pulse*2)*(1+fractureNoise(f.seed,part*9+j));auto direction=f.right*std::cos(phase)+f.back*std::sin(phase)+f.up*(f.orbital?std::sin(phase*1.7):.6);DrawLine3D(vec(at+direction*reach),vec(at+direction*(reach+.6)),Color{tint.r,tint.g,tint.b,static_cast<unsigned char>(pulse*205)});}rlEnableDepthMask();EndBlendMode();}
   }
@@ -336,22 +339,22 @@ Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* v
  if(port.planet>=0){asset.detailCentres.push_back(port.position+b*56+n*10);for(const auto& site:layout.facilities){auto f=surface(site.position);asset.detailCentres.push_back(port.position+a*f.origin.x+n*(f.origin.y+8)+b*f.origin.z);}}
  for(int lod=0;lod<3;lod++){bool close=lod==0,far=lod==2;Builder m;Color metal=colour(style.hull),glow=colour(style.accent,96),secondary=colour(style.secondary,96);
   if(port.planet>=0){
-   if(!port.disabled){
+   if(!port.disabled&&!modularStructure(game.worldDamage,portObjectId(port.id))){
    landingPad(m,s.faction,far);
    }else{for(int i=0;i<8;i++)m.bevelBox({std::sin(i*3.1)*24,.5,std::cos(i*2.7)*24},{6,1.4,4},coded({37,38,44,0},0),.2);}
    // A real loading yard lies outside the player's landing circle.
-   if(objectIntegrity(game.worldDamage,propObjectId(port.id,"gantry",0))>0){
+   if(objectIntegrity(game.worldDamage,propObjectId(port.id,"gantry",0))>0&&!modularStructure(game.worldDamage,propObjectId(port.id,"gantry",0))){
    loadingGantry(m,s.faction,far);
    }
-   if(objectIntegrity(game.worldDamage,propObjectId(port.id,"mast",0))>0){
+   if(objectIntegrity(game.worldDamage,propObjectId(port.id,"mast",0))>0&&!modularStructure(game.worldDamage,propObjectId(port.id,"mast",0))){
    portMast(m,s.faction,far);
    }
    for(int i=0;i<9;i++)for(int c=0;c<std::min(far?2:8,cargoSlots(game.worldDamage,port.id,i,s.stock[i]));c++){
-    if(objectIntegrity(game.worldDamage,propObjectId(port.id,"cargo",i*8+c))<=0)continue;
+    if(objectIntegrity(game.worldDamage,propObjectId(port.id,"cargo",i*8+c))<=0||modularStructure(game.worldDamage,propObjectId(port.id,"cargo",i*8+c)))continue;
     V3 p{-11+(i%3)*11.,3.42+(c/2)*2.44,48+(i/3)*6.+(c%2)*2.6};freightContainer(m,p,coded(cargoColours[i],17),far!=0);
    }
    if(close){
-    if(objectIntegrity(game.worldDamage,propObjectId(port.id,"terminal",0))>0){
+    if(objectIntegrity(game.worldDamage,propObjectId(port.id,"terminal",0))>0&&!modularStructure(game.worldDamage,propObjectId(port.id,"terminal",0))){
     portTerminal(m,s.faction,far);
     }
    }
@@ -362,7 +365,7 @@ Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* v
     m.frame=surface(site.position);double facing=site.angle+(site.ordinal%2?pi:0);m.frame.x=unit(m.frame.x*std::cos(facing)+m.frame.z*std::sin(facing));m.frame.z=unit(cross(m.frame.x,m.frame.y));
     auto damaged=s.facilityIntegrity.find(site.kind*24+site.ordinal);double hp=damaged==s.facilityIntegrity.end()?1:damaged->second;
     if(hp<=0){m.cylinder({0,-.65,0},10,1.,coded({38,37,44,0},128),far?8:16);}
-    else{size_t first=m.colours.size();facility(m,site,style,s.faction,far,close);if(hp<1)for(size_t c=first;c<m.colours.size();c+=4)for(int k=0;k<3;k++)m.colours[c+k]=static_cast<unsigned char>(m.colours[c+k]*(.5+.5*hp));}
+    else if(!modularStructure(game.worldDamage,facilityObjectId(s.id,site.kind,site.ordinal))){size_t first=m.colours.size();facility(m,site,style,s.faction,far,close);if(hp<1)for(size_t c=first;c<m.colours.size();c+=4)for(int k=0;k<3;k++)m.colours[c+k]=static_cast<unsigned char>(m.colours[c+k]*(.5+.5*hp));}
    }
    m.frame={};
    if(!far){for(int i=0;i<14;i++){double angle=i*2*pi/14+.1,rad=62+(i%3)*6;V3 at{std::cos(angle)*rad,0,std::sin(angle)*rad};
@@ -372,9 +375,9 @@ Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* v
      for(int side:{-1,1}){m.beam({0,4,0},{side*1.4,6.+(i%3),.5},.12,coded({89,126,88,0},160),4);m.sphere({side*1.4,6.+(i%3),.5},{1.4,2,1.5},coded({102,177,133,0},160),false,8,4);}}
     m.frame={};for(int i=0;i<10;i++)for(int side:{-1,1}){auto f=surface({side*13.,0,-45-i*7.});m.frame=f;if(objectIntegrity(game.worldDamage,propObjectId(port.id,"beacon",i*2+(side>0)))>0)m.cylinder({},.28,.65,glow,5);}m.frame={};}
   }else{
-   if(port.disabled)m.box({0,-18,0},{.05,.05,.05},coded({30,30,36,0},0));
-   if(!port.disabled)orbitalCore(m,s.faction,view?std::min(8,view->facilities[Warehouse]):((int(game.planets.at(port.body).worldSeed%5)+1)<<4),far);
-   for(int side:{-1,1})if(objectIntegrity(game.worldDamage,propObjectId(port.id,"panel",side+1))>0){m.frame.origin={side*131.,0,0};stationWing(m,s.faction,side);m.frame={};}
+   if(port.disabled||modularStructure(game.worldDamage,portObjectId(port.id)))m.box({0,-18,0},{.05,.05,.05},coded({30,30,36,0},0));
+   if(!port.disabled&&!modularStructure(game.worldDamage,portObjectId(port.id)))orbitalCore(m,s.faction,view?std::min(8,view->facilities[Warehouse]):((int(game.planets.at(port.body).worldSeed%5)+1)<<4),far);
+   for(int side:{-1,1})if(objectIntegrity(game.worldDamage,propObjectId(port.id,"panel",side+1))>0&&!modularStructure(game.worldDamage,propObjectId(port.id,"panel",side+1))){m.frame.origin={side*131.,0,0};stationWing(m,s.faction,side);m.frame={};}
   }
 
   auto model=m.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;model.transform=rotation;if(close)asset.close=model;else if(far)asset.distant=model;else asset.detailed=model;

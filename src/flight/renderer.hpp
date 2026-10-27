@@ -20,7 +20,7 @@ class Renderer {
  struct PortAsset {Model close{},detailed{},distant{};std::vector<V3> detailCentres;V3 at{},up{};uint64_t key=0;double radius=60;int detail=-1;};
  std::unordered_map<std::string,PortAsset> portAssets;std::map<std::tuple<int,int,int,int>,Model> craftAssets;
  struct FracturedHull {std::array<Model,5> parts{};std::array<V3,5> pivots{};int triangles=0;};std::map<std::pair<int,int>,FracturedHull> fracturedHulls;
- struct BrokenStructure {std::vector<Model> parts;std::vector<FragmentBounds> bounds;uint64_t key=0;int sourceTriangles=0,triangles=0,caps=0;double sourceArea=0,partArea=0;};
+ struct BrokenStructure {std::vector<Model> parts;std::vector<FragmentBounds> bounds;std::vector<int> indices;uint64_t key=0;int sourceTriangles=0,triangles=0,caps=0;double sourceArea=0,partArea=0;};
  struct StructuralInstance {std::string id;StructureRemains shape;int body=-1;};
  std::unordered_map<std::string,BrokenStructure> brokenStructures;std::vector<StructuralInstance> structuralInstances;V3 structureAnchor{1e10,0,0};uint64_t structureRevision=~uint64_t(0);bool structureLow=false;
  BrokenStructure buildBrokenStructure(const StructureRemains&);void prepareStructures(const Game&);void drawStructuralRemains(const Game&,bool shadow=false);double structureAge(const Game&,const StructureRemains&)const;

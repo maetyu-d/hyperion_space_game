@@ -18,7 +18,7 @@ struct SurfaceScar {V3 normal;double radius=1,depth=.2;};
 struct Planet {std::string name,biome;V3 centre;double radius,seed;V3 portNormal;bool giant=false;
  double water=.35,life=.25,temperature=289,atmosphere=1;int kind=0;uint32_t worldSeed=0;int generation=1,landform=0;double tectonic=.5;std::vector<SurfaceScar> scars{};
 };
-struct Port {std::string name,description;V3 position,normal;int planet;std::string id,settlement;int body=-1;int minor=-1;bool disabled=false;};
+struct Port {std::string name,description;V3 position,normal;int planet;std::string id,settlement;int body=-1;int minor=-1;bool disabled=false,recovery=false;};
 struct MinorObject {hyperion::MinorBody source;V3 centre;bool destroyed=false;};
 std::vector<V3> transferRoute(const std::vector<Planet>& planets,V3 start,const Port& destination);
 struct RoutePose {V3 position,forward;};
@@ -129,7 +129,7 @@ struct Game {
   void minorContacts(V3 previous);
   int combatTargetIndex()const;void cycleCombatTarget();bool selectWeapon(int);
   void prepareCombat(double,Input&);void updateCombat(double,const Input&);
-  void damageWorld(int,double,int,V3,bool);
+  void damageWorld(int,double,int,V3,bool,const std::string& attacker="");
   void damageShip(double,int,V3);void damageTraffic(int,double,int,V3,bool credited,int module=0,const std::string& attacker="");void chainArc(int,double);
   bool enemiesOf(const Traffic&,const Traffic&)const;
   bool lineOfSight(V3,V3)const;double terrainHit(V3,V3)const;bool protectedPort(V3)const;

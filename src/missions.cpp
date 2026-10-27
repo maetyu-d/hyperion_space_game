@@ -1,7 +1,7 @@
 #include "economy.hpp"
 #include <sstream>
 namespace hyperion {
-const char* missionKindName(int k){static const char* names[]={"Relief delivery","Convoy escort","Captain interdiction","Field research","Ocean recovery"};return k>=0&&k<5?names[k]:"Unknown mission";}
+const char* missionKindName(int k){static const char* names[]={"Relief delivery","Convoy escort","Captain interdiction","Field research","Ocean recovery","Reconstruction","Evacuation","Black-box retrieval"};return k>=0&&k<8?names[k]:"Unknown mission";}
 const char* missionStateName(int s){static const char* names[]={"Available","In progress","Return to issuer","Completed","Failed","Expired"};return s>=0&&s<6?names[s]:"Unknown";}
 bool missionOpen(const Mission& m){return m.state==MissionActive||m.state==MissionReady;}
 void finishMission(Economy& e,Mission& m,int state,const std::string& cause){
@@ -86,6 +86,11 @@ std::string missionObjective(const Economy& e,const Mission& m){
  if(m.state>=MissionComplete)return m.result;
  if(m.kind==WreckMission){auto* w=findOceanWreck(e,m.target);auto* home=findSettlement(e,m.issuer);return m.trip==1?"Rescue "+std::to_string(m.quantity)+" crew / "+std::to_string(w?w->aboard:0)+" aboard / "+std::to_string(w?w->deliveredCrew:0)+" delivered / unload at "+(home?home->name:m.issuer):"Recover and deliver "+std::to_string(m.quantity)+" "+goods[m.good].name+" from "+m.contact.name;}
 
+ if(m.kind>=ReconstructionMission){auto it=e.worldDamage.find(m.target);if(it==e.worldDamage.end())return "Recovery site resolved / await commission status update";const auto& d=it->second;const auto& r=d.recovery;
+  if(m.kind==EvacuationMission)return "Rescue "+std::to_string(m.quantity)+" survivors / "+std::to_string(r.aboard)+" aboard / "+std::to_string(r.delivered)+" delivered / life support until hour "+std::to_string(int(r.supportUntil));
+  if(m.kind==BlackBoxMission)return "Stabilize, cut open and recover the recorder / return one research datum";
+  Stock cost{};if(d.kind==FacilityObject)cost=buildings[d.slot/24].construction;else{cost[Alloy]=d.kind==PortObject?32:8;cost[Components]=d.kind==PortObject?12:3;}std::string text="Rebuild original infrastructure / ";for(int i=0;i<goodCount;i++)if(cost[i]>0)text+=std::to_string(int(cost[i]))+" "+goods[i].name+" / ";return text+"stabilize and evacuate first";
+ }
  if(m.kind==ReliefMission)return "Deliver "+std::to_string(m.quantity-m.delivered)+" "+goods[m.good].name+" to the issuer's warehouse / "+std::to_string(m.delivered)+" delivered";
  if(m.kind==EscortMission)return "Rendezvous with "+m.target+" / stay within 650 km for 45% of its commissioned leg / "+std::to_string(int(m.coverage*100))+"% verified";
  if(m.kind==InterdictionMission){auto* c=findCaptain(const_cast<Economy&>(e),m.target);return "Defeat "+(c?c->name:m.target)+" yourself / existing faction consequences apply";}

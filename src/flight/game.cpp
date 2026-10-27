@@ -67,6 +67,7 @@ void Game::launch(){
   message(surface?"Departure assist / vertical lift / steer or thrust to take control / J for navigation.":"Docking clamps released / clearing the berth. Clear skies, commander.");
 }
 void Game::dockAt(int index,bool preserveAttitude){
+ if(index>=0&&index<int(ports.size())&&ports[index].recovery){cancelNavigation();ship.throttle=0;ship.velocity={};docked=false;dockedPort=-1;savedDock.clear();message("Recovery approach / hold outside the wreck and close below 5 km/s");return;}
  if(index>=0&&index<int(ports.size())&&ports[index].disabled){index=-1;for(int i=0;i<int(ports.size());i++)if(!ports[i].disabled&&ports[i].minor<0){index=i;break;}if(index<0){docked=false;dockedPort=-1;savedDock.clear();return;}}
   if(index<0||index>=int(ports.size()))return;
   if(ports[index].minor>=0){message("Fly-by destination / no docking facilities. Survey from the destination panel.");return;}
@@ -83,7 +84,7 @@ bool Game::dock(){
   if(ports.empty())return false;
   if(docked){launch();return true;}
   int nearest=-1;double best=1e30;
-  for(int i=0;i<int(ports.size());i++)if(ports[i].minor<0&&!ports[i].disabled){double d=length(ship.position-ports[i].position);if(d<best){best=d;nearest=i;}}
+  for(int i=0;i<int(ports.size());i++)if(ports[i].minor<0&&!ports[i].disabled&&!ports[i].recovery){double d=length(ship.position-ports[i].position);if(d<best){best=d;nearest=i;}}
   if(nearest<0)return false;
   double limit=ports[nearest].planet>=0?55:95;
   if(best<limit&&speed()<55){

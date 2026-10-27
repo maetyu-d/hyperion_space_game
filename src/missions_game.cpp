@@ -27,6 +27,7 @@ bool Game::missionAction(const std::string& a,const std::string& id){
  if(a=="plotMission"){selectedMinor.clear();
   trackedMission=m.id;
   if(m.kind==WreckMission)if(auto* wreck=findOceanWreck(e,m.target))if(wreck->aboard||stockTotal(wreck->recovered)>0||m.state==MissionReady)return wreckAction("plotWreckHome",m.target);
+  if(m.kind>=ReconstructionMission&&m.state!=MissionReady&&m.star==s.currentStar)return recoveryAction("recoveryPlot",m.target);
   if(m.star!=s.currentStar){system(m.star);s.selectedPlanet=m.planet;notify("Mission system plotted / jump before rendezvous");return true;}
   if((m.kind==SurveyMission||m.kind==WreckMission)&&hasExpedition()&&s.activeStar==m.star&&s.activePlanet==m.planet){
    if(expeditionLayer()==Mode::Surface)s.waypoint=m.contact.pos;
@@ -64,6 +65,7 @@ bool Game::missionAction(const std::string& a,const std::string& id){
   else{finishMission(e,m,MissionFailed,"Commission abandoned / unused escrow returned");success=true;message="Mission abandoned / escrow returned / issuer trust -3";}
  }else if(e.docked!=site->id||!canDock(*site))message="Dock at "+site->name+" to transfer cargo or debrief";
  else if(a=="deliverMission"){
+  if(m.kind==EvacuationMission&&m.state==MissionActive)return recoveryAction("recoveryDeliver",m.target);
   if(m.kind==WreckMission&&m.state==MissionActive)return wreckAction("wreckDeliver",m.target);
   if(m.kind!=ReliefMission||m.state!=MissionActive)message="No active relief delivery on this commission";
   else{auto cargo=shipStock();int units=int(std::floor(std::min({double(m.quantity-m.delivered),cargo[m.good],std::max(0.,storageCapacity(*site)-stockTotal(site->stock))})));if(units<=0)message="Required cargo missing or destination warehouse full";
@@ -71,8 +73,8 @@ bool Game::missionAction(const std::string& a,const std::string& id){
  }else if(a=="debriefMission"){
   if(m.state!=MissionReady)message="Complete the physical objective before debriefing";
   else{
-   auto cargo=shipStock();if(m.kind==SurveyMission&&(cargo[Research]<m.quantity||stockTotal(site->stock)+m.quantity>storageCapacity(*site)))message="Debrief needs "+std::to_string(m.quantity)+" research data aboard and issuer warehouse space";
-   else{if(m.kind==SurveyMission){cargo[Research]-=m.quantity;site->stock[Research]+=m.quantity;storeShipStock(cargo);}site->morale=std::min(100.,site->morale+1);auto paid=m.escrow;finishMission(e,m,MissionComplete,"Debrief complete / "+std::to_string(paid)+" cr paid from escrow / standing improved");success=true;message=m.result;}
+   auto cargo=shipStock();if((m.kind==SurveyMission||m.kind==BlackBoxMission)&&(cargo[Research]<m.quantity||stockTotal(site->stock)+m.quantity>storageCapacity(*site)))message="Debrief needs "+std::to_string(m.quantity)+" research data aboard and issuer warehouse space";
+   else{if(m.kind==SurveyMission||m.kind==BlackBoxMission){cargo[Research]-=m.quantity;site->stock[Research]+=m.quantity;storeShipStock(cargo);}site->morale=std::min(100.,site->morale+1);auto paid=m.escrow;finishMission(e,m,MissionComplete,"Debrief complete / "+std::to_string(paid)+" cr paid from escrow / standing improved");success=true;message=m.result;}
   }
  }
  if(success&&turnBased())advanceTime(1,true);notify(message.empty()?"Mission order unavailable":message,success?Notice::Important:Notice::Status);return true;

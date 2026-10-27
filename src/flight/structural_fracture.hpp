@@ -19,10 +19,11 @@ inline std::vector<FractureVertex> clipFracture(const std::vector<FractureVertex
   if(insideA!=insideB)out.push_back(fractureMix(a,b,std::clamp(da/(da-db),0.,1.)));if(insideB)out.push_back(b);a=b;da=db;
  }return out;
 }
-inline StructureFracture fractureStructure(const std::vector<FractureVertex>& source,int profile,uint32_t seed){
+inline StructureFracture fractureStructure(const std::vector<FractureVertex>& source,int profile,uint32_t seed,const StructureRemains* layout=nullptr){
  if(source.empty()||source.size()%3)throw std::runtime_error("Invalid structural fracture source");StructureFracture result;
  V3 low{1e30,1e30,1e30},high{-1e30,-1e30,-1e30};for(const auto& v:source){if(!finite(v.position)||!finite(v.normal))throw std::runtime_error("Nonfinite structural geometry");low={std::min(low.x,v.position.x),std::min(low.y,v.position.y),std::min(low.z,v.position.z)};high={std::max(high.x,v.position.x),std::max(high.y,v.position.y),std::max(high.z,v.position.z)};}
  int nx=2,ny=3,nz=2;if(profile==StationCore){nx=3;ny=2;nz=3;}else if(profile==StationWing){nx=3;ny=1;nz=2;}else if(profile==LandingPad){nx=3;ny=1;nz=3;}else if(profile==LoadingGantry){nx=3;ny=2;nz=1;}else if(profile==FreightCrate||profile==PortTerminal){nx=2;ny=1;nz=2;}
+ if(layout&&layout->localized){nx=3;ny=structureRows(*layout);nz=3;low=layout->hitCentre-layout->hitHalf;high=layout->hitCentre+layout->hitHalf;}
  const int counts[]={nx,ny,nz};std::array<std::vector<double>,3> planes;
  for(int axis=0;axis<3;axis++){double a=coordinate(low,axis),b=coordinate(high,axis);planes[axis].push_back(a);for(int i=1;i<counts[axis];i++){double jitter=(fractureNoise(seed,axis*7+i)-.5)*.12;planes[axis].push_back(a+(b-a)*(double(i)/counts[axis]+jitter/counts[axis]));}planes[axis].push_back(b);}
  result.parts.resize(nx*ny*nz);result.sourceTriangles=int(source.size()/3);for(size_t i=0;i<source.size();i+=3)result.sourceArea+=triangleArea(source[i].position,source[i+1].position,source[i+2].position);

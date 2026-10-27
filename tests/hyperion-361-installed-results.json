@@ -1,0 +1,131 @@
+{
+  "version": "3.61.0",
+  "binarySHA256": "d7d0692bb23eaad058fbc30383435f6da70f3c8904b721ece133035a6062497d",
+  "runs": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.58
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.57
+    },
+    {
+      "check": "wreck-at-sea",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "wreck-delivered",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "old-damaged-world",
+      "exit": 0,
+      "seconds": 9.46,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "old-dismantled-wreck",
+      "exit": 0,
+      "seconds": 9.46,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "structural-fragments",
+      "exit": 0,
+      "seconds": 9.44,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "fragments-in-cockpit",
+      "exit": 0,
+      "noSave": true,
+      "frames": 4
+    },
+    {
+      "check": "legacy-ruins-in-cockpit",
+      "exit": 0,
+      "noSave": true,
+      "frames": 4
+    },
+    {
+      "check": "recovery-side-breach",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "recovery-live-station",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "recovery-ship-recorder",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "recovery-tow-wing",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    }
+  ],
+  "frozenSaveRoundtripsExact": true,
+  "rawStructuralFixture": {
+    "renderOnlyTrafficRemoved": true,
+    "restoredTrafficCount": 11,
+    "onlyTrafficRegenerated": true,
+    "economyAndShipStateUnchanged": true
+  },
+  "oldCampaignRoundtripsExact": true,
+  "damageCampaignsAuthoritativeExact": true
+}

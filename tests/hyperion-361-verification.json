@@ -1,0 +1,37 @@
+{
+  "version": "3.61.0",
+  "cpuSuites": 39,
+  "failed": 0,
+  "recoveryChecks": 108,
+  "nativeRecovery": {
+    "scenariosPerProfile": 7,
+    "framesPerProfile": 490,
+    "profiles": [
+      "high",
+      "low",
+      "reduced"
+    ]
+  },
+  "nativeArchitecturalRegression": {
+    "scenariosPerProfile": 25,
+    "framesPerProfile": 1625,
+    "profiles": [
+      "high",
+      "low",
+      "reduced"
+    ]
+  },
+  "sanitizers": [
+    "address",
+    "undefined-behavior"
+  ],
+  "rendererStateMutation": false,
+  "playerSavesUsed": false,
+  "nativeCombatAndLandingPassed": true,
+  "recoveryUI": "docs/screenshots/recovery-planning.jpg",
+  "installedVersion": "3.61.0",
+  "installedBinarySHA256": "d7d0692bb23eaad058fbc30383435f6da70f3c8904b721ece133035a6062497d",
+  "installedChecks": 19,
+  "oldCampaignFrozenRoundtripsExact": true,
+  "newRecoveryAuthoritativeAndSettledRoundtripsExact": true
+}

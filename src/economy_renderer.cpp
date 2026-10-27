@@ -28,6 +28,7 @@ void Renderer::economyPanel(float x,float& y,float width) {
  auto full=[&](const std::string& label,const std::string& action,const std::string& arg="",bool enabled=true,bool primary=false){button(label,{x,y,width,32},action,arg,enabled,primary);y+=40;};
  auto selector=[&](){if(disclosure(selected?selected->name:"Choose a port","sites",x,y,width)){for(auto& site:e.settlements)if(site.star==game->s.currentStar||site.owner==0)full(site.name+" / "+site.planetName,"selectSettlement",site.id,true,selected&&site.id==selected->id);}};
  if(ui->tab==4||ui->tab==5)wreckDeliveries(x,y,width,false);
+ if(ui->tab==4||ui->tab==5)recoveryPanel(x,y,width);
  if(ui->tab==4||ui->tab==5)missionPanel(x,y,width);
  if(ui->tab==4){
   fitted(std::to_string(e.credits)+" cr / "+std::to_string(e.colonists)+" volunteers / "+std::to_string(e.ships)+" shuttles",x,y,width,11,mint,true);y+=27;selector();

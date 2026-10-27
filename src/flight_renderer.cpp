@@ -33,7 +33,23 @@ void hudDiamond(Vector2 at,float radius,Color tint){
 }
 
 }
+void Renderer::recoveryPanel(float x,float& y,float width){
+ auto& e=game->s.economy;auto& f=game->s.flight;std::vector<std::pair<double,std::string>> sites;for(const auto& [id,d]:e.worldDamage)if(d.recovery.valid&&(d.star==game->s.currentStar||d.recovery.aboard>0)){double distance=hyperion::flight::length(d.position-f.ship.position);if(distance<2500||d.recovery.aboard>0||game->recoveryTarget==id)sites.push_back({distance,id});}if(sites.empty())return;std::sort(sites.begin(),sites.end());
+ if(!disclosure("Recovery / "+std::to_string(sites.size())+" sites","recovery",x,y,width))return;
+ auto name=[&](const WorldDamage& d){auto* site=findSettlement(e,d.owner);return std::string(d.kind==FacilityObject?buildings[d.slot/24].name:d.recovery.shipModel>=0?"Ship wreck":"Orbital equipment")+" / "+(site?site->name:d.star);};
+ auto selected=e.worldDamage.find(game->recoveryTarget);if(selected==e.worldDamage.end()||!selected->second.recovery.valid){game->recoveryTarget=sites.front().second;selected=e.worldDamage.find(game->recoveryTarget);}auto& d=selected->second;auto& r=d.recovery;auto id=selected->first;
+ if(disclosure(name(d),"recovery-sites",x,y,width)){for(size_t i=0;i<std::min(size_t(6),sites.size());i++){button(name(e.worldDamage.at(sites[i].second)),{x,y,width,28},"recoverySelect",sites[i].second);y+=35;}}
+ wrapped(n(hyperion::flight::length(d.position-f.ship.position))+" km / "+(recoveryHazard(r,game->s.hours)>.02?"Live fuel and circuits":"Safe containment")+" / "+std::to_string(r.crew)+" stranded / "+std::to_string(r.aboard)+" aboard",x,y,width,11,recoveryHazard(r,game->s.hours)>.02?pink:mint);y+=12;
+ if(!game->turnBased()){button("Plan recovery / pause",{x,y,width,30},"recoveryPlan",id);y+=40;return;}
+ std::string next=recoveryHazard(r,game->s.hours)>.02?"recoveryStabilize":r.crew>0?"recoveryRescue":r.aboard>0?"recoveryDeliver":!r.cut?"recoveryCut":r.box&&!r.boxRecovered?"recoveryBox":"salvage";
+ auto label=[&](const std::string& a)->std::string{return a=="recoveryStabilize"?"Stabilize hazards":a=="recoveryRescue"?"Rescue survivors":a=="recoveryDeliver"?"Deliver evacuees":a=="recoveryCut"?"Cut equipment free":a=="recoveryBox"?"Recover black box":a=="recoveryTow"?"Attach tow":a=="recoveryDetach"?"Release tow":a=="recoveryRebuild"?"Reconstruct original site":"Collect released salvage";};
+ if(next=="salvage"){bool available=stockTotal(d.salvage)>0&&f.speed()<=15&&!f.docked&&hyperion::flight::length(d.position-f.ship.position)<55;button(label(next),{x,y,width,30},next,"",available);y+=39;}
+ else{auto quote=game->recoveryQuote(next,id);button(label(next)+" / 1 h",{x,y,width,30},next,id,quote.available);y+=38;wrapped(quote.available?quote.text:quote.reason,x,y,width,11,muted);y+=13;}
+ button("Plot approach",{x,y,width,28},"recoveryPlot",id,game->recoveryQuote("recoveryPlot",id).available);y+=36;
+ if(disclosure("Other recovery orders","recovery-orders",x,y,width))for(const char* a:{"recoveryStabilize","recoveryRescue","recoveryCut","recoveryBox","recoveryDeliver","recoveryTow","recoveryDetach","recoveryRebuild"}){if(next==a)continue;auto quote=game->recoveryQuote(a,id);button(label(a)+" / 1 h",{x,y,width,27},a,id,quote.available);y+=34;if(quote.available){wrapped(quote.text,x,y,width,10,muted);y+=8;}}
+}
 void Renderer::combatPanel(float x,float& y,float width){
+ recoveryPanel(x,y,width);
  auto& f=game->s.flight;auto& c=f.ship.combat;int selected=f.combatTargetIndex();
  if(!disclosure("Combat / "+std::string(hyperion::flight::weaponDef(c.weapon).name),"combat",x,y,width))return;
  if(game->turnBased()){wrapped("Orders resolve on Wait 1h / N. K takes the helm in real time.",x,y,width,12,mint);y+=12;}
@@ -58,7 +74,8 @@ void Renderer::flightHUD(){
  const auto delta=target.position-f.ship.position;
  const double d=hyperion::flight::length(delta),speed=f.speed(),stoppingDistance=f.stoppingDistance();
  const float edge=UILayout::worldRight(w,ui->panel),cx=w*.5f,cy=h*.5f;
- const bool compact=ui->panel;
+ const bool compact=ui->panel;std::string recoveryPrompt;double nearestRecovery=55;for(const auto& [id,d]:game->s.economy.worldDamage)if(d.recovery.valid&&d.star==game->s.currentStar&&(!d.recovery.cut||d.recovery.crew||d.recovery.aboard||d.recovery.towed||(d.recovery.box&&!d.recovery.boxRecovered))){double distance=hyperion::flight::length(d.position-f.ship.position);if(distance<nearestRecovery){nearestRecovery=distance;recoveryPrompt=id;}}
+
  const auto landing=f.landing();
  const float inset=UILayout::safeInset(w,h),deckY=h-inset-(compact?104:80),deckWidth=edge-2*inset,markerBottom=deckY-80;
  const float systemsWidth=compact?180.f:clamp(deckWidth*.31f,270.f,330.f);
@@ -198,7 +215,9 @@ void Renderer::flightHUD(){
    float pulse=float(std::min(1.,f.hitConfirm*8)),outer=19+4*pulse,inner=15+2*pulse;tint.a=static_cast<unsigned char>(230*pulse);
    for(int side:{-1,1}){DrawLineEx({cx+side*outer,cy-outer},{cx+side*inner,cy-inner},1.7f,tint);DrawLineEx({cx+side*outer,cy+outer},{cx+side*inner,cy+inner},1.7f,tint);}
   }
-  if(!compact&&speed<=15)for(const auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&(std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)+std::accumulate(wreck.supplies.begin(),wreck.supplies.end(),0.))>0){button("Collect salvage",{24,deckY-73,150,30},"salvage");break;}
+  if(!compact&&speed<=15&&recoveryPrompt.empty())for(const auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&(std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)+std::accumulate(wreck.supplies.begin(),wreck.supplies.end(),0.))>0){button("Collect salvage",{24,deckY-73,150,30},"salvage");break;}
+  if(!compact&&!recoveryPrompt.empty())button("Plan recovery",{24,deckY-73,150,30},"recoveryPlan",recoveryPrompt);
+
  }
 
  // One lower deck carries the flight readings, scope and contextual controls.

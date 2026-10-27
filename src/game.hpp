@@ -49,7 +49,9 @@ public:
  State s;Universe universe;
  std::string toast;double toastTime=0,radar=-1,heading=0,elapsed=0;std::string soundEvent;
  Notice toastPriority=Notice::Status;unsigned criticalSerial=0;TurnReport lastTurn;std::vector<TurnReport> recentTurns;
- std::string trackedMission;
+ std::string trackedMission,recoveryTarget;
+ struct RecoveryQuote {bool available=false;std::string text,reason;};
+ RecoveryQuote recoveryQuote(const std::string&,const std::string&)const;bool recoveryAction(const std::string&,const std::string&);void updateRecovery(double);void recoveryMissions();void registerSpaceWreck(const flight::Event&);
  int wreckGood=Components;
  std::string selectedMinor,focusedContact,transferNotice;ChartRecall chartRecall;SurveyRecall surveyRecall;DiveState diveState;DiveReport diveReport;std::string diveDebrief;
  const MinorBody* minorSelection(){for(const auto& b:universe.minorBodies(s.viewStar))if(b.id==selectedMinor)return &b;return nullptr;}

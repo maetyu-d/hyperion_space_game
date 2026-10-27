@@ -2,7 +2,7 @@
 #include "universe.hpp"
 namespace hyperion {
 struct Economy;
-enum MissionKind {ReliefMission,EscortMission,InterdictionMission,SurveyMission,WreckMission};
+enum MissionKind {ReliefMission,EscortMission,InterdictionMission,SurveyMission,WreckMission,ReconstructionMission,EvacuationMission,BlackBoxMission};
 enum MissionState {MissionOffered,MissionActive,MissionReady,MissionComplete,MissionFailed,MissionExpired};
 struct Mission {
  std::string id,title,cause,issuer,star,target,result;

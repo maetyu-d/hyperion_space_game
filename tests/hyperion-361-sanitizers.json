@@ -1,0 +1,20 @@
+{
+  "addressSanitizer": true,
+  "undefinedBehaviorSanitizer": true,
+  "wholeCoreInstrumented": true,
+  "leakDetection": false,
+  "runs": [
+    {
+      "target": "hyperion_recovery_tests",
+      "exit": 0
+    },
+    {
+      "target": "hyperion_structural_tests",
+      "exit": 0
+    },
+    {
+      "target": "hyperion_world_destruction_tests",
+      "exit": 0
+    }
+  ]
+}

@@ -14,7 +14,7 @@ void Renderer::missionPanel(float x,float& y,float width){
   para(missionObjective(e,m),m.state==MissionReady?mint:muted);
   if(m.state==MissionOffered){button("Accept commission",{x,y,width,30},"acceptMission",m.id);y+=38;}
   else{
-   button("Plot / track",{x,y,(width-6)/2,30},"plotMission",m.id);button(m.state==MissionReady?"Debrief":"Deliver cargo",{x+(width+6)/2,y,(width-6)/2,30},m.state==MissionReady?"debriefMission":"deliverMission",m.id,(m.state==MissionReady||(m.kind==ReliefMission||m.kind==WreckMission))&&site&&game->canDock(*site));y+=38;
+   button("Plot / track",{x,y,(width-6)/2,30},"plotMission",m.id);button(m.state==MissionReady?"Debrief":"Deliver cargo",{x+(width+6)/2,y,(width-6)/2,30},m.state==MissionReady?"debriefMission":"deliverMission",m.id,(m.state==MissionReady||(m.kind==ReliefMission||m.kind==WreckMission||m.kind==EvacuationMission))&&site&&game->canDock(*site));y+=38;
    if(disclosure("Commission details","job:"+m.id,x,y,width)){para(m.cause,muted);if(m.kind==EscortMission)para("Actual freight must arrive with at least 65% of its commissioned cargo. Escort coverage requires an undocked ship, clear line of sight and proximity to the named trip.",warning);button("Abandon / return escrow",{x,y,width,28},"abortMission",m.id);y+=38;}
   }
   y+=12;++count;

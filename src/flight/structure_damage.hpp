@@ -7,6 +7,7 @@ namespace hyperion::flight {
 enum StructureProfile {StationCore=14,StationWing,LandingPad,LoadingGantry,PortMast,FreightCrate,PortTerminal,StructureProfileCount};
 struct StructureRemains {
  bool valid=false,orbital=false;int profile=0,faction=0,variant=0,ordinal=0;uint32_t seed=0;
+ bool localized=false;V3 hitCentre{},hitHalf{1,1,1};std::array<double,6> sections{1,1,1,1,1,1},separated{-1,-1,-1,-1,-1,-1};uint32_t cleared=0;std::array<double,18> debrisHP{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
  V3 origin,right{1,0,0},up{0,1,0},back{0,0,1},impact;
  double born=-1,localBorn=-1; // localBorn is a transient bridge to the flight clock.
 };
@@ -14,6 +15,17 @@ inline double fractureNoise(uint32_t seed,int n){uint32_t h=seed^uint32_t(n+1)*0
 inline V3 structurePoint(const StructureRemains& s,V3 p){return s.origin+s.right*p.x+s.up*p.y+s.back*p.z;}
 struct FragmentBounds {V3 low,high;V3 centre()const{return (low+high)*.5;}V3 half()const{return (high-low)*.5;}};
 struct StructurePose {V3 centre,right{1,0,0},up{0,1,0},back{0,0,1};double contact=0;};
+inline int structureRows(const StructureRemains& s){return s.profile==StationWing||s.profile==LandingPad?1:2;}
+inline int structureCellSection(int cell,int rows){int x=cell%3,z=(cell/3)%3,y=cell/9;return x==0?0:x==2?1:z==0?2:z==2?3:y==rows-1?4:5;}
+inline const char* structureSectionName(int n){const char* names[]={"Port section","Starboard section","Fore section","Aft section","Upper works","Core supports"};return names[std::clamp(n,0,5)];}
+inline FragmentBounds structureCell(const StructureRemains& s,int cell){int indices[]={cell%3,cell/9,(cell/3)%3},counts[]={3,structureRows(s),3};V3 low=s.hitCentre-s.hitHalf,high=s.hitCentre+s.hitHalf;
+ auto point=[&](int axis,int i){double a=axis==0?low.x:axis==1?low.y:low.z,b=axis==0?high.x:axis==1?high.y:high.z;double t=double(i)/counts[axis];if(i>0&&i<counts[axis])t+=(fractureNoise(s.seed,axis*7+i)-.5)*.12/counts[axis];return a+(b-a)*t;};
+ return {{point(0,indices[0]),point(1,indices[1]),point(2,indices[2])},{point(0,indices[0]+1),point(1,indices[1]+1),point(2,indices[2]+1)}};
+}
+inline int structureSectionAt(const StructureRemains& s,V3 p){for(int i=0;i<9*structureRows(s);i++){auto b=structureCell(s,i);if(p.x<=b.high.x+1e-6&&p.y<=b.high.y+1e-6&&p.z<=b.high.z+1e-6&&p.x>=b.low.x-1e-6&&p.y>=b.low.y-1e-6&&p.z>=b.low.z-1e-6)return structureCellSection(i,structureRows(s));}auto n=p-s.hitCentre;return std::abs(n.x/s.hitHalf.x)>.33?(n.x<0?0:1):std::abs(n.z/s.hitHalf.z)>.33?(n.z<0?2:3):n.y>0?4:5;}
+inline bool hasDetachedSections(const StructureRemains& s){return s.localized&&std::any_of(s.sections.begin(),s.sections.end(),[](double hp){return hp<=0;});}
+inline double sectionAge(const StructureRemains& s,int section,double age){return s.sections[section]>0?0:std::max(0.,age-(s.separated[section]-s.born)*55.);}
+
 inline V3 fragmentPoint(const StructurePose& s,V3 p){return s.centre+s.right*p.x+s.up*p.y+s.back*p.z;}
 inline StructurePose structurePose(const StructureRemains& s,const FragmentBounds& bounds,int part,double age,double ground=0){
  StructurePose pose;auto pivot=bounds.centre(),half=bounds.half();double size=std::max({half.x,half.y,half.z,.1});

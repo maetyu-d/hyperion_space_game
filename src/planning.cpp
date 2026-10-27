@@ -15,6 +15,7 @@ TurnOutlook Game::outlook(double hours)const {
   if(enemies)add(Notice::Important,std::to_string(enemies)+" armed hostile contact(s) nearby / combat advances with the order");
   if(f.autopilot)add(Notice::Status,"Navigator continues toward the selected berth during the order");
  }
+ for(const auto& [id,d]:s.economy.worldDamage)if(d.recovery.valid&&(d.star==s.currentStar||d.recovery.faction==0)){const auto& r=d.recovery;if(r.crew>0&&r.supportUntil<=s.hours+out.hours)add(Notice::Critical,"Wreck life support expires in "+number(std::max(0.,r.supportUntil-s.hours))+" h / "+std::to_string(r.crew)+" survivors",d.owner);if(!r.failed&&!r.stabilized&&r.failureAt>s.hours&&r.failureAt<=s.hours+out.hours)add(Notice::Important,"Unstable wreck / secondary failure during this order",d.owner);}
  if(f.courier.active&&f.courier.deadline<=s.hours+out.hours+1e-8)add(Notice::Important,"Courier deadline in "+number(std::max(0.,f.courier.deadline-s.hours))+" h / reserved payment at risk",f.courier.destination);
  for(const auto& contract:s.economy.contracts)if(contract.accepted&&!contract.closed&&contract.deadline<=s.hours+out.hours+1e-8){auto* site=findSettlement(s.economy,contract.settlement);add(Notice::Important,"Delivery deadline: "+(site?site->name:contract.settlement)+" / "+number(std::max(0.,contract.deadline-s.hours))+" h",contract.settlement);}
  for(const auto& m:s.economy.missions)if(missionOpen(m)){
@@ -38,6 +39,7 @@ TurnOutlook Game::outlook(double hours)const {
 std::vector<TurnEvent> Game::upcoming(double horizon)const {
  std::vector<TurnEvent> events;if(!std::isfinite(horizon))return events;horizon=clamp(horizon,0.,24.);
  auto add=[&](double eta,Notice priority,const std::string& text,const std::string& site=std::string{},bool estimate=false){if(!std::isfinite(eta)||eta>horizon+1e-8)return;events.push_back({std::max(0.,eta),priority,estimate,text,site});};
+ for(const auto& [id,d]:s.economy.worldDamage)if(d.recovery.valid&&(d.star==s.currentStar||d.recovery.faction==0)){const auto& r=d.recovery;if(r.crew>0)add(r.supportUntil-s.hours,Notice::Critical,"Wreck life support / "+std::to_string(r.crew)+" survivors",d.owner);if(!r.failed&&!r.stabilized&&r.failureAt>s.hours)add(r.failureAt-s.hours,Notice::Important,"Wreck secondary failure",d.owner);}
  if(s.flight.courier.active)add(s.flight.courier.deadline-s.hours,Notice::Important,"Courier deadline",s.flight.courier.destination);
  for(const auto& c:s.economy.contracts)if(c.accepted&&!c.closed){auto* site=findSettlement(s.economy,c.settlement);add(c.deadline-s.hours,Notice::Important,"Delivery deadline / "+(site?site->name:c.settlement),c.settlement);}
  for(const auto& m:s.economy.missions)if(missionOpen(m))add(m.deadline-s.hours,Notice::Important,"Mission deadline / "+m.title,m.issuer);
@@ -55,6 +57,7 @@ void Game::waitPlanned(const std::string& duration){
  notify("Choose a wait of 1, 3, 6, 12 or 24 hours");
 }
 std::string Game::orderHint(const std::string& action,const std::string& arg){
+ if(action.rfind("recovery",0)==0){auto q=recoveryQuote(action,arg.empty()?recoveryTarget:arg);return q.available?q.text:q.reason;}
  if(action=="wreckRescue"||action=="wreckSalvage"||action=="wreckCut"||action=="wreckDeliver"){auto quote=wreckQuote(action,arg);return quote.available?quote.text:quote.reason;}
  if(action=="oceanRoute")return "Free route planning / estimates include headwind power and vent exposure; work costs extra";
 
