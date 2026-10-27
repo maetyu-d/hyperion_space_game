@@ -1,0 +1,110 @@
+[
+  {
+    "active": true,
+    "colours": 14,
+    "gear": false,
+    "graphics": "high",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "ega",
+    "palettePixels": 1296000,
+    "scene": 0
+  },
+  {
+    "active": true,
+    "colours": 4,
+    "gear": false,
+    "graphics": "high",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "cga",
+    "palettePixels": 1296000,
+    "scene": 1
+  },
+  {
+    "active": true,
+    "colours": 13,
+    "gear": false,
+    "graphics": "low",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "ega",
+    "palettePixels": 1296000,
+    "scene": 2
+  },
+  {
+    "active": true,
+    "colours": 13,
+    "gear": true,
+    "graphics": "extreme",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "ega",
+    "palettePixels": 1296000,
+    "scene": 3
+  },
+  {
+    "active": false,
+    "colours": 0,
+    "gear": true,
+    "graphics": "high",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "ega",
+    "palettePixels": 0,
+    "scene": 4
+  },
+  {
+    "active": true,
+    "colours": 6,
+    "gear": false,
+    "graphics": "high",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "ega",
+    "palettePixels": 1296000,
+    "scene": 5
+  },
+  {
+    "active": true,
+    "colours": 4,
+    "gear": false,
+    "graphics": "high",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "cga",
+    "palettePixels": 1296000,
+    "scene": 6
+  },
+  {
+    "active": false,
+    "colours": 0,
+    "gear": false,
+    "graphics": "high",
+    "hours": 0.0,
+    "mode": "GALAXY",
+    "offPalettePixels": 0,
+    "palette": "ega",
+    "palettePixels": 0,
+    "scene": 7
+  },
+  {
+    "active": true,
+    "colours": 4,
+    "gear": false,
+    "graphics": "high",
+    "hours": 0.0,
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "palette": "cga",
+    "palettePixels": 1296000,
+    "scene": 8
+  }
+]

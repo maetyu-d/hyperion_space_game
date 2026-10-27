@@ -387,7 +387,7 @@ int main(int argc,char** argv){try{Options opt;
   else if(!saveSession.redirected())ui.saveWarning.clear();
  };
  auto toggleHUD=[&](){ui.toggleFlightHUD();ui.menu=ui.sections=false;if(!opt.noSave&&!saveEnhancedHUD(displayPath,ui.enhancedHUD))game.notify("HUD changed / display preference could not be stored");};
- auto toggleWirePalette=[&](){ui.wirePalette=nextWirePalette(ui.wirePalette);if(!opt.noSave&&!saveWirePalette(displayPath.parent_path()/"wire-palette.txt",ui.wirePalette))game.notify("Palette changed / preference could not be stored");else game.notify(ui.wirePalette==WirePalette::EGA?"EGA / 16 colours / G selects CGA / Alt+G gear":"CGA / 4 colours / G selects EGA / Alt+G gear");};
+ auto toggleWirePalette=[&](){ui.wirePalette=nextWirePalette(ui.wirePalette);if(!opt.noSave&&!saveWirePalette(displayPath.parent_path()/"wire-palette.txt",ui.wirePalette))game.notify("Palette changed / preference could not be stored");else game.notify(ui.wirePalette==WirePalette::EGA?"EGA / 16 colours / F7 selects CGA / G gear":"CGA / 4 colours / F7 selects EGA / G gear");};
  bool orderCommitted=false;
  auto order=[&](const std::string& action,const std::string& arg=std::string{}){if(orderCommitted&&!Game::planningAction(action))return false;double before=game.s.hours;auto previousGoal=game.diveState.goal.id;auto previousMode=game.s.mode;bool result=game.issueOrder(action,arg,ui.paused||ui.help||ui.settings);if(game.s.mode==Mode::Ocean&&(previousMode!=Mode::Ocean||action=="dive"||action=="oceanSelect"||action=="oceanNext"||(action=="oceanProceed"&&previousGoal!=game.diveState.goal.id))){ui.panel=false;ui.divePage=0;ui.scroll=0;}if(game.s.hours!=before){orderCommitted=true;if(game.turnBased()&&ui.panel&&ui.expanded.erase("turn-planner")){ui.expanded.insert("turn-report");ui.scroll=0;}}return result;};
  auto exportSave=[&](const char* kind){auto file=backupPath(opt.save,kind);if(saveState(game.s,file,error)){game.notify("Save exported / "+fs::path(file).filename().string());std::cout<<"Exported "<<file<<'\n';return true;}game.notify("Export failed / "+error);return false;};
@@ -432,7 +432,7 @@ int main(int argc,char** argv){try{Options opt;
  std::set<int> diagnosticKeys;if(opt.continuityCheck&&frame%60==26){int stage=frame/60;if(stage==2||stage==5)diagnosticKeys.insert(KEY_K);if(stage==4||stage==6)diagnosticKeys.insert(KEY_L);}
  if(opt.wreckCheck&&frame%60==26){int stage=frame/60;if(stage==1||stage==2||stage==6)diagnosticKeys.insert(KEY_ENTER);if(stage==3)diagnosticKeys.insert(KEY_C);if(stage==5)diagnosticKeys.insert(KEY_K);}
  if(opt.oceanCheck){int stage=frame/60,phase=frame%60;if(stage==4&&(phase==26||phase==46))diagnosticKeys.insert(KEY_K);if((stage==3||stage==5||stage==6||stage==7||stage==9||stage==11||stage==12||stage==14)&&phase==26)diagnosticKeys.insert(KEY_ENTER);if((stage==2||stage==13)&&phase==26)diagnosticKeys.insert(KEY_SPACE);if(stage==13&&phase==26)diagnosticKeys.insert(KEY_LEFT_SHIFT);if(stage==13&&phase==31)diagnosticKeys.insert(KEY_I);}
- if(opt.paletteCheck&&frame%20==8){diagnosticKeys.insert(KEY_G);if(frame/20==3)diagnosticKeys.insert(KEY_LEFT_ALT);if(frame/20==6)diagnosticKeys.insert(KEY_LEFT_CONTROL);}
+ if(opt.paletteCheck&&frame%20==8){int scene=frame/20;diagnosticKeys.insert(scene==3||scene==4||scene==7?KEY_G:KEY_F7);if(scene==6)diagnosticKeys.insert(KEY_LEFT_CONTROL);}
  auto rawKeyPressed=[&](int key){return diagnosticKeys.count(key)||(!opt.graphicsCheck&&(frameKeys.count(key)>0||IsKeyPressed(key)));};
  auto keyPressed=[&](int key){return ui.handoff.ready()&&game.s.mode==inputMode&&rawKeyPressed(key);};
  bool command=diagnosticKeys.count(KEY_LEFT_CONTROL)||IsKeyDown(KEY_LEFT_CONTROL)||IsKeyDown(KEY_RIGHT_CONTROL)||IsKeyDown(KEY_LEFT_SUPER)||IsKeyDown(KEY_RIGHT_SUPER);
@@ -444,8 +444,7 @@ int main(int argc,char** argv){try{Options opt;
   else if(ui.settings||ui.help){ui.settings=false;ui.help=false;}
   else if(ui.panel)ui.panel=false;else if(game.s.mode==Mode::Flight)ui.paused=!ui.paused;else if(game.s.mode==Mode::Ocean||game.s.mode==Mode::Surface)order("system");else if(game.hasExpedition())order("expedition");else if(game.s.mode==Mode::System)order("galaxy");else ui.paused=!ui.paused;save();
  }
- bool gearModifier=IsKeyDown(KEY_LEFT_ALT)||IsKeyDown(KEY_RIGHT_ALT)||diagnosticKeys.count(KEY_LEFT_ALT);
- if(game.s.mode==Mode::Flight&&ui.wireframe&&!gearModifier&&!command&&!ui.settings&&!ui.help&&rawKeyPressed(KEY_G))toggleWirePalette();
+ if(game.s.mode==Mode::Flight&&ui.wireframe&&!command&&!ui.settings&&!ui.help&&rawKeyPressed(KEY_F7))toggleWirePalette();
  if(ui.settings){int code;while((code=GetCharPressed())>0){if(code>=32&&code<=126&&ui.seedInput.size()<80)ui.seedInput.push_back(char(code));}if(keyPressed(KEY_BACKSPACE)&&!ui.seedInput.empty())ui.seedInput.pop_back();}
  else if(!ui.help&&!command){
   auto piloting=[&](){return game.s.mode==Mode::Flight;};
@@ -459,7 +458,7 @@ int main(int argc,char** argv){try{Options opt;
   if(keyPressed(KEY_N)){bool shift=IsKeyDown(KEY_LEFT_SHIFT)||IsKeyDown(KEY_RIGHT_SHIFT);order(piloting()||shift?"wait":"endTurn");save();}
   if(keyPressed(KEY_I)){if(game.s.mode==Mode::Ocean){ui.openPanel(0,ui.divePage==2);ui.divePage=2;ui.scroll=0;}else ui.openPanel(0,true);}
   if(keyPressed(KEY_R)&&!piloting()){if(game.s.mode==Mode::Ocean){ui.openPanel(0,ui.divePage==0);ui.divePage=0;}else{ui.openPanel(0);ui.expanded.erase("turn-report");ui.expanded.erase("before-turn");ui.expanded.erase("turn-planner");ui.expanded.insert("play-turn");}ui.scroll=0;}
-  if(keyPressed(KEY_G)&&piloting()&&(!ui.wireframe||gearModifier))order("gear");
+  if(keyPressed(KEY_G)&&piloting())order("gear");
   if(keyPressed(KEY_G)&&!piloting()){order("galaxy");ui.scroll=0;save();}
   if((keyPressed(KEY_O)||(keyPressed(KEY_M)&&piloting()))){order(piloting()?"strategy":"system");save();}
   if(keyPressed(KEY_F)&&!piloting()){order("refuel");save();}
@@ -986,8 +985,8 @@ int main(int argc,char** argv){try{Options opt;
  }
  renderer.draw(game,ui,dt);
  if(opt.paletteCheck&&frame%20==14){int scene=frame/20;bool toggles=scene==0||scene==1||scene==2||scene==8,gears=scene==3||scene==4;
-  if(ui.wirePalette!=(toggles?nextWirePalette(paletteBefore):paletteBefore))throw std::runtime_error("G palette selection failed");
-  if(game.s.flight.ship.gear!=(gears?!paletteGear:paletteGear))throw std::runtime_error("G palette shortcut changed landing gear");
+  if(ui.wirePalette!=(toggles?nextWirePalette(paletteBefore):paletteBefore))throw std::runtime_error("F7 palette selection failed");
+  if(game.s.flight.ship.gear!=(gears?!paletteGear:paletteGear))throw std::runtime_error("F7 palette shortcut changed landing gear");
   if(game.s.hours!=lookHours||game.s.flight.time!=lookFlightTime||game.s.hull!=lookHull||hyperion::flight::length(game.s.flight.ship.position-lookPosition)>1e-8||ui.graphicsQuality!=paletteQuality||ui.enhancedHUD!=paletteHUD)throw std::runtime_error("Palette key changed simulation, HUD or quality");
   if(scene==7&&game.s.mode!=Mode::Galaxy)throw std::runtime_error("G lost its galaxy binding outside flight");
   auto palette=renderer.paletteStats();int colours=0;for(int n:palette.colours)colours+=n>0;
@@ -1143,7 +1142,7 @@ int main(int argc,char** argv){try{Options opt;
  if(opt.benchmark&&frame>=60){benchmarkSamples.push_back(std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-frameStart).count());for(int i=0;i<6;i++)profileTotals[i]+=renderer.flightProfile()[i];}
  frame++;if(opt.frames&&frame>=opt.frames){if(!opt.screenshot.empty()){auto p=fs::path(opt.screenshot);if(p.has_parent_path())fs::create_directories(p.parent_path());renderer.screenshot(opt.screenshot);}quit=true;}
  }
- if(opt.paletteCheck){if(paletteScenes.size()!=9)throw std::runtime_error("Incomplete palette key check");if(!opt.captures.empty()){std::ofstream out(fs::path(opt.captures)/"palette-scenes.json");out<<paletteScenes.dump(2)<<'\n';}std::cout<<"CGA/EGA key selection, paused presentation, Alt+G gear, standard gear, editing/modifier guards, strategy binding and exact palette output verified / "<<paletteScenes.dump()<<'\n';}
+ if(opt.paletteCheck){if(paletteScenes.size()!=9)throw std::runtime_error("Incomplete palette key check");if(!opt.captures.empty()){std::ofstream out(fs::path(opt.captures)/"palette-scenes.json");out<<paletteScenes.dump(2)<<'\n';}std::cout<<"F7 CGA/EGA selection, paused presentation, G gear in all flight looks, editing/modifier guards, strategy binding and exact palette output verified / "<<paletteScenes.dump()<<'\n';}
  if(opt.wireCheck){if(wireScenes.size()!=10)throw std::runtime_error("Incomplete vector look check");if(!opt.captures.empty()){std::ofstream out(fs::path(opt.captures)/"wireframe-scenes.json");out<<wireScenes.dump(2)<<'\n';}std::cout<<"Vector look / native controls, quality presets, animated life, buildings, ships, minor bodies, paused settings and frozen simulation verified / "<<wireScenes.dump()<<'\n';}
  if(opt.qualityCheck){if(qualityScenes.size()!=(opt.extremeCheck?9:opt.lookCheck?12:6))throw std::runtime_error("Incomplete graphics quality check");if(!opt.captures.empty()){std::ofstream out(fs::path(opt.captures)/"quality-scenes.json");out<<qualityScenes.dump(2)<<'\n';}std::cout<<(opt.extremeCheck?"Low/High/Extreme resources, independent looks/HUD, native controls and frozen world verified / ":opt.lookCheck?"Flight looks, pointer controls, frozen simulation and graphics quality verified / ":"High/Low graphics switching verified / ")<<qualityScenes.dump()<<'\n';}
  if(opt.wreckCheck){if(wreckScenes.size()!=9)throw std::runtime_error("Incomplete wreck diagnostic");if(!opt.captures.empty()){std::ofstream out(fs::path(opt.captures)/"wreck-scenes.json");out<<wreckScenes.dump(2)<<'\n';}std::cout<<"Wreck expeditions verified / "<<wreckScenes.dump()<<'\n';}

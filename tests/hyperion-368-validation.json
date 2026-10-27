@@ -1,0 +1,22 @@
+{
+  "version": "3.68.0",
+  "binarySHA256": "a80f9eb26b45a3ace1d91d5099d6736b41c29d4f9492e7a99728647a8a1de3a6",
+  "focusedSuitesPassed": 3,
+  "nativeShortcutScenariosPassed": 9,
+  "nativeFrames": 180,
+  "checks": [
+    "G gear in wireframe",
+    "G gear in Standard",
+    "F7 CGA/EGA selection",
+    "paused palette selection",
+    "editing and command guards",
+    "G galaxy outside flight",
+    "strategy return",
+    "frozen simulation, HUD and quality"
+  ],
+  "offPalettePixels": 0,
+  "installedLaunchChecks": 2,
+  "copiedCampaignUnchanged": true,
+  "playerSaveAndPreferencesUnchanged": true,
+  "previousApp": "releases/Hyperion 3.67.app"
+}

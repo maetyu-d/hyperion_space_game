@@ -402,7 +402,7 @@ void Renderer::modal(){modalDrawing=true;DrawRectangle(0,0,int(w),int(h),alpha(i
   const std::vector<std::pair<std::string,std::string>> lines=game->s.mode==Mode::Flight?std::vector<std::pair<std::string,std::string>>{
    {"FLIGHT","W/S throttle, arrows steer, Q/E roll, A/D strafe, R/F vertical thrust. Shift boosts; hold Option/Alt for fine thrust and steering. C cruises, X matches assist to forward speed, Backspace stops."},
    {"NAVIGATE","I lists ports; Tab cycles; J flies and docks automatically. Steering takes control. Enter launches or docks nearby below 55 km/s."},
-   {"LANDING","Enter requests nearby landing assist. G lowers gear; in wireframe use Alt+G (G switches CGA/EGA). Keep descent under 6 km/s, drift under 10 and tilt under 35 degrees; the landing display checks the ground slope. L deploys after touchdown."},
+   {"LANDING","Enter requests nearby landing assist. G lowers gear. Keep descent under 6 km/s, drift under 10 and tilt under 35 degrees; the landing display checks the ground slope. L deploys after touchdown."},
    {"COMMERCE","E opens the docked exchange. Port service uses real local supplies. Courier pouches pay reserved escrow. Civilian kills carry fines and faction penalties."},
    {"COMBAT","Space / left mouse fires. 1/2/3/4 selects pulse, kinetic, plasma or resonance; U cycles subsystem focus. T cycles hostiles. Keep the target in the reticle to lock, Z launches a seeker, Y releases countermeasures. I opens ship systems and orders."},
    {"STRATEGY","O or M opens system strategy. B opens settlements, markets, factions and history. Outside the cockpit, R opens the turn planner; N ends a turn and the world waits between orders. K resumes real time."}
@@ -414,7 +414,7 @@ void Renderer::modal(){modalDrawing=true;DrawRectangle(0,0,int(w),int(h),alpha(i
    {"SOCIETIES","B opens outposts, markets, factions, patrols and pirate vendettas. Factions offers safe-passage deals and warrant restitution. Freight routes offer funded escorts. N resolves an hour. R opens field choices, objectives and forecasts. Shift+Enter follows a plotted field route. Shift+N waits up to six hours. I opens details. Research fabricates upgrades. Atlas holds discoveries."}
   };
   for(auto& item:lines){text(item.first,tx,ty,10,mint,true);float lineY=ty;wrapped(item.second,tx+84,lineY,mw-152,14,pearl);ty=std::max(ty+43,lineY+15);}
-  wrapped("Wireframe: G CGA/EGA / Alt+G gear / F8 flight HUD / P pause / F9 hide UI / F10 sound / F11 fullscreen / F12 capture / K switch mode / O strategy / Cmd or Ctrl+Q quit",tx,ty,mw-68,12,muted,true);
+  wrapped("Wireframe: F7 CGA/EGA / G gear / F8 flight HUD / P pause / F9 hide UI / F10 sound / F11 fullscreen / F12 capture / K switch mode / O strategy / Cmd or Ctrl+Q quit",tx,ty,mw-68,12,muted,true);
  }
  button("CLOSE / ESC",{x+mw-171,y+mh-53,137,33},"close");modalDrawing=false;
 }

@@ -1,4 +1,4 @@
-# HYPERION 3.67
+# HYPERION 3.68
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -8,14 +8,25 @@ run in the native renderer.
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
 
+## Restored gear control in 3.68
+
+**G controls landing gear in every flight look.** In wireframe flight, use
+**F7** to switch CGA / EGA. Palette selection remains available while paused,
+is remembered between sessions, and leaves the ship and simulation unchanged.
+Landing hints, helm controls, help and palette messages show the new bindings.
+Outside flight, G retains its galaxy shortcut.
+
+`--wire-palette-check` verifies F7 selection, G gear in wireframe and Standard,
+paused presentation, editing/modifier guards and the strategy return.
+
 ## CGA / EGA selection in 3.67
 
-In wireframe flight, press **G** to switch instantly between four-colour CGA
+In wireframe flight, press **F7** to switch instantly between four-colour CGA
 and 16-colour EGA. The EGA presentation adds green coastlines, blue survey
 grids, warm rings, faction-coloured ship edges and coloured wildlife while
 retaining the same hidden-line geometry. A brief message confirms the choice.
 
-**Alt+G controls landing gear in wireframe mode.** The landing hints, helm
+**G controls landing gear in every flight look.** The landing hints, helm
 panel and help show the new shortcut. In other flight looks, **G** still controls
 gear; outside flight it still opens the galaxy. Palette selection works while
 paused and leaves the simulation, HUD and quality preset unchanged. Typing in
@@ -24,10 +35,10 @@ settings and command-modified shortcuts do not change the palette.
 The palette is remembered separately from the campaign, quality and look.
 Existing installations default to CGA. Command-line launches accept
 `--flight-look wireframe --wire-palette cga|ega`. `--wire-palette-check` exercises
-the actual G-key handler, modifiers, paused play, all quality presets and the
+the actual palette-key handler, modifiers, paused play, all quality presets and the
 strategy return, and checks the final output against the selected palette.
 
-![EGA selected with G during wireframe flight](docs/screenshots/ega-wireframe.png)
+![EGA selected with F7 during wireframe flight](docs/screenshots/ega-wireframe.png)
 
 ## CGA vector detail in 3.66
 
