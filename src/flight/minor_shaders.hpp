@@ -1,4 +1,5 @@
 #pragma once
+#include "wire_shaders.hpp"
 namespace hyperion::flight {
 // Static, direction-anchored material data. Alpha is relief, never opacity.
 inline constexpr const char* minorBakeFragment=R"GLSL(#version 330
@@ -75,6 +76,7 @@ inline constexpr const char* minorFragment=R"GLSL(#version 330
 in vec3 worldPosition,normal,localPosition;out vec4 finalColor;
 uniform sampler2D materialTexture,detailTexture,grainTexture;
 uniform vec3 lightDirection,eye;uniform float hue,ice,metal,visibility,radius,detailBlend;
+ )GLSL" HYPERION_VECTOR_GLSL R"GLSL(
 vec3 pigment(float h){return .5+.5*cos(6.283185*(h+vec3(0,.68,.34)));}
 vec4 field(sampler2D tex,vec3 p){
  vec2 size=vec2(textureSize(tex,0)),uv=vec2(atan(p.z,p.x)/6.283185+.5,acos(clamp(p.y,-1.,1.))/3.14159265);
@@ -104,6 +106,7 @@ vec3 smoothFieldNormal(vec3 p,vec3 geometric,vec3 fallback){
  return normalize(mix(fallback,normalize(geometric-gradient),blend));
 }
 void main(){
+ if(wireframe>.5){finalColor=vec4(vectorSurface(localPosition,normal,eye-worldPosition,radius,hue*31.,0.),1.);return;}
  vec3 geometric=normalize(normal),p=normalize(localPosition),v=normalize(eye-worldPosition),l=normalize(lightDirection);
  vec4 material=field(materialTexture,p);if(detailBlend>.001)material=mix(material,field(detailTexture,p),detailBlend);
  // Close grains are anchored in body-local space, independent of the

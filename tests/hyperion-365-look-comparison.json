@@ -1,0 +1,50 @@
+[
+  {
+    "case": "building-standard",
+    "reference": "3.64",
+    "quality": "high",
+    "meanChannelDifference": 0.0,
+    "maximumChannelDifference": 0,
+    "pixelsDifferentByMoreThan3": 0,
+    "size": [
+      1920,
+      1200
+    ]
+  },
+  {
+    "case": "enemy-standard",
+    "reference": "3.64",
+    "quality": "high",
+    "meanChannelDifference": 6.655092592592593e-06,
+    "maximumChannelDifference": 1,
+    "pixelsDifferentByMoreThan3": 0,
+    "size": [
+      1920,
+      1200
+    ]
+  },
+  {
+    "case": "asteroid-low-standard",
+    "reference": "3.64",
+    "quality": "low",
+    "meanChannelDifference": 9.693287037037038e-06,
+    "maximumChannelDifference": 1,
+    "pixelsDifferentByMoreThan3": 0,
+    "size": [
+      1920,
+      1200
+    ]
+  },
+  {
+    "case": "building-psychedelic",
+    "reference": "3.64",
+    "quality": "high",
+    "meanChannelDifference": 0.0,
+    "maximumChannelDifference": 0,
+    "pixelsDifferentByMoreThan3": 0,
+    "size": [
+      1920,
+      1200
+    ]
+  }
+]

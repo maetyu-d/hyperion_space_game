@@ -1,0 +1,87 @@
+{
+  "version": "3.65.0",
+  "binarySHA256": "9912568fc5c4bd255cf3c40904579637689f626443ef4e9056f3977649b1f5b5",
+  "cpuSuites": {
+    "passed": 42,
+    "failed": 0
+  },
+  "nativeVectorAudit": {
+    "scenarios": 10,
+    "frames": 280,
+    "qualities": [
+      "low",
+      "high",
+      "extreme"
+    ],
+    "checks": [
+      "real pointer-selected looks",
+      "frozen flight time, position, hull and campaign hours",
+      "independent quality and HUD",
+      "ships, buildings and animated wildlife",
+      "planet and asteroid grids",
+      "small paused settings",
+      "strategy return",
+      "cached vector geometry released when leaving the look"
+    ]
+  },
+  "nativeCometAudit": {
+    "frames": 32,
+    "passed": true
+  },
+  "previousLooksPreserved": [
+    {
+      "case": "building-standard",
+      "reference": "3.64",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "enemy-standard",
+      "reference": "3.64",
+      "quality": "high",
+      "meanChannelDifference": 6.655092592592593e-06,
+      "maximumChannelDifference": 1,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "asteroid-low-standard",
+      "reference": "3.64",
+      "quality": "low",
+      "meanChannelDifference": 9.693287037037038e-06,
+      "maximumChannelDifference": 1,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "building-psychedelic",
+      "reference": "3.64",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    }
+  ],
+  "installedLaunchChecks": 10,
+  "copiedCampaignsUnchanged": 9,
+  "playerSaveAndPreferencesUnchanged": true,
+  "previousApp": "releases/Hyperion 3.64.app",
+  "defaultLook": "standard",
+  "lookIndependentOfQualityAndHUD": true
+}

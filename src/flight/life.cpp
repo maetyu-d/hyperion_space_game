@@ -13,6 +13,7 @@ void Renderer::drawLife(const Scene& sceneView){
  auto set=[&](int i,float value){if(lifeUniforms[i]>=0)SetShaderValue(lifeShader,lifeUniforms[i],&value,SHADER_UNIFORM_FLOAT);};
  Vector3 light{float(sunDirection.x),float(sunDirection.y),float(sunDirection.z)};SetShaderValue(lifeShader,lifeUniforms[7],&light,SHADER_UNIFORM_VEC3);SetShaderValue(lifeShader,lifeUniforms[8],&camera.position,SHADER_UNIFORM_VEC3);set(0,float(std::fmod(sceneView.hours*55,100000.)));set(14,lowGraphics?1.f:0.f);
  V3 eye{camera.position.x,camera.position.y,camera.position.z},look=unit(V3{camera.target.x,camera.target.y,camera.target.z}-eye);double fadeSeconds=fixedVisualTime>=0?1./60:std::clamp(double(GetFrameTime()),1./240,.05);auto draws=lifeDrawList(sceneView,eye,look,reduced,lowGraphics,&lifeBudget,fadeSeconds,extremeGraphics);
+ int vectorLoc=GetShaderLocation(lifeShader,"wireframe");float vectorMode=wireframe?1.f:0.f;SetShaderValue(lifeShader,vectorLoc,&vectorMode,SHADER_UNIFORM_FLOAT);
  // One batched, terrain-aligned contact shadow pass anchors nearby land life.
  // Soft outer vertices blend into the existing ground instead of adding a decal texture.
  rlSetTexture(0);rlBegin(RL_TRIANGLES);
@@ -31,7 +32,7 @@ void Renderer::drawLife(const Scene& sceneView){
    if(!model.meshCount){auto data=lifeMesh(animal.plan,animal.flora,detailed,extremeGraphics&&detailed);Mesh mesh{};mesh.vertexCount=int(data.positions.size()/3);mesh.triangleCount=mesh.vertexCount/3;auto copy=[](const auto& source){auto* memory=MemAlloc(unsigned(source.size()*sizeof(source[0])));std::memcpy(memory,source.data(),source.size()*sizeof(source[0]));return memory;};mesh.vertices=static_cast<float*>(copy(data.positions));mesh.normals=static_cast<float*>(copy(data.normals));mesh.colors=static_cast<unsigned char*>(copy(data.colours));UploadMesh(&mesh,false);model=LoadModelFromMesh(mesh);model.materials[0].shader=lifeShader;}
    model.transform={float(right.x),float(up.x),float(-forward.x),0,float(right.y),float(up.y),float(-forward.y),0,float(right.z),float(up.z),float(-forward.z),0,0,0,0,1};
    float coverage[]={float(from),float(to)};SetShaderValue(lifeShader,lifeUniforms[13],coverage,SHADER_UNIFORM_VEC2);
-   DrawModel(model,{float(animal.position.x),float(animal.position.y),float(animal.position.z)},float(animal.size),WHITE);
+   drawVectorModel(model,{float(animal.position.x),float(animal.position.y),float(animal.position.z)},float(animal.size),3);
   };
   double split=draw.coverage*(1.-draw.detail);drawLod(false,0.,split);drawLod(true,split,draw.coverage);lifeDrawn++;
  }

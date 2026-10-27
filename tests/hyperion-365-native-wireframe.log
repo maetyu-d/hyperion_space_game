@@ -1,0 +1,38 @@
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Weather depth: R32F / matched terrain / 1440x900
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1440x900
+Sun shadow cache: 1 updates / 21 active frames
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 1024
+Weather depth: R32F / matched terrain / 1440x900
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / low graphics / spectral silk / auroras / 3D cockpit / 1440x900
+Sun shadow cache: 1 updates / 21 active frames
+Building material storage: RGBA8 / 4096 / 13 mip levels
+Building detail storage: RGBA8 / 4096 / 13 mip levels
+Building detail mean: 0.07767 / 0.45515 / 0.21553 / 0.49768
+Sun shadow storage: R32F / 4096
+Weather depth: R32F / matched terrain / 2880x1800
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / extreme graphics / spectral silk / auroras / 3D cockpit / 2880x1800
+Sun shadow cache: 2 updates / 42 active frames
+Building material storage: RGBA8 / 2048 / 12 mip levels
+Building detail storage: RGBA8 / 2048 / 12 mip levels
+Building detail mean: 0.07767 / 0.45510 / 0.21563 / 0.49768
+Sun shadow storage: R32F / 2048
+Weather depth: R32F / matched terrain / 1440x900
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 1440x900
+Weather depth: R32F / matched terrain / 2304x1440
+Flight depth buffer: 32 bits
+Flight renderer: HDR16F / high graphics / spectral silk / auroras / 3D cockpit / 2304x1440
+Vector look / native controls, quality presets, animated life, buildings, ships, minor bodies, paused settings and frozen simulation verified / [{"active":true,"cached":6,"draws":6,"featureEdges":13304,"graphics":"high","hours":0.0,"look":"wireframe","mode":"FLIGHT","organisms":0,"scene":0,"triangles":7472},{"active":true,"cached":7,"draws":7,"featureEdges":21882,"graphics":"high","hours":0.0,"look":"wireframe","mode":"FLIGHT","organisms":0,"scene":1,"triangles":12044},{"active":true,"cached":19,"draws":280,"featureEdges":659094,"graphics":"high","hours":0.25,"look":"wireframe","mode":"FLIGHT","organisms":246,"scene":2,"triangles":505804},{"active":true,"cached":28,"draws":182,"featureEdges":339868,"graphics":"low","hours":0.0,"look":"wireframe","mode":"FLIGHT","organisms":147,"scene":3,"triangles":285724},{"active":true,"cached":4,"draws":4,"featureEdges":13052,"graphics":"extreme","hours":0.0,"look":"wireframe","mode":"FLIGHT","organisms":0,"scene":4,"triangles":7246},{"active":true,"cached":6,"draws":6,"featureEdges":18968,"graphics":"extreme","hours":0.0,"look":"wireframe","mode":"FLIGHT","organisms":0,"scene":5,"triangles":10916},{"active":true,"cached":13,"draws":259,"featureEdges":571282,"graphics":"high","hours":0.0,"look":"wireframe","mode":"FLIGHT","organisms":254,"scene":6,"triangles":423546},{"active":true,"cached":13,"draws":259,"featureEdges":571282,"graphics":"high","hours":0.0,"look":"standard","mode":"ORBIT","organisms":254,"scene":7,"triangles":423546},{"active":false,"cached":0,"draws":0,"featureEdges":0,"graphics":"high","hours":0.0,"look":"psychedelic","mode":"FLIGHT","organisms":254,"scene":8,"triangles":0},{"active":true,"cached":13,"draws":259,"featureEdges":571282,"graphics":"high","hours":0.0,"look":"wireframe","mode":"FLIGHT","organisms":254,"scene":9,"triangles":423546}]
+Hyperion native run: 280 frames / shaders OK / 2560x1600
+Measured render rate: 9.41849 frames/s
+Sun shadow cache: 3 updates / 91 active frames

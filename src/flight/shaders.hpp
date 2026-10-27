@@ -5,6 +5,7 @@
 #include "water.hpp"
 #include "architecture.hpp"
 #include "weather.hpp"
+#include "wire_shaders.hpp"
 // The same bounded, direction-anchored silk field colours space and materials.
 // It has no longitude seam and never moves geography or flight instruments.
 #define PRISM_PIGMENT_GLSL R"GLSL(
@@ -50,7 +51,7 @@ in vec2 fragTexCoord;
 out vec4 finalColor;
 uniform vec2 resolution;
 uniform vec3 forward,up,right,radial,lightDirection;
-uniform float time,air,seed,altitude,storm,lightning,lowGraphics;
+uniform float time,air,seed,altitude,storm,lightning,lowGraphics,wireframe;
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 uniform sampler2D noiseTexture;
 float noise(vec3 p){vec3 cell=floor(p),f=fract(p);f=f*f*(3.-2.*f);vec2 uv=cell.xy+vec2(37.,17.)*cell.z+f.xy;vec2 rg=textureLod(noiseTexture,(uv+.5)/256.,0.).rg;return mix(rg.r,rg.g,f.z);}
@@ -76,6 +77,7 @@ vec3 stars(vec3 d,float density,float layer){
 void main(){
  vec2 uv=gl_FragCoord.xy/resolution*2.-1.;uv.x*=resolution.x/resolution.y;
  vec3 d=normalize(forward+right*uv.x*.7002+up*uv.y*.7002);
+ if(wireframe>.5){vec3 c=vec3(.0002,.00045,.0011)+(stars(d,115.,1.)+stars(d,245.,11.)*.24)*.52;float haze=exp(-pow((d.y*.75+d.x*.31+.09)*5.,2.));c+=vec3(.0008,.0011,.003)*haze;c+=vec3(.55,.76,.92)*pow(max(0.,dot(d,lightDirection)),7500.)*.7;finalColor=vec4(c,1.);return;}
  vec3 q=d*3.1+vec3(seed*.013,0,seed*.007);
  float wisps=dust(q*1.7),band=exp(-pow((d.y*.75+d.x*.31+d.z*.12+.09+sin(d.z*3.)*.1)*3.8,2.));
  float cloud=pow(max(0.,wisps-.23),2.1)*band;
@@ -200,7 +202,7 @@ vec4 surface(vec3 n){
  return value;
 }
 vec4 geology(vec3 n){vec2 uv=vec2(atan(n.z,n.x)/6.283185,acos(clamp(n.y,-1.,1.))/3.14159265);float rows=float(textureSize(geologyTexture,0).y);uv.y=uv.y*((rows-1.)/rows)+.5/rows;vec2 dx=dFdx(uv),dy=dFdy(uv);dx.x-=round(dx.x);dy.x-=round(dy.x);return textureGrad(geologyTexture,uv,dx,dy);}
-)GLSL" PRISM_PIGMENT_GLSL PRISM_SURFACE_DETAIL_GLSL PRISM_RING_LIGHT_GLSL PRISM_NEAR_SUN_GLSL PRISM_WATER_GLSL R"GLSL(
+)GLSL" PRISM_PIGMENT_GLSL HYPERION_VECTOR_GLSL PRISM_SURFACE_DETAIL_GLSL PRISM_RING_LIGHT_GLSL PRISM_NEAR_SUN_GLSL PRISM_WATER_GLSL R"GLSL(
 vec3 spectrum(float x){return .5+.5*cos(6.283185*(x+vec3(0,.67,.33)));}
 vec3 bump(vec3 n,float height,float strength){
 #ifdef TERRAIN_DETAIL
@@ -234,6 +236,7 @@ void main(){
  vec3 n=normalize(localPosition),q=n*3.2+vec3(seed*.17,seed*.073,seed*.11);
  float pixelAngle=max(length(dFdx(n)),length(dFdy(n))),normalResolved=1.-smoothstep(.006,.035,pixelAngle);
  if(patchCos>0.){float cap=dot(n,patchNormal)-patchCos;if(groundPass<.5&&cap>0.)discard;if(groundPass>.5&&groundPass<1.5&&cap<0.)discard;}
+ if(wireframe>.5){finalColor=vec4(vectorSurface(localPosition,normal,eye-worldPosition,radius,seed,groundPass),1.);return;}
  vec4 data=surface(n);float elevation=useSurface>.5?data.r:fbm(q+noise(q*1.9)*.6),detail=useSurface>.5?data.g:fbm(q*27.);
  float sea=mix(.28,.72,water),land=smoothstep(sea-.008,sea+.013,elevation),latitude=abs(n.y);
  float ridge=useSurface>.5?data.b:pow(1.-abs(noise(q*23.)*2.-1.),2.);
@@ -599,8 +602,9 @@ void main(){
 inline constexpr const char* ringFragment=R"GLSL(#version 330
 in vec3 worldPosition,normal,localPosition;out vec4 finalColor;
 uniform vec3 centre,eye,lightDirection;uniform float radius,seed,time;
-)GLSL" PRISM_PIGMENT_GLSL PRISM_RING_LIGHT_GLSL R"GLSL(
+)GLSL" PRISM_PIGMENT_GLSL HYPERION_VECTOR_GLSL PRISM_RING_LIGHT_GLSL R"GLSL(
 void main(){
+ if(wireframe>.5){float r=length(localPosition),line=vectorLine((r-1.29)*18.);float spoke=vectorLine(atan(localPosition.z,localPosition.x)/6.283185*72.);finalColor=vec4(vec3(.38,.65,1.)*(line*.7+spoke*.18),max(line*.58,spoke*.16));return;}
  float r=length(localPosition),x=(r-1.29)/.48;vec2 field=ringField(r,fwidth(r),seed);
  vec3 p=worldPosition-centre,L=normalize(lightDirection),V=normalize(eye-worldPosition),N=normalize(normal);
  float along=dot(p,L),distance=length(cross(p,L)),penumbra=radius*.009+fwidth(distance);
@@ -675,7 +679,7 @@ in vec2 fragTexCoord;
 out vec4 finalColor;
 uniform sampler2D texture0,bloomTexture;
 uniform vec2 texel;
-uniform float hit,effects,sunVisibility,lowGraphics,psychedelic;uniform vec2 sunPosition;
+uniform float hit,effects,sunVisibility,lowGraphics,psychedelic,wireframe;uniform vec2 sunPosition;
 uniform vec3 impactColour;uniform vec2 impactDirection;uniform float shieldBreak;
 float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
 void main(){
@@ -684,13 +688,13 @@ void main(){
  vec3 d=texture(texture0,uv+vec2(-1,1)*texel).rgb,e=texture(texture0,uv+vec2(1,1)*texel).rgb;
  float lo=min(luma(c),min(min(luma(a),luma(b)),min(luma(d),luma(e))));
  float hi=max(luma(c),max(max(luma(a),luma(b)),max(luma(d),luma(e))));
- if(hi-lo>max(.045,hi*.18)){
+ if(wireframe<.5&&hi-lo>max(.045,hi*.18)){
   vec2 edge=vec2(-(luma(a)+luma(b)-luma(d)-luma(e)),luma(a)+luma(d)-luma(b)-luma(e));
   edge=clamp(edge/(min(abs(edge.x),abs(edge.y))+max(.012,(luma(a)+luma(b)+luma(d)+luma(e))*.03125)),-4.,4.)*texel;
   vec3 filtered=(texture(texture0,uv+edge*.167).rgb+texture(texture0,uv-edge*.167).rgb)*.5;
   c=mix(c,filtered,.68);
  }
- if(lowGraphics<.5){
+ if(wireframe<.5&&lowGraphics<.5){
  // Recover broad material contrast from the taps already used for AA.
  // Skip silhouettes and tiny highlights so sharpening cannot make stars,
  // mineral glints or the horizon sparkle. The HUD is drawn afterwards.
@@ -719,6 +723,7 @@ void main(){
  c+=vec3(.15,.28,.50)*shieldBreak*rim*fracture*.22*effects;
  // Linear HDR is preserved until the final exposure and ACES display transform.
  c=max(c*1.30,vec3(0.));
+ if(wireframe>.5)c+=texture(bloomTexture,uv).rgb*.12;
  float peak=max(c.r,max(c.g,c.b)),mappedPeak=(peak*(2.51*peak+.03))/(peak*(2.43*peak+.59)+.14);
  vec3 film=(c*(2.51*c+.03))/(c*(2.43*c+.59)+.14);
  // Keep rich pigment hues through the highlight rolloff instead of whitening

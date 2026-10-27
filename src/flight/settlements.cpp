@@ -253,7 +253,7 @@ void Renderer::drawRemains(const HullRemains& hull,V3 at,double age){
  auto base=debrisPose(hull,0,0);debrisHulls++;
  for(int part=0;part<5;part++){auto& model=it->second.parts[part];if(!model.meshCount)continue;auto pose=debrisPose(hull,part,age);
   auto r=pose.right,u=pose.up,b=pose.back;model.transform={float(r.x),float(u.x),float(b.x),0,float(r.y),float(u.y),float(b.y),0,float(r.z),float(u.z),float(b.z),0,0,0,0,1};
-  auto centre=at+debrisPoint(base,it->second.pivots[part])*hull.size+pose.offset;uniform(structure,"fracturePivot",it->second.pivots[part]);uniform(structure,"fractureHeat",reduced?0.f:float(std::exp(-age*.32)));DrawModel(model,vec(centre),float(hull.size),WHITE);if(age>.01&&it->second.interiors[part].meshCount){auto& inside=it->second.interiors[part];inside.transform=model.transform;DrawModel(inside,vec(centre),float(hull.size),WHITE);}debrisParts++;
+  auto centre=at+debrisPoint(base,it->second.pivots[part])*hull.size+pose.offset;uniform(structure,"fracturePivot",it->second.pivots[part]);uniform(structure,"fractureHeat",reduced?0.f:float(std::exp(-age*.32)));drawVectorModel(model,vec(centre),float(hull.size));if(age>.01&&it->second.interiors[part].meshCount){auto& inside=it->second.interiors[part];inside.transform=model.transform;drawVectorModel(inside,vec(centre),float(hull.size));}debrisParts++;
  }
 }
 void Renderer::drawShipRemains(const Game& game){
@@ -318,7 +318,7 @@ void Renderer::drawStructuralRemains(const Game& game,bool shadow){
    if(!f.orbital&&instance.body>=0&&!intact&&partAge>.3){const auto& planet=game.planets[instance.body];double lift=0;auto half=asset.bounds[part].half();for(int x:{-1,1})for(int z:{-1,1}){auto foot=structurePoint(f,fragmentPoint(pose,{x*half.x,-half.y,z*half.z}));auto radial=unit(foot-planet.centre);auto floor=planet.centre+radial*(planet.radius+terrain(planet,radial)+2.02);lift=std::max(lift,dot(floor-foot,f.up));}at+=f.up*(lift*std::clamp((partAge-.3)/.5,0.,1.));}
    auto rotateBasis=[&](V3 n){return f.right*n.x+f.up*n.y+f.back*n.z;};auto r=rotateBasis(pose.right),u=rotateBasis(pose.up),b=rotateBasis(pose.back);auto& model=asset.parts[part];model.transform={float(r.x),float(u.x),float(b.x),0,float(r.y),float(u.y),float(b.y),0,float(r.z),float(u.z),float(b.z),0,0,0,0,1};
    if(shadow){auto original=model.materials[0].shader;model.materials[0].shader=sunDepth;uniform(sunDepth,"groundPass",0.f);DrawModel(model,vec(at-game.planets[groundBody].centre),1,WHITE);model.materials[0].shader=original;}
-   else{uniform(structure,"fracturePivot",asset.bounds[part].centre());DrawModel(model,vec(at),1,WHITE);structuralParts++;if(part<int(asset.interiors.size())&&asset.interiors[part].meshCount){auto& interior=asset.interiors[part];interior.transform=model.transform;DrawModel(interior,vec(at),1,WHITE);interiorDraws++;}}
+   else{uniform(structure,"fracturePivot",asset.bounds[part].centre());drawVectorModel(model,vec(at),1);structuralParts++;if(part<int(asset.interiors.size())&&asset.interiors[part].meshCount){auto& interior=asset.interiors[part];interior.transform=model.transform;drawVectorModel(interior,vec(at),1);interiorDraws++;}}
    if(shadow||intact||partAge<.08||partAge>7)continue;
    if(!reduced&&partAge<10&&part%3==0){double pressure=std::exp(-partAge*.45);auto vent=at+u*asset.bounds[part].half().y*.4;BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();for(int jet=0;jet<(lowGraphics?2:4);jet++){double t=std::fmod(partAge*.7+jet*.23,1.);auto plume=vent+u*(t*(2+pressure*5))+r*(std::sin(t*pi+part)*pressure*.6);if(combatGlow.id)DrawBillboard(camera,combatGlow,vec(plume),float(.4+t*1.8),Color{137,169,184,static_cast<unsigned char>(pressure*(1-t)*30)});}rlEnableDepthMask();EndBlendMode();}
    // Cold mineral dust and spectral arcs originate on the moving architecture,
@@ -399,7 +399,7 @@ void Renderer::drawSettlement(const Port& port,const SettlementView* view,const 
  uniform(structure,"shadowCentre",port.planet>=0?game.planets[port.planet].centre:V3{});uniform(structure,"skyRadial",port.normal);
  uniform(structure,"structureAir",port.planet>=0?float(game.planets[port.planet].atmosphere):0.f);
  int matrixLocation=GetShaderLocation(structure,"sunShadowMatrix");if(matrixLocation>=0)SetShaderValueMatrix(structure,matrixLocation,sunMatrix);
- DrawModel(asset.detail==2?asset.close:asset.detail==1?asset.detailed:asset.distant,vec(port.position),1,WHITE);
+ drawVectorModel(asset.detail==2?asset.close:asset.detail==1?asset.detailed:asset.distant,vec(port.position),1,4);
 }
 void Renderer::drawPortActivity(const Port& port,const Scene& sceneView){
  bool loading=false,receiving=false,holding=false;int good=0;for(auto& s:sceneView.shipments){if(s.from==port.settlement&&s.loading){loading=true;good=s.good;}if(s.to==port.settlement&&(s.unloading||s.holding)){receiving=true;holding|=s.holding;good=s.good;}}
@@ -408,7 +408,7 @@ void Renderer::drawPortActivity(const Port& port,const Scene& sceneView){
  V3 n=port.normal,a=unit(cross({1,0,0},n),{0,0,1}),b=unit(cross(a,n));V3 centre=port.position+n*(port.planet>=0?22:91)+b*(port.planet>=0?53:55);
  double travel=holding?0:.5+.5*std::sin(sceneView.seconds*.55);V3 hook=centre+a*((travel-.5)*24)-n*(4+travel*8);
  DrawLine3D(vec(centre+a*((travel-.5)*24)),vec(hook),tint);
- if(!holding){DrawCubeV(vec(hook-n*1.2),{3,2.3f,2.3f},coded(cargoColours[std::clamp(good,0,8)],255));}
+ if(!holding){DrawCubeV(vec(hook-n*1.2),{3,2.3f,2.3f},wireframe?Color{0,1,2,255}:coded(cargoColours[std::clamp(good,0,8)],255));if(wireframe)DrawCubeWiresV(vec(hook-n*1.2),{3,2.3f,2.3f},Color{103,222,239,255});}
  for(int i=0;i<6;i++){V3 p=centre+a*((i-2.5)*4)-n*18;Color c=tint;c.a=static_cast<unsigned char>(holding?190:((int(sceneView.seconds*2)+i)%6==0?240:50));DrawSphereEx(vec(p),.45f,3,4,c);}
 }
 Model Renderer::buildCraft(int faction,int kind,int pods,int good){
@@ -448,7 +448,7 @@ void Renderer::drawFactionCraft(const Traffic& traffic,const Scene& sceneView){
  uniform(structure,"craftScale",float(size));uniform(structure,"craftIdentity",float(traffic.genome.seed%65521)/65521.f);
  uniform(structure,"serviceWear",traffic.pirate?.22f:traffic.kind==1?.10f:.04f);
  uniform(structure,"useSunShadow",0.f);uniform(structure,"structureAir",0.f);uniform(structure,"skyRadial",up);
- DrawModel(it->second,vec(traffic.position),float(size),WHITE);
+ drawVectorModel(it->second,vec(traffic.position),float(size),0,wireframe?colour(factionStyle(traffic.faction).accent):WHITE);
  if(traffic.charge>.025&&length(traffic.position-V3{camera.position.x,camera.position.y,camera.position.z})<1500){
   Color c=traffic.chargeWeapon==Resonance?Color{180,125,255,220}:traffic.chargeWeapon==Seeker?Color{255,173,110,220}:Color{255,110,197,220};
   BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();

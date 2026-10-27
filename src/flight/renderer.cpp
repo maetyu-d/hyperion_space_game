@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "wire_shaders.hpp"
 #include "world_objects.hpp"
 #include "../screen_layout.hpp"
 #include "shaders.hpp"
@@ -127,6 +128,7 @@ Mesh globe(const Planet&p,int lon=192,int lat=96){Mesh mesh{};mesh.vertexCount=(
 }
 }
 bool Renderer::init(GraphicsQuality initialQuality){
+ wireShader=LoadShaderFromMemory(wireVertex,wireFragment);if(!IsShaderValid(wireShader))return false;
  quality=initialQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;
  uniforms.clear();noiseTexture=lookupNoise();sky=LoadShaderFromMemory(nullptr,skyFragment);world=LoadShaderFromMemory(worldVertex,worldFragment);
  // Distant globe fragments do not carry close material registers or work.
@@ -277,6 +279,7 @@ bool Renderer::exportShadow(const std::string& path)const{
  std::printf("Sun shadow depth: %.6f .. %.6f\n",lo,hi);bool result=ExportImage(preview,path.c_str());UnloadImage(preview);UnloadImage(image);return result;
 }
 void Renderer::shutdown(){
+ clearWireModels();if(wireShader.id){UnloadShader(wireShader);wireShader={};}
  clearLife();clearMinorBodies();if(combatGlow.id){UnloadTexture(combatGlow);combatGlow={};}
  std::printf("Sun shadow cache: %u updates / %u active frames\n",shadowUpdates,shadowFrames);
  if(sunScene.id){UnloadRenderTexture(sunScene);sunScene={};}
@@ -414,12 +417,15 @@ void Renderer::drawMotion(const Game& g){
  }
  rlEnableDepthMask();EndBlendMode();
 }
-void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,GraphicsQuality graphicsQuality,bool psychedelicLook){
+void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,GraphicsQuality graphicsQuality,bool psychedelicLook,bool wireframeLook){
  if(g.planets.empty()||g.ports.empty())return;
  if(quality!=graphicsQuality){shutdown();quality=graphicsQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;worldKey.clear();bodiesKey.clear();cockpitWidth=cockpitHeight=0;groundBody=shadowBody=-1;if(!init(quality))throw std::runtime_error("Graphics quality initialization failed");}
  for(auto shader:{sky,world,groundShader,cloud,post})set(shader,"lowGraphics",lowGraphics?1.f:0.f);
  const auto profile=flightQualityProfile(quality);
- psychedelic=psychedelicLook;
+ wireframe=wireframeLook;psychedelic=psychedelicLook&&!wireframe;wireDraws=wireTriangles=wireEdges=0;++wireSerial;
+ for(auto it=wireModels.begin();it!=wireModels.end();)if(!wireframe||wireSerial-it->second.used>2){UnloadModel(it->second.model);it=wireModels.erase(it);}else ++it;
+ for(auto shader:{sky,world,groundShader,post,ringShader}){set(shader,"wireframe",wireframe?1.f:0.f);set(shader,"wirePixelScale",std::max(1.f,float(flightRenderSize(quality,reducedEffects,GetRenderWidth(),GetRenderHeight()).width)/std::max(1,GetRenderWidth())));}
+ psychedelic=psychedelicLook&&!wireframe;
  for(auto shader:{sky,world,groundShader,cloud,atmo,ringShader,aurora,structure,cockpitShader,post})set(shader,"psychedelic",psychedelic?1.f:0.f);
  for(auto shader:{world,groundShader,cloud,atmo,aurora,structure})set(shader,"extremeQuality",extremeGraphics?1.f:0.f);
  set(atmo,"integrationSamples",float(reducedEffects?8:profile.atmosphereSamples));set(atmo,"sunSamples",float(reducedEffects?3:profile.atmosphereSunSamples));set(aurora,"integrationSamples",float(reducedEffects?6:profile.auroraSamples));
@@ -470,7 +476,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  // the main framebuffer is unbound, and resolves before ships and the cockpit.
  // The cockpit has its own close projection. A one-kilometre world near
  // plane preserves substantially more precision in distant layered planets.
- prepareMinorBodies(g);prepareStructures(g);drawSunShadows(g,eye);rlSetClipPlanes(1.,60000);
+ prepareMinorBodies(g);prepareStructures(g);if(!wireframe)drawSunShadows(g,eye);else shadowActive=false;rlSetClipPlanes(1.,60000);
  BeginTextureMode(scene);ClearBackground(ink);
  set(sky,"resolution",Vector2{float(renderW),float(renderH)});set(sky,"forward",g.ship.forward);set(sky,"up",g.ship.up);
  set(sky,"right",unit(cross(g.ship.forward,g.ship.up)));set(sky,"radial",unit(g.ship.position-p.centre));set(sky,"lightDirection",sunDirection);
@@ -501,14 +507,14 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  EndMode3D();EndTextureMode();
  // Full-resolution distance capture uses the identical mesh, morph and 1 km
  // near plane as colour, keeping close occluders precise without shading twice.
- BeginTextureMode(opaqueScene);ClearBackground(BLANK);BeginMode3D(camera);rlDrawRenderBatchActive();rlDisableColorBlend();
+ if(!wireframe){BeginTextureMode(opaqueScene);ClearBackground(BLANK);BeginMode3D(camera);rlDrawRenderBatchActive();rlDisableColorBlend();
  drawPlanetDepth(g,visible,eye);drawMinorBodies(g,true);rlDrawRenderBatchActive();rlEnableColorBlend();EndMode3D();EndTextureMode();drawClouds(g,visible,eye);
  BeginTextureMode(scene);BeginBlendMode(BLEND_ALPHA_PREMULTIPLY);
  DrawTexturePro(composite.texture,{0,0,float(renderW),-float(renderH)},{0,0,float(renderW),float(renderH)},{0,0},0,WHITE);
  EndBlendMode();EndTextureMode();elapsed(1);drawAuroras(g,visible,eye);elapsed(2);
  BeginTextureMode(scene);BeginBlendMode(BLEND_ADDITIVE);
  DrawTexturePro(composite.texture,{0,0,float(renderW),-float(renderH)},{0,0,float(renderW),float(renderH)},{0,0},0,WHITE);
- EndBlendMode();BeginMode3D(camera);
+ EndBlendMode();}else{elapsed(1);elapsed(2);BeginTextureMode(scene);}BeginMode3D(camera);
  drawCometTails(g);
  for(int i=0;i<int(g.ports.size());i++){
   const auto&port=g.ports[i];if(port.minor>=0||port.recovery)continue;double d=length(port.position-g.ship.position);
@@ -601,7 +607,7 @@ void Renderer::drawCockpit(const Game& g){
  set(cockpitShader,"combatLight",combatLight);
  // Only the cabin moves: the world camera, reticle and projectile aim remain aligned.
  Vector3 kick{};if(!reduced)kick={float(std::sin(g.time*71)*g.feedback.impact*.003),float(-g.feedback.recoil*.004+std::sin(g.time*59)*g.feedback.impact*.004),float(g.feedback.recoil*.025)};
- DrawModel(cockpitModel,kick,1,WHITE);EndMode3D();rlSetClipPlanes(1.,60000.);
+ drawVectorModel(cockpitModel,kick,1,2);EndMode3D();rlSetClipPlanes(1.,60000.);
 }
 void Renderer::present(float width,float height){
  if(!composite.id)return;

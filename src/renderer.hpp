@@ -1,5 +1,6 @@
 #pragma once
 #include "game.hpp"
+#include "display_preferences.hpp"
 #include "wildlife.hpp"
 #include "raylib.h"
 #include "flight/renderer.hpp"
@@ -15,7 +16,9 @@ inline Vector2 uiMouse(){return uiPoint(GetMousePosition());}
 struct UI : StrategyWorkspace {
  WorkspaceMemory workspaceMemory;
  ModeHandoff handoff;
- bool enhancedHUD=false,psychedelic=false;GraphicsQuality graphicsQuality=GraphicsQuality::High;
+ bool enhancedHUD=false,psychedelic=false,wireframe=false;
+ FlightLook flightLook()const{return wireframe?FlightLook::Wireframe:psychedelic?FlightLook::Psychedelic:FlightLook::Standard;}
+ void chooseLook(FlightLook look){wireframe=look==FlightLook::Wireframe;psychedelic=look==FlightLook::Psychedelic;}GraphicsQuality graphicsQuality=GraphicsQuality::High;
  bool help=false,settings=false,paused=false,sound=false,reduced=false;
  bool menu=false,sections=false;int destinationFilter=0,divePage=0;
  bool auditInterface=false;std::map<std::string,Rectangle> auditButtons;
@@ -58,6 +61,7 @@ class Renderer {
  void flightDirector(const hyperion::flight::LandingInfo&,double);void flightHUD();void flightPanel(float,float&,float);void combatPanel(float,float&,float);void boardingPanel(float,float&,float);void recoveryPanel(float,float&,float);
  void overlay();void panel();void modal();void notification();void menus();void heading(const std::string&,float,float);void row(const std::string&,const std::string&,float,float&,float);
 public:
+ hyperion::flight::Renderer::VectorStats flightVectorStats()const{return flightGraphics.vectorStats();}
  hyperion::flight::Renderer::BreakupStats flightBreakupStats()const{return flightGraphics.breakupStats();}
  hyperion::flight::Renderer::QualityStats flightQualityStats()const{return flightGraphics.qualityStats();}
  bool flightMaterialFilteringValid()const{return flightGraphics.materialFilteringValid();}

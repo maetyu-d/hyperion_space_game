@@ -34,17 +34,22 @@ inline bool saveEnhancedHUD(const std::filesystem::path& path,bool enhanced){
  fs::rename(pending,path,ec);if(!ec)return true;fs::remove(pending,ec);return false;
 }
 // The visual style is independent of render quality, HUD and campaign state.
-inline bool loadPsychedelicLook(const std::filesystem::path& path){
- std::error_code ec;if(std::filesystem::file_size(path,ec)>80||ec)return false;
- std::ifstream in(path);std::string header,value;
- return bool(std::getline(in,header))&&bool(std::getline(in,value))&&in.peek()==std::char_traits<char>::eof()&&header=="HYPERION LOOK 1"&&value=="look=psychedelic";
+enum class FlightLook { Standard, Psychedelic, Wireframe };
+inline constexpr const char* flightLookName(FlightLook look){return look==FlightLook::Wireframe?"wireframe":look==FlightLook::Psychedelic?"psychedelic":"standard";}
+inline bool parseFlightLook(std::string_view name,FlightLook& look){if(name=="standard")look=FlightLook::Standard;else if(name=="psychedelic")look=FlightLook::Psychedelic;else if(name=="wireframe")look=FlightLook::Wireframe;else return false;return true;}
+inline FlightLook loadFlightLook(const std::filesystem::path& path){
+ std::error_code ec;if(std::filesystem::file_size(path,ec)>80||ec)return FlightLook::Standard;
+ std::ifstream in(path);std::string header,value;FlightLook look=FlightLook::Standard;
+ if(!std::getline(in,header)||!std::getline(in,value)||in.peek()!=std::char_traits<char>::eof()||header!="HYPERION LOOK 1"||value.rfind("look=",0)!=0)return FlightLook::Standard;
+ return parseFlightLook(std::string_view(value).substr(5),look)?look:FlightLook::Standard;
 }
-inline bool savePsychedelicLook(const std::filesystem::path& path,bool psychedelic){
+inline bool saveFlightLook(const std::filesystem::path& path,FlightLook look){
  namespace fs=std::filesystem;std::error_code ec;auto pending=path;pending+=".pending";
  if(fs::is_symlink(path,ec)||fs::is_symlink(pending,ec))return false;
  if(!path.parent_path().empty()){fs::create_directories(path.parent_path(),ec);if(ec)return false;}
- {std::ofstream out(pending,std::ios::trunc);out<<"HYPERION LOOK 1\nlook="<<(psychedelic?"psychedelic":"standard")<<'\n';out.flush();if(!out){out.close();fs::remove(pending,ec);return false;}}
+ {std::ofstream out(pending,std::ios::trunc);out<<"HYPERION LOOK 1\nlook="<<flightLookName(look)<<'\n';out.flush();if(!out){out.close();fs::remove(pending,ec);return false;}}
  fs::rename(pending,path,ec);if(!ec)return true;fs::remove(pending,ec);return false;
 }
-
+inline bool loadPsychedelicLook(const std::filesystem::path& path){return loadFlightLook(path)==FlightLook::Psychedelic;}
+inline bool savePsychedelicLook(const std::filesystem::path& path,bool psychedelic){return saveFlightLook(path,psychedelic?FlightLook::Psychedelic:FlightLook::Standard);}
 }

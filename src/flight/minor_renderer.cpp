@@ -55,7 +55,7 @@ void Renderer::clearMinorBodies(){for(auto& entry:minorModels)UnloadModel(entry.
 void Renderer::drawMinorBodies(const Game& g,bool depth){
  V3 eye{camera.position.x,camera.position.y,camera.position.z};
  if(depth){uniform(planetDepth,"patchCos",0.f);uniform(planetDepth,"groundPass",0.f);}
- else{minorDrawn=0;uniform(minorShader,"lightDirection",sunDirection);uniform(minorShader,"eye",eye);}
+ else{minorDrawn=0;uniform(minorShader,"wireframe",wireframe?1.f:0.f);uniform(minorShader,"wirePixelScale",std::max(1.f,float(scene.texture.width)/std::max(1,GetRenderWidth())));uniform(minorShader,"lightDirection",sunDirection);uniform(minorShader,"eye",eye);}
  for(const auto& b:g.minorBodies){if(b.destroyed)continue;auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
   if(dot(offset,g.ship.forward)<-b.source.radius*1.3||distance>58000||pixels<.65)continue;
   auto it=minorModels.find(b.source.id);if(it==minorModels.end())continue;
@@ -71,6 +71,10 @@ void Renderer::drawCometTails(const Game& g){
  for(const auto& b:g.minorBodies)if(!b.destroyed&&b.source.kind==MinorKind::Comet&&length(b.centre-eye)<50000){
   double activity=std::clamp(12000./std::max(4000.,length(b.centre)),.3,1.4);auto tail=-sunDirection;auto side=unit(cross(tail,eye-b.centre),{1,0,0});
   auto orbit=minorOrbit(b.source,(presentation?presentation->hours:g.time/55)+1);auto tangent=unit(V3{orbit.x,orbit.y,orbit.z}-b.centre,{0,0,1});
+  if(wireframe){for(int strand=-1;strand<=1;strand++)for(int i=0;i<40;i++){
+   auto point=[&](int k){double t=k/40.,size=b.source.radius*115*activity;return b.centre+tail*(size*t)+tangent*(size*t*t*.08)+side*(strand*b.source.radius*(.25+t*2.4));};
+   DrawLine3D(vec(point(i)),vec(point(i+1)),Color{static_cast<unsigned char>(strand?155:105),static_cast<unsigned char>(strand?139:225),255,static_cast<unsigned char>(200*(1.-i/40.))});
+  }continue;}
   for(int plume=0;plume<2;plume++){
    double size=b.source.radius*(plume?80:115)*activity;auto point=[&](double t){return b.centre+tail*(size*t)+tangent*(plume?size*t*t*.18:0);};
    auto width=[&](double t){return b.source.radius*(.7+std::pow(t,.65)*(plume?8:2.8))*activity;};

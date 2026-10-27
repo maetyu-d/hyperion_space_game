@@ -1,4 +1,4 @@
-# HYPERION 3.64
+# HYPERION 3.65
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,34 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Vector wireframe flight in 3.65
+
+Choose **Menu → Settings → Look: Wireframe** for a contemporary, Elite-inspired
+vector look: luminous cyan and ivory edges against a deep black starfield,
+restrained violet and mint accents, soft bloom and the existing minimal scanner.
+
+Ships, stations, settlements, fractured hulls and the cockpit retain their real
+geometry. The renderer hides coplanar triangle diagonals and uses opaque depth
+to conceal rear edges. Architectural panel tracery adds close detail. Planets,
+moons and asteroids use sparse survey grids and terrain contours; ground grid
+spacing changes continuously during descent. Wildlife retains its procedural
+anatomy, movement and population, rendered with animated vector edges. Comets
+become fine spectral streamers. Weapons and explosions retain their light.
+
+The look is remembered independently of **Low / High / Extreme** quality and the
+HUD. Switch between **Standard / Psychedelic / Wireframe** during flight, while
+paused or in strategy; campaign time, flight physics and the economy stay the
+same. Standard remains the default for a new installation.
+
+![A generated ship against an Elite-inspired vector planet](docs/screenshots/wireframe-flight.jpg)
+
+![A living settlement in wireframe flight](docs/screenshots/wireframe-settlement.jpg)
+
+Command-line launches support `--flight-look standard|psychedelic|wireframe`.
+`--wireframe-check` exercises native pointer controls, all quality presets,
+ships, buildings, wildlife, terrain, minor bodies, compact paused settings and
+the strategy return, while checking that the simulation stays frozen.
 
 ## Extreme graphics quality in 3.64
 

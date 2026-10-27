@@ -30,7 +30,7 @@ void Renderer::drawWorldDamage(const Game& game){
   int count=d.kind==MinorObjectKind?12:d.kind==RockObject?5:4;
   for(int i=0;i<count&&chunks>0;i++,chunks--){double angle=i*2.399963,spread=d.kind==MinorObjectKind?d.scale*1.3:d.scale*.8;auto centre=at+(right*std::cos(angle)+back*std::sin(angle))*spread*(.35+random(seed,i));
    double size=d.kind==MinorObjectKind?d.scale*(.09+.13*random(seed,i+20)):std::clamp(d.scale*.17,.12,2.8);if(d.kind!=MinorObjectKind)centre=centre-up*(d.scale*.4);
-   Color tint=d.kind==RockObject||d.kind==MinorObjectKind?Color{74,63,88,255}:Color{37,43,57,255};DrawCubeV(vec(centre),{float(size*1.4),float(size*.6),float(size)},tint);
+   Color tint=wireframe?Color{0,1,2,255}:d.kind==RockObject||d.kind==MinorObjectKind?Color{74,63,88,255}:Color{37,43,57,255};DrawCubeV(vec(centre),{float(size*1.4),float(size*.6),float(size)},tint);if(wireframe)DrawCubeWiresV(vec(centre),{float(size*1.4),float(size*.6),float(size)},Color{113,185,229,255});
    if(!reduced&&i%3==0)DrawLine3D(vec(centre+up*size*.3-right*size*.5),vec(centre+up*size*.3+right*size*.5),Color{105,76,133,210});
   }
  }
