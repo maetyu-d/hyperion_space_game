@@ -119,15 +119,17 @@ void Renderer::flightHUD(){
   return box;
  };
 
- // Aim and prograde stay aligned to the camera; opening a panel never shifts them.
+ // The aim mark follows the same optical path as the projectile at target range.
+ const int aiming=f.combatTargetIndex();double aimRange=aiming>=0?hyperion::flight::length(f.apparentPosition(f.ship.position,f.traffic[aiming].position)-f.ship.position):900.;
+ const auto aim=flightGraphics.project(f.ship.position+f.ship.forward*clamp(aimRange,300.,2000.),w,h);const float ax=aim.x,ay=aim.y;
  if(!compact&&!f.docked){
   for(int side:{-1,1}){
-   DrawLineEx({cx+side*9,cy},{cx+side*21,cy},3,Color{4,12,20,150});
-   DrawLineEx({cx+side*21,cy},{cx+side*24,cy+4},3,Color{4,12,20,150});
-   DrawLineEx({cx+side*9,cy},{cx+side*21,cy},1,Color{153,255,218,190});
-   DrawLineEx({cx+side*21,cy},{cx+side*24,cy+4},1,Color{153,255,218,125});
+   DrawLineEx({ax+side*9,ay},{ax+side*21,ay},3,Color{4,12,20,150});
+   DrawLineEx({ax+side*21,ay},{ax+side*24,ay+4},3,Color{4,12,20,150});
+   DrawLineEx({ax+side*9,ay},{ax+side*21,ay},1,Color{153,255,218,190});
+   DrawLineEx({ax+side*21,ay},{ax+side*24,ay+4},1,Color{153,255,218,125});
   }
-  DrawCircleV({cx,cy},2.5f,Color{4,12,20,165});DrawCircleV({cx,cy},1.2f,pearl);
+  DrawCircleV({ax,ay},2.5f,Color{4,12,20,165});DrawCircleV({ax,ay},1.2f,pearl);
 
  }
 
@@ -136,7 +138,7 @@ void Renderer::flightHUD(){
  if(game->toastTime<=0&&compact){
   const float limit=compact?std::min(330.f,edge-48):350.f;
   bool nil=false;for(const auto& region:f.nilRegions)nil|=hyperion::flight::nilWeight(region,f.ship.position)>.01;
-  const auto description=(nil?std::string("NIL OPTICS / "):std::string{})+f.planets[f.nearestPlanet()].name+(f.atmosphereDensity()>.001?" / ATMOSPHERE / ":" / SPACE / ")+hyperion::flight::vesselDef(f.ship.vessel.model).name;
+  const auto description=(nil?std::string("NIL OPTICS / "):flightGraphics.spaceStats().strength>.1?std::string("CURVED SPACE / "):std::string{})+f.planets[f.nearestPlanet()].name+(f.atmosphereDensity()>.001?" / ATMOSPHERE / ":" / SPACE / ")+hyperion::flight::vesselDef(f.ship.vessel.model).name;
   const auto value=elide(description,limit-24,10,true);
   const float railWidth=MeasureTextEx(mono,value.c_str(),10,.1f).x+24;
   hudCard({24,74,railWidth,26},ice);text(value,36,82,10,muted,true);
@@ -159,7 +161,7 @@ void Renderer::flightHUD(){
     point=body.centre+normal*(body.radius+hyperion::flight::terrain(body,normal)+5);mark=true;
    }
    if(tracked->kind==EscortMission)for(const auto& t:f.traffic)if(!t.dead&&t.routeId==tracked->target){point=t.position;mark=true;}
-   if(mark&&hyperion::flight::dot(point-f.ship.position,f.ship.forward)>0&&f.lineOfSight(f.ship.position,point)){
+   if(mark&&flightGraphics.inFront(point)&&f.lineOfSight(f.ship.position,point)){
     const auto at=flightGraphics.project(point,w,h);
     if(at.x>35&&at.x<edge-220&&at.y>185&&at.y<markerBottom){
      hudDiamond(at,9,violet);
@@ -201,7 +203,7 @@ void Renderer::flightHUD(){
   const auto& enemy=f.traffic[selected];int through=-1;auto image=f.apparentPosition(f.ship.position,enemy.position,&through);const auto offset=image-f.ship.position;
   const double range=hyperion::flight::length(offset);const auto q=flightGraphics.project(image,w,h);
   const Color tint=!enemy.hostile?ice:f.lock>=1?mint:pink;
-  if(hyperion::flight::dot(offset,f.ship.forward)>0&&f.sighted(f.ship.position,enemy.position)&&q.x>60&&q.x<edge-80&&q.y>180&&q.y<markerBottom){
+  if(flightGraphics.inFront(image)&&f.sighted(f.ship.position,enemy.position)&&q.x>60&&q.x<edge-80&&q.y>180&&q.y<markerBottom){
    const float size=float(clamp(1550/range,14.,46.));
    for(int a:{-1,1})for(int b:{-1,1}){
     DrawLineEx({q.x+a*size,q.y+b*size},{q.x+a*(size-7),q.y+b*size},1.5f,tint);

@@ -3,6 +3,7 @@
 #include "world_objects.hpp"
 #include "../screen_layout.hpp"
 #include "shaders.hpp"
+#include "space_shaders.hpp"
 #include "minor_shaders.hpp"
 #include "geology.hpp"
 #include "building_material.hpp"
@@ -128,18 +129,19 @@ Mesh globe(const Planet&p,int lon=192,int lat=96){Mesh mesh{};mesh.vertexCount=(
 }
 }
 bool Renderer::init(GraphicsQuality initialQuality){
- wireShader=LoadShaderFromMemory(wireVertex,wireFragment);if(!IsShaderValid(wireShader)||wireShader.id==rlGetShaderIdDefault())return false;
+ wireShader=spaceShader(wireVertex,wireFragment);
+ spacePrimitive=spaceShader(spacePrimitiveVertex,spacePrimitiveFragment,"vertexPosition");if(!IsShaderValid(wireShader)||wireShader.id==rlGetShaderIdDefault())return false;
  quality=initialQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;
- uniforms.clear();noiseTexture=lookupNoise();sky=LoadShaderFromMemory(nullptr,skyFragment);world=LoadShaderFromMemory(worldVertex,worldFragment);
+ uniforms.clear();noiseTexture=lookupNoise();std::string curvedSky=skyFragment;curvedSky.insert(curvedSky.find('\n')+1,spaceGLSL);sky=LoadShaderFromMemory(nullptr,curvedSky.c_str());world=spaceShader(worldVertex,worldFragment);
  // Distant globe fragments do not carry close material registers or work.
  std::string groundVertex=worldVertex,groundFragment=worldFragment;
  for(auto* source:{&groundVertex,&groundFragment})source->insert(source->find('\n')+1,"#define TERRAIN_DETAIL\n");
- groundShader=LoadShaderFromMemory(groundVertex.c_str(),groundFragment.c_str());planetDepth=LoadShaderFromMemory(groundVertex.c_str(),planetDepthFragment);sunDepth=LoadShaderFromMemory(groundVertex.c_str(),sunDepthFragment);
+ groundShader=spaceShader(groundVertex.c_str(),groundFragment.c_str());planetDepth=spaceShader(groundVertex.c_str(),planetDepthFragment);sunDepth=LoadShaderFromMemory(groundVertex.c_str(),sunDepthFragment);
  std::string volumeVertex=worldVertex;volumeVertex.insert(volumeVertex.find('\n')+1,"#define CLAMP_NEAR\n");
- atmo=LoadShaderFromMemory(volumeVertex.c_str(),atmoFragment);cloud=LoadShaderFromMemory(volumeVertex.c_str(),cloudFragment);ringShader=LoadShaderFromMemory(worldVertex,ringFragment);aurora=LoadShaderFromMemory(volumeVertex.c_str(),auroraFragment);
+ atmo=spaceShader(volumeVertex.c_str(),atmoFragment);cloud=spaceShader(volumeVertex.c_str(),cloudFragment);ringShader=spaceShader(worldVertex,ringFragment);aurora=spaceShader(volumeVertex.c_str(),auroraFragment);
  cloudResolve=LoadShaderFromMemory(nullptr,cloudResolveFragment);
  blur=LoadShaderFromMemory(nullptr,blurFragment);post=LoadShaderFromMemory(nullptr,postFragment);supersampleResolve=LoadShaderFromMemory(nullptr,supersampleResolveFragment);cockpitShader=LoadShaderFromMemory(worldVertex,cockpitFragment);
- structure=LoadShaderFromMemory(worldVertex,structureFragment);minorShader=LoadShaderFromMemory(worldVertex,minorFragment);minorBake=LoadShaderFromMemory(nullptr,minorBakeFragment);
+ structure=spaceShader(worldVertex,structureFragment);minorShader=spaceShader(worldVertex,minorFragment);minorBake=LoadShaderFromMemory(nullptr,minorBakeFragment);
  minorShader.locs[SHADER_LOC_MAP_NORMAL]=GetShaderLocation(minorShader,"grainTexture");
  minorShader.locs[SHADER_LOC_MAP_ALBEDO]=GetShaderLocation(minorShader,"materialTexture");minorShader.locs[SHADER_LOC_MAP_ROUGHNESS]=GetShaderLocation(minorShader,"detailTexture");
  surfaceBake=LoadShaderFromMemory(nullptr,surfaceBakeFragment);geologyBake=LoadShaderFromMemory(nullptr,geologyBakeFragment);detailBake=LoadShaderFromMemory(nullptr,detailBakeFragment);
@@ -279,7 +281,7 @@ bool Renderer::exportShadow(const std::string& path)const{
  std::printf("Sun shadow depth: %.6f .. %.6f\n",lo,hi);bool result=ExportImage(preview,path.c_str());UnloadImage(preview);UnloadImage(image);return result;
 }
 void Renderer::shutdown(){
- clearFolds();
+ clearFolds();if(spacePrimitive.id){UnloadShader(spacePrimitive);spacePrimitive={};}
  clearWireModels();if(wireShader.id){UnloadShader(wireShader);wireShader={};}
  clearLife();clearMinorBodies();if(combatGlow.id){UnloadTexture(combatGlow);combatGlow={};}
  std::printf("Sun shadow cache: %u updates / %u active frames\n",shadowUpdates,shadowFrames);
@@ -311,7 +313,7 @@ void Renderer::drawPlanetDepth(const Game& g,const std::vector<int>& visible,V3 
 void Renderer::drawAuroras(const Game& g,const std::vector<int>& visible,V3 eye){
  // Aurora rays use the same opaque distance field as clouds. Resolve their
  // half-resolution emission at full resolution before adding it to the scene.
- rlSetClipPlanes(worldNearPlane,60000.);BeginTextureMode(auroraScene);ClearBackground(BLANK);BeginMode3D(camera);clipFoldView();
+ rlSetClipPlanes(worldNearPlane,60000.);BeginTextureMode(auroraScene);ClearBackground(BLANK);BeginMode3D(camera);clipFoldView();beginSpace();
  set(aurora,"viewForward",g.ship.forward);set(aurora,"resolution",Vector2{float(auroraScene.texture.width),float(auroraScene.texture.height)});
  BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();
  for(int i:visible){const auto& body=g.planets[i];double distance=length(eye-body.centre);if(body.atmosphere<.12||distance<body.radius+70)continue;
@@ -320,13 +322,13 @@ void Renderer::drawAuroras(const Game& g,const std::vector<int>& visible,V3 eye)
   set(aurora,"seed",float(body.seed));set(aurora,"time",float(visualTime));set(aurora,"atmosphere",float(body.atmosphere));set(aurora,"radius",float(body.radius));set(aurora,"strength",float(fade)*(reduced?.55f:1.f));
   auto& shell=atmospheres[i];shell.materials[0].maps[MATERIAL_MAP_METALNESS].texture=opaqueDepth;shell.materials[0].shader=aurora;DrawModel(shell,vec(body.centre),float((body.radius+70)/(body.radius+40)),WHITE);shell.materials[0].shader=atmo;
  }
- rlEnableDepthMask();EndBlendMode();EndMode3D();EndTextureMode();rlSetClipPlanes(worldNearPlane,60000.);
+ rlEnableDepthMask();EndBlendMode();EndShaderMode();EndMode3D();EndTextureMode();rlSetClipPlanes(worldNearPlane,60000.);
  resolveWeather(g,eye,auroraScene.texture,true);if(auditClouds)measureCloudOcclusion(g,g.nearestPlanet(),eye,true);
 }
 void Renderer::drawClouds(const Game& g,const std::vector<int>& visible,V3 eye){
  // The main terrain depth is now complete and detached from this framebuffer.
  // Cloud integration reads it directly, avoiding a second near-clamped mesh.
- rlSetClipPlanes(worldNearPlane,60000.);BeginTextureMode(cloudScene);ClearBackground(BLANK);BeginMode3D(camera);clipFoldView();
+ rlSetClipPlanes(worldNearPlane,60000.);BeginTextureMode(cloudScene);ClearBackground(BLANK);BeginMode3D(camera);clipFoldView();beginSpace();
  auto sorted=visible;std::stable_sort(sorted.begin(),sorted.end(),[&](int a,int b){return length(g.planets[a].centre-eye)>length(g.planets[b].centre-eye);});
  BeginBlendMode(BLEND_ALPHA_PREMULTIPLY);rlDrawRenderBatchActive();rlDisableDepthMask();rlDisableBackfaceCulling();
  for(auto shader:{cloud,atmo}){set(shader,"viewForward",g.ship.forward);set(shader,"resolution",Vector2{float(cloudScene.texture.width),float(cloudScene.texture.height)});}
@@ -341,7 +343,7 @@ void Renderer::drawClouds(const Game& g,const std::vector<int>& visible,V3 eye){
   }
   if(body.atmosphere>=.08&&length(g.ship.position-body.centre)>=body.radius+42){set(atmo,"centre",body.centre);set(atmo,"eye",eye);set(atmo,"lightDirection",sunDirection);set(atmo,"seed",float(body.seed));set(atmo,"kind",float(body.kind));set(atmo,"atmosphere",float(body.atmosphere));set(atmo,"radius",float(body.radius));atmospheres[i].materials[0].maps[MATERIAL_MAP_METALNESS].texture=opaqueDepth;DrawModel(atmospheres[i],vec(body.centre),1,WHITE);}
  }
- rlDrawRenderBatchActive();rlEnableBackfaceCulling();rlEnableDepthMask();EndBlendMode();EndMode3D();EndTextureMode();rlSetClipPlanes(worldNearPlane,60000.);
+ rlDrawRenderBatchActive();rlEnableBackfaceCulling();rlEnableDepthMask();EndBlendMode();EndShaderMode();EndMode3D();EndTextureMode();rlSetClipPlanes(worldNearPlane,60000.);
  resolveWeather(g,eye,cloudScene.texture);if(auditClouds)measureCloudOcclusion(g,g.nearestPlanet(),eye);
 }
 void Renderer::resolveWeather(const Game& g,V3 eye,Texture2D source,bool emission){
@@ -371,7 +373,7 @@ void Renderer::measureCloudOcclusion(const Game& g,int body,V3 eye,bool emission
   auto direction=unit(g.ship.forward+right*((2*(x+.5)/width-1)*double(width)/height*.7002075)+up*((2*(y+.5)/height-1)*.7002075));
   double b=dot(origin,direction),exit=-b+std::sqrt(std::max(0.,b*b+inner*inner-dot(origin,origin)));
   double opaque=depth[pixel];
-  if(opaque>=exit*dot(direction,g.ship.forward)-.1)continue;
+  if(opaque>=exit-.1)continue;
   stats.testedPixels++;stats.maxLeakAlpha=std::max(stats.maxLeakAlpha,alpha);if(alpha>1.f/1024)stats.leakingPixels++;
  }
 #endif
@@ -421,6 +423,7 @@ void Renderer::drawMotion(const Game& g){
 void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,GraphicsQuality graphicsQuality,bool psychedelicLook,bool wireframeLook,bool egaPalette){
  if(g.planets.empty()||g.ports.empty())return;
  if(quality!=graphicsQuality){shutdown();quality=graphicsQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;worldKey.clear();bodiesKey.clear();cockpitWidth=cockpitHeight=0;groundBody=shadowBody=-1;if(!init(quality))throw std::runtime_error("Graphics quality initialization failed");}
+ prepareSpace(g,cockpitVisible);
  prepareFoldViews(g,sceneView,reducedEffects,cockpitVisible,psychedelicLook,wireframeLook,egaPalette);
  for(auto shader:{sky,world,groundShader,cloud,post})set(shader,"lowGraphics",lowGraphics?1.f:0.f);
  const auto profile=flightQualityProfile(quality);
@@ -476,7 +479,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
 #endif
  }return GetTime();};double tick=profiling?stamp():0.;
  auto elapsed=[&](int stage){if(profiling){double next=stamp();timings[stage]=(next-tick)*1000;tick=next;}};
- std::vector<int> visible;for(int i=0;i<int(g.planets.size());i++){const auto& body=g.planets[i];if(dot(body.centre-g.ship.position,g.ship.forward)>=-body.radius*1.85)visible.push_back(i);}
+ std::vector<int> visible;for(int i=0;i<int(g.planets.size());i++){const auto& body=g.planets[i];if(inFront(body.centre,body.radius*1.85))visible.push_back(i);}
  int lensed=nilBody(g);if(lensed>=0)visible.erase(std::remove(visible.begin(),visible.end(),lensed),visible.end());
  // Hysteresis prevents a hovering body from alternating between meshes.
  // Main colour, cloud occlusion and aurora occlusion share this one decision.
@@ -487,14 +490,14 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  // plane preserves substantially more precision in distant layered planets.
  prepareMinorBodies(g);prepareStructures(g);if(!wireframe)drawSunShadows(g,eye);else shadowActive=false;rlSetClipPlanes(worldNearPlane,60000);
  BeginTextureMode(scene);ClearBackground(ink);
- set(sky,"resolution",Vector2{float(renderW),float(renderH)});set(sky,"forward",g.ship.forward);set(sky,"up",g.ship.up);
+ applySpace(sky);set(sky,"resolution",Vector2{float(renderW),float(renderH)});set(sky,"forward",g.ship.forward);set(sky,"up",g.ship.up);
  set(sky,"right",unit(cross(g.ship.forward,g.ship.up)));set(sky,"radial",unit(g.ship.position-p.centre));set(sky,"lightDirection",sunDirection);
  auto localWeather=weatherAt(p,unit(g.ship.position-p.centre),presentation?presentation->hours:g.time/55);
  set(sky,"storm",float(localWeather.storm));set(sky,"lightning",reduced?0.f:float(localWeather.lightning));
  set(sky,"time",now);set(sky,"altitude",float(altitude));set(sky,"air",float(std::clamp(1-altitude/240,0.,1.))*.88f*float(std::clamp(p.atmosphere,.0,1.2)));set(sky,"seed",float(g.planets.front().seed));
  BeginShaderMode(sky);texture(sky,"noiseTexture",noiseTexture);DrawRectangle(0,0,renderW,renderH,WHITE);EndShaderMode();
  elapsed(0);
- rlSetClipPlanes(worldNearPlane,60000);BeginMode3D(camera);clipFoldView();
+ rlSetClipPlanes(worldNearPlane,60000);BeginMode3D(camera);clipFoldView();beginSpace();
  for(auto shader:{world,groundShader}){set(shader,"time",now);set(shader,"eye",eye);set(shader,"lightDirection",sunDirection);set(shader,"metal",0.f);set(shader,"groundBlend",groundBlend);set(shader,"gearPosition",g.ship.position);set(shader,"groundClearance",float(altitude));}
  for(int i:visible){
   const auto& body=g.planets[i];
@@ -513,21 +516,21 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
  }
  drawMinorBodies(g);
  for(int i:visible)if(g.planets[i].giant||i==2)drawRings(g.planets[i],now);
- EndMode3D();drawNil(g,eye);EndTextureMode();
+ EndShaderMode();EndMode3D();drawNil(g,eye);EndTextureMode();
  // Full-resolution distance capture uses the identical mesh, morph and 1 km
  // near plane as colour, keeping close occluders precise without shading twice.
- if(!wireframe){BeginTextureMode(opaqueScene);ClearBackground(BLANK);BeginMode3D(camera);clipFoldView();rlDrawRenderBatchActive();rlDisableColorBlend();
- drawPlanetDepth(g,visible,eye);drawMinorBodies(g,true);rlDrawRenderBatchActive();rlEnableColorBlend();EndMode3D();EndTextureMode();drawClouds(g,visible,eye);
+ if(!wireframe){BeginTextureMode(opaqueScene);ClearBackground(BLANK);BeginMode3D(camera);clipFoldView();beginSpace();rlDrawRenderBatchActive();rlDisableColorBlend();
+ drawPlanetDepth(g,visible,eye);drawMinorBodies(g,true);rlDrawRenderBatchActive();rlEnableColorBlend();EndShaderMode();EndMode3D();EndTextureMode();drawClouds(g,visible,eye);
  BeginTextureMode(scene);BeginBlendMode(BLEND_ALPHA_PREMULTIPLY);
  DrawTexturePro(composite.texture,{0,0,float(renderW),-float(renderH)},{0,0,float(renderW),float(renderH)},{0,0},0,WHITE);
  EndBlendMode();EndTextureMode();elapsed(1);drawAuroras(g,visible,eye);elapsed(2);
  BeginTextureMode(scene);BeginBlendMode(BLEND_ADDITIVE);
  DrawTexturePro(composite.texture,{0,0,float(renderW),-float(renderH)},{0,0,float(renderW),float(renderH)},{0,0},0,WHITE);
- EndBlendMode();}else{elapsed(1);elapsed(2);BeginTextureMode(scene);}BeginMode3D(camera);clipFoldView();
+ EndBlendMode();}else{elapsed(1);elapsed(2);BeginTextureMode(scene);}BeginMode3D(camera);clipFoldView();beginSpace();
  drawCometTails(g);
  for(int i=0;i<int(g.ports.size());i++){
   const auto&port=g.ports[i];if(port.minor>=0||port.recovery||port.fold>=0)continue;double d=length(port.position-g.ship.position);
-  if(d<8500&&(dot(port.position-g.ship.position,g.ship.forward)>-380)&&(port.planet<0||dot(port.normal,g.ship.position-port.position)>-160)){
+  if(d<8500&&(inFront(port.position,380))&&(port.planet<0||dot(port.normal,g.ship.position-port.position)>-160)){
    drawSettlement(port,sceneView.settlement(port.settlement),g);if(d<1500)drawPortActivity(port,sceneView);
   }
  }
@@ -540,7 +543,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
   }
  }
  drawLife(sceneView);
- for(const auto&t:g.traffic)if(!t.dead&&length(t.position-g.ship.position)<6500&&dot(t.position-g.ship.position,g.ship.forward)>-80)drawFactionCraft(t,sceneView);
+ for(const auto&t:g.traffic)if(!t.dead&&length(t.position-g.ship.position)<6500&&inFront(t.position,80))drawFactionCraft(t,sceneView);
  drawWorldDamage(g);drawShipRemains(g);drawCombat(g);drawFolds(g);
  auto facing=unit(cross(g.ship.forward,g.ship.up)),vertical=g.ship.up;
  for(const auto& wreck:g.wrecks)if(length(wreck.position-g.ship.position)<1700)ring(wreck.position,facing,vertical,6,alpha(mint,.25f),24);
@@ -552,7 +555,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
    BeginBlendMode(BLEND_ADDITIVE);for(int i=0;i<9;i++){auto point=[&](int k){return mix(base,top,k/9.)+east*(std::sin(k*2.7+p.seed)*1.4)+side*(std::sin(k*4.1+p.seed)*.8);};tube(point(i),point(i+1),.12f,alpha(Color{187,155,255,255},float(localWeather.lightning*.7)));}EndBlendMode();
   }
  }
- drawGroundEffects(g);drawMotion(g);EndMode3D();elapsed(3);
+ drawGroundEffects(g);drawMotion(g);EndShaderMode();EndMode3D();elapsed(3);
  if(showCockpit){
   auto viewport=hyperion::UIViewport(float(GetScreenWidth()),float(GetScreenHeight()));int cabinW=int(std::lround(viewport.width)),cabinH=int(std::lround(viewport.height));
   if(cockpitWidth!=cabinW||cockpitHeight!=cabinH||cockpitDocked!=g.docked||cockpitKind!=g.ship.vessel.model)rebuildCockpit(cabinW,cabinH,g.docked,g.ship.vessel.model);
@@ -616,7 +619,7 @@ void Renderer::drawCockpit(const Game& g){
  set(cockpitShader,"combatLight",combatLight);
  // Only the cabin moves: the world camera, reticle and projectile aim remain aligned.
  Vector3 kick{};if(!reduced)kick={float(std::sin(g.time*71)*g.feedback.impact*.003),float(-g.feedback.recoil*.004+std::sin(g.time*59)*g.feedback.impact*.004),float(g.feedback.recoil*.025)};
- drawVectorModel(cockpitModel,kick,1,2);EndMode3D();rlSetClipPlanes(worldNearPlane,60000.);
+ applySpace(wireShader,false);drawVectorModel(cockpitModel,kick,1,2);EndMode3D();rlSetClipPlanes(worldNearPlane,60000.);
 }
 void Renderer::present(float width,float height){
  if(!composite.id)return;
@@ -626,5 +629,5 @@ void Renderer::present(float width,float height){
  }else DrawTexturePro(composite.texture,{0,0,float(composite.texture.width),-float(composite.texture.height)},{0,0,width,height},{0,0},0,WHITE);
 
 }
-Vector2 Renderer::project(V3 p,float width,float height)const{return GetWorldToScreenEx(vec(p),camera,int(width),int(height));}
+Vector2 Renderer::project(V3 p,float width,float height)const{return GetWorldToScreenEx(vec(visualPosition(p)),camera,int(width),int(height));}
 }

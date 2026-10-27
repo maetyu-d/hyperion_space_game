@@ -1,0 +1,24 @@
+{
+  "version": "3.70.0",
+  "binarySHA256": "dea0a14b2e60b9d4f07630ab39c4e980599f1bb19018568c428f0df4338e7a0f",
+  "cpuSuitesPassed": 44,
+  "curvedSpaceChecks": 6003,
+  "nativeScenesPassed": 14,
+  "interfaceChecksPassed": 4,
+  "cloudOcclusionScenarios": 12,
+  "cloudAndAuroraLeakingPixels": 0,
+  "offPalettePixels": 0,
+  "gpuRasterErrorPixels": 0.06878885429704269,
+  "gpuProjectionErrorKm": 0.19501811684327552,
+  "ordinaryFlatCurvedMeanRGBDifference": 31.01669241898148,
+  "closeApproachMeanRGBDifference": 0.0,
+  "installedSmokeLooks": [
+    "High Psychedelic",
+    "Extreme EGA Wireframe"
+  ],
+  "copiedCampaignRoundtripExact": true,
+  "playerSaveAndPreferencesUnchanged": true,
+  "previousApp": "releases/Hyperion 3.69.app",
+  "scope": "Default system-wide Nil optical projection; familiar canonical flight handling, physical simulation and turn-based strategy",
+  "nearMeshDifferencePixels": 0
+}

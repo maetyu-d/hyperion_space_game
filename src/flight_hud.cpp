@@ -33,10 +33,10 @@ void hyperion::Renderer::flightDirector(const flight::LandingInfo& landing,doubl
  }
  const V3 target=enemy?f.apparentPosition(f.ship.position,f.traffic[selected].position):m.navigation,offset=target-f.ship.position;
  const Color targetTint=enemy?(f.traffic[selected].hostile?pink:ice):mint;
- if(length(offset)>1){const bool ahead=dot(offset,f.ship.forward)>0;Vector2 q{};if(ahead)q=flightGraphics.project(target,w,h);
+ if(length(offset)>1){const bool ahead=flightGraphics.inFront(target);Vector2 q{};if(ahead)q=flightGraphics.project(target,w,h);
   if(ahead&&hudContains(layout.bearing,{q.x,q.y})){if(!enemy&&f.lineOfSight(f.ship.position,target)){stroke({q.x,q.y-5},{q.x+5,q.y},mint);stroke({q.x+5,q.y},{q.x,q.y+5},mint);stroke({q.x,q.y+5},{q.x-5,q.y},mint);stroke({q.x-5,q.y},{q.x,q.y-5},mint);}}
   else{
-   const auto rightAxis=unit(cross(f.ship.forward,f.ship.up));const auto at=hudBearing(layout.bearing,{cx,cy},dot(offset,rightAxis),-dot(offset,f.ship.up));HUDPoint direction{at.x-cx,at.y-cy};const double len=std::max(1.,std::hypot(direction.x,direction.y));direction.x/=len;direction.y/=len;const HUDPoint across{-direction.y*4,direction.x*4};
+   const auto rightAxis=unit(cross(f.ship.forward,f.ship.up));auto visual=flightGraphics.visualPosition(target)-f.ship.position;const auto at=hudBearing(layout.bearing,{cx,cy},dot(visual,rightAxis),-dot(visual,f.ship.up));HUDPoint direction{at.x-cx,at.y-cy};const double len=std::max(1.,std::hypot(direction.x,direction.y));direction.x/=len;direction.y/=len;const HUDPoint across{-direction.y*4,direction.x*4};
    stroke({at.x-direction.x*7+across.x,at.y-direction.y*7+across.y},at,targetTint);stroke(at,{at.x-direction.x*7-across.x,at.y-direction.y*7-across.y},targetTint);
    // Navigation already has a name and range on the lower rail.
    if(enemy&&!ahead)read("AFT",at.x<cx-60?at.x-34:at.x+10,at.y-4,30,8,targetTint);

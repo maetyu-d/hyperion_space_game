@@ -1,5 +1,6 @@
 #pragma once
 #include "game.hpp"
+#include "space.hpp"
 #include "scene.hpp"
 #include "life_visibility.hpp"
 #include "../graphics_quality.hpp"
@@ -12,6 +13,10 @@ namespace hyperion::flight {
 struct GeometryStats {int models=0,closeTriangles=0,closePorts=0,detailedTriangles=0,distantTriangles=0,degenerateTriangles=0,invalidVertices=0,invalidNormals=0;};
 struct CloudOcclusionStats {int testedPixels=0,leakingPixels=0;float maxLeakAlpha=0,maxCloudAlpha=0;};
 class Renderer {
+ SpaceView ambient;bool ambientEnabled=true;double ambientOverride=-1;
+ Shader spacePrimitive{};void prepareSpace(const Game&,bool);void applySpace(Shader,bool enabled=true);void beginSpace();void resumeSpace();
+ Shader spaceShader(const char*,const char*,const char* position="worldPosition");
+
  std::unique_ptr<Renderer> foldRenderer;bool foldViewPass=false;V3 foldClipPosition{},foldClipNormal{0,0,1};
  struct FoldPreview {int gate=-1;RenderTexture2D image{};};std::vector<FoldPreview> foldPreviews;
  Shader foldWindow{},nilOptics{};
@@ -55,6 +60,8 @@ class Renderer {
  void drawPlanetDepth(const Game&,const std::vector<int>&,V3);void drawAuroras(const Game&,const std::vector<int>&,V3);void drawClouds(const Game&,const std::vector<int>&,V3);
  bool auditClouds=false;CloudOcclusionStats cloudStats{},auroraStats{};void measureCloudOcclusion(const Game&,int,V3,bool emission=false);void resolveWeather(const Game&,V3,Texture2D,bool emission=false);
 public:
+ void curvedSpace(bool enabled){ambientEnabled=enabled;}SpaceView spaceStats()const{return ambient;}
+ V3 visualPosition(V3 p)const{return spacePoint(ambient,p);}bool inFront(V3 p,double radius=0)const;
  struct FoldStats {int windows=0,mouths=0,nilBody=-1;};
  FoldStats foldStats()const{FoldStats stats;for(const auto& p:foldPreviews)if(p.gate>=0)stats.windows++;stats.mouths=foldDrawn;stats.nilBody=nilDrawn;return stats;}
  struct StructuralStats {int objects=0,parts=0,cached=0,interiors=0,sourceTriangles=0,triangles=0,caps=0;double sourceArea=0,partArea=0;};

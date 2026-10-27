@@ -1,5 +1,6 @@
 #pragma once
 #include "../worldgen_glsl.hpp"
+#include "space_shaders.hpp"
 #include "surface_detail.hpp"
 #include "lighting.hpp"
 #include "water.hpp"
@@ -67,16 +68,19 @@ vec3 stars(vec3 d,float density,float layer){
  float h=hash(vec3(cell,layer)),bright=step(.989,h);
  vec2 centre=vec2(hash(vec3(cell,layer+2.)),hash(vec3(cell,layer+4.)))*.7+.15;
  vec2 delta=q-centre;
- float aa=clamp(length(fwidth(grid))*.43,.018,.16),r=length(delta);
- float point=(1.-smoothstep(aa*.15,aa*1.1,r))*step(.94,h);
- float halo=exp(-r*r*115.)*bright*.22;
- float spike=(exp(-abs(delta.x)*190.)*exp(-abs(delta.y)*12.)+exp(-abs(delta.y)*190.)*exp(-abs(delta.x)*12.))*bright*.12;
+ // Keep point sources round in screen pixels even where curved rays stretch
+ // the angular grid. Nebulae retain the full continuous deformation.
+ vec2 dx=dFdx(grid),dy=dFdy(grid);float det=dx.x*dy.y-dx.y*dy.x;
+ vec2 pixel=abs(det)>.0000001?vec2(dy.y*delta.x-dy.x*delta.y,-dx.y*delta.x+dx.x*delta.y)/det:delta/max(length(fwidth(grid)),.02);
+ float r=length(pixel),point=(1.-smoothstep(.3,1.05,r))*step(.94,h);
+ float halo=exp(-r*r*.45)*bright*.14;
+ float spike=(exp(-abs(pixel.x)*2.8)*exp(-abs(pixel.y)*.7)+exp(-abs(pixel.y)*2.8)*exp(-abs(pixel.x)*.7))*bright*.07;
  vec3 temperature=mix(vec3(.49,.69,1.),vec3(1.,.78,.47),hash(vec3(cell,layer+8.)));
  return temperature*(point*(.4+bright*1.4)+halo+spike);
 }
 void main(){
  vec2 uv=gl_FragCoord.xy/resolution*2.-1.;uv.x*=resolution.x/resolution.y;
- vec3 d=normalize(forward+right*uv.x*.7002+up*uv.y*.7002);
+ vec3 d=hxSky(normalize(forward+right*uv.x*.7002+up*uv.y*.7002));
  if(wireframe>.5){vec3 light=stars(d,115.,1.)+stars(d,245.,11.)*.24;float star=dot(light,vec3(.3,.59,.11));vec3 c=wireEGA>.5?light*.52:vec3(star*.52);c+=vec3(1.)*pow(max(0.,dot(d,lightDirection)),7500.)*.7;finalColor=vec4(c,1.);return;}
  vec3 q=d*3.1+vec3(seed*.013,0,seed*.007);
  float wisps=dust(q*1.7),band=exp(-pow((d.y*.75+d.x*.31+d.z*.12+.09+sin(d.z*3.)*.1)*3.8,2.));
@@ -166,9 +170,9 @@ void main(){
 }
 )GLSL";
 inline constexpr const char* planetDepthFragment=R"GLSL(#version 330
-in vec3 localPosition;out vec4 finalColor;
-uniform vec3 patchNormal;uniform float patchCos,groundPass;
-void main(){if(patchCos>0.){float cap=dot(normalize(localPosition),patchNormal)-patchCos;if(groundPass<.5&&cap>0.)discard;if(groundPass>.5&&groundPass<1.5&&cap<0.)discard;}finalColor=vec4(1./gl_FragCoord.w);}
+in vec3 localPosition,worldPosition;out vec4 finalColor;
+uniform vec3 eye;uniform vec3 patchNormal;uniform float patchCos,groundPass;
+void main(){if(patchCos>0.){float cap=dot(normalize(localPosition),patchNormal)-patchCos;if(groundPass<.5&&cap>0.)discard;if(groundPass>.5&&groundPass<1.5&&cap<0.)discard;}finalColor=vec4(length(worldPosition-eye));}
 )GLSL";
 inline constexpr const char* worldFragment=R"GLSL(#version 330
 in vec3 worldPosition,normal,localPosition;
@@ -452,7 +456,7 @@ void main(){
  if(gl_FrontFacing)discard;
  vec2 span=sphere(o,d,radius+48.);float start=max(0.,span.x),end=span.y;
  float opaque=texture(opaqueDepth,gl_FragCoord.xy/resolution).r;
- if(opaque>0.)end=min(end,opaque/max(dot(d,viewForward),.0001));
+ if(opaque>0.)end=min(end,opaque);
  vec2 ground=sphere(o,d,radius+2.);if(ground.x>0.)end=min(end,ground.x);if(end<=start)discard;
  // Skip the empty space beneath the weather, retaining both tangent limbs.
  vec2 inner=sphere(o,d,radius+20.);float aEnd=end,bStart=end;
@@ -560,7 +564,7 @@ void main(){
  if(dot(o,o)<inner*inner){
   vec3 d=normalize(viewForward+viewRight*screen.x*(float(size.x)/float(size.y))*.7002075+viewUp*screen.y*.7002075);
   float b=dot(o,d),h=inner*inner-dot(cross(o,d),cross(o,d));
-  float entry=(-b+sqrt(max(0.,h)))*dot(d,viewForward);
+  float entry=-b+sqrt(max(0.,h));
   if(depth<entry){finalColor=vec4(0.);return;}
  }
  vec4 sum=vec4(0.);float total=0.;
@@ -587,7 +591,7 @@ void main(){
  vec3 o=eye-centre,d=normalize(worldPosition-eye),L=normalize(lightDirection);float outer=radius+40.;vec2 span=sphere(o,d,outer);
  float start=max(0.,span.x),end=span.y;vec2 ground=sphere(o,d,radius+5.);if(ground.x>0.)end=min(end,ground.x);
  float opaque=texture(opaqueDepth,gl_FragCoord.xy/resolution).r;
- if(opaque>0.)end=min(end,opaque/max(dot(d,viewForward),.0001));if(end<=start)discard;
+ if(opaque>0.)end=min(end,opaque);if(end<=start)discard;
  float stepSize=(end-start)/integrationSamples,optical=0.;vec3 sum=vec3(0.);vec3 beta=vec3(.0058,.0135,.029)*clamp(atmosphere,.12,1.4);
  if(kind>3.5&&kind<4.5)beta=vec3(.018,.026,.008);if(kind>4.5)beta=vec3(.022,.015,.009);
  float mu=dot(d,L),rayleigh=.05968*(1.+mu*mu),mie=.012*pow(max(.02,1.-.76*mu),-1.5);
@@ -637,7 +641,7 @@ void main(){
  if(dot(n,lightDirection)>.25)discard;
  vec3 o=eye-centre,d=normalize(worldPosition-eye);vec2 span=sphere(o,d,radius+70.);
  float start=max(0.,span.x),end=span.y;vec2 ground=sphere(o,d,radius+18.);if(ground.x>0.)end=min(end,ground.x);
- float opaque=texture(opaqueDepth,gl_FragCoord.xy/resolution).r;if(opaque>0.)end=min(end,opaque/max(dot(d,viewForward),.0001));if(end<=start)discard;
+ float opaque=texture(opaqueDepth,gl_FragCoord.xy/resolution).r;if(opaque>0.)end=min(end,opaque);if(end<=start)discard;
  float stepSize=(end-start)/integrationSamples,drift=sin(time*.027+seed);vec3 sum=vec3(0.);
  for(int i=0;i<24;i++){
   if(float(i)>=integrationSamples)break;

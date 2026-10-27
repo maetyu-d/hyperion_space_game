@@ -87,6 +87,6 @@ void Renderer::drawGroundEffects(const Game& g){
   Color tint=c.water?Color{143,211,225,0}:Color{174,146,118,0};tint.a=static_cast<unsigned char>((c.water?75:65)*strength*std::sin(phase*pi));rlColor4ub(tint.r,tint.g,tint.b,tint.a);
   for(auto uv:std::array<std::array<float,2>,6>{{{{0,0}},{{1,0}},{{1,1}},{{0,0}},{{1,1}},{{0,1}}}}){auto point=centre+right*((uv[0]*2-1)*r)+up*((uv[1]*2-1)*r*.65);rlTexCoord2f(uv[0],uv[1]);rlVertex3f(float(point.x),float(point.y),float(point.z));}
  }
- rlEnd();rlDrawRenderBatchActive();rlSetTexture(0);EndShaderMode();rlEnableDepthMask();EndBlendMode();
+ rlEnd();rlDrawRenderBatchActive();rlSetTexture(0);EndShaderMode();resumeSpace();rlEnableDepthMask();EndBlendMode();
 }
 }

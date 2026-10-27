@@ -1,4 +1,4 @@
-# HYPERION 3.69
+# HYPERION 3.70
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,39 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Ordinary curved space in 3.70
+
+**Ordinary cockpit flight now uses curved-space optics by default.** You do not
+need to find a rift or enter an anomaly. A continuous Nil optical chart bends
+distant planets, rings, moons, asteroids, stations, ships, weapon trails and the
+starfield as you fly. Each system has a deterministic chart orientation and
+curvature scale. It operates in Standard, Psychedelic and CGA/EGA Wireframe,
+at Low, High and Extreme quality.
+
+This is the **curved views, familiar handling** treatment: thrust, inertia,
+collisions, weapon damage, navigation routes, cargo, the clock and the economy
+use the same physical simulation. Target labels, bearing cues, lead markers and
+the aiming mark use the matching optical projection. The cockpit structure and
+instruments retain a readable shape. Star points remain round while the nebulae
+bend around them.
+
+The closest 300 km remain an exact flat near field, with the full distant
+projection beyond 2,200 km. Curvature fades smoothly below 260 km altitude and
+is flat below 60 km for landing and launch. Physical rift mouths also have a
+locally flat transition; their live destination views inherit the same blend.
+The stronger ring-image Nil pockets remain available through archive folds.
+Non-cockpit gameplay remains turn based.
+
+![Ordinary curved-space flight with the familiar cockpit and psychedelic look](docs/screenshots/ordinary-curved-space.png)
+
+![The same ordinary-space curvature in Extreme EGA wireframe](docs/screenshots/ordinary-curved-space-ega.png)
+
+`hyperion_space_tests` checks the analytic optical map and unchanged physical
+state. The expanded `hyperion_fold_check` compares flat/curved ordinary flight,
+close approaches, all three looks, both wireframe palettes and existing rift
+crossings. A float GPU readback checks that target-marker calculations agree
+with the production shader. Previous 3.69 is preserved under `releases/`.
 
 ## Folded connections and Nil optics in 3.69
 

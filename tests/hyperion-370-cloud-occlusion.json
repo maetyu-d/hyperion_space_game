@@ -1,0 +1,134 @@
+[
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 12.540601236683642,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.5146484375,
+    "maxCloudAlpha": 0.994140625,
+    "maxLeakAlpha": 0.0,
+    "scene": 0,
+    "testedPixels": 111774
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 12.540601236683642,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.546875,
+    "maxCloudAlpha": 0.994140625,
+    "maxLeakAlpha": 0.0,
+    "scene": 1,
+    "testedPixels": 133214
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 12.540601236683642,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 0.0,
+    "maxCloudAlpha": 0.99267578125,
+    "maxLeakAlpha": 0.0,
+    "scene": 2,
+    "testedPixels": 286019
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 12.540601236683642,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.4619140625,
+    "maxCloudAlpha": 0.99462890625,
+    "maxLeakAlpha": 0.0,
+    "scene": 3,
+    "testedPixels": 109494
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 12.563365354103667,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 0.59375,
+    "maxCloudAlpha": 0.9970703125,
+    "maxLeakAlpha": 0.0,
+    "scene": 4,
+    "testedPixels": 149143
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 12.540601236683642,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.4912109375,
+    "maxCloudAlpha": 0.994140625,
+    "maxLeakAlpha": 0.0,
+    "scene": 5,
+    "testedPixels": 89644
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 19.949999999999477,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.4580078125,
+    "maxCloudAlpha": 0.99560546875,
+    "maxLeakAlpha": 0.0,
+    "scene": 6,
+    "testedPixels": 0
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 22.099999999998886,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.4912109375,
+    "maxCloudAlpha": 0.9970703125,
+    "maxLeakAlpha": 0.0,
+    "scene": 7,
+    "testedPixels": 0
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 33.000000000001364,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.42578125,
+    "maxCloudAlpha": 0.99755859375,
+    "maxLeakAlpha": 0.0,
+    "scene": 8,
+    "testedPixels": 0
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 47.95000000000118,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.5693359375,
+    "maxCloudAlpha": 0.99951171875,
+    "maxLeakAlpha": 0.0,
+    "scene": 9,
+    "testedPixels": 0
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 64.99999999999818,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 0.697265625,
+    "maxCloudAlpha": 0.99951171875,
+    "maxLeakAlpha": 0.0,
+    "scene": 10,
+    "testedPixels": 0
+  },
+  {
+    "auroraLeakingPixels": 0,
+    "eyeAltitude": 1388.1599999999987,
+    "leakingPixels": 0,
+    "maxAuroraLeak": 0.0,
+    "maxAuroraLight": 1.43359375,
+    "maxCloudAlpha": 0.9990234375,
+    "maxLeakAlpha": 0.0,
+    "scene": 11,
+    "testedPixels": 0
+  }
+]

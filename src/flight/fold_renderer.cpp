@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 #include "fold_shaders.hpp"
+#include "space_shaders.hpp"
 #include "rlgl.h"
 #include "raymath.h"
 #include <stdexcept>
@@ -49,7 +50,7 @@ void Renderer::prepareFoldViews(const Game& g,const Scene& sceneView,bool reduce
  for(size_t slot=0;slot<visible.size();slot++){
   auto& preview=foldPreviews[slot];int index=visible[slot].second;const auto& entry=g.folds[index];const auto& exit=g.folds[entry.peer];
   Game remote=g;remote.folds.clear();remote.ship.position=foldPoint(entry,exit,eye);remote.ship.forward=unit(foldVector(entry,exit,g.ship.forward));remote.ship.up=unit(foldVector(entry,exit,g.ship.up));remote.ship.velocity=foldVector(entry,exit,g.ship.velocity);remote.touchdownAge=10;
-  foldRenderer->foldClipPosition=exit.position;foldRenderer->foldClipNormal=exit.normal;foldRenderer->freezeVisualTime(fixedVisualTime);
+  foldRenderer->ambientOverride=ambient.strength;foldRenderer->foldClipPosition=exit.position;foldRenderer->foldClipNormal=exit.normal;foldRenderer->freezeVisualTime(fixedVisualTime);
   foldRenderer->prepare(remote,sceneView,reducedEffects,false,previewQuality,psychedelicLook,wireframeLook,egaPalette);
   auto image=foldRenderer->scene.texture;
   if(preview.image.texture.width!=image.width||preview.image.texture.height!=image.height){if(preview.image.id)UnloadRenderTexture(preview.image);preview.image=target(image.width,image.height);if(!preview.image.id)throw std::runtime_error("Fold window allocation failed");}
@@ -59,16 +60,16 @@ void Renderer::prepareFoldViews(const Game& g,const Scene& sceneView,bool reduce
 }
 void Renderer::drawFolds(const Game& g){
  if(foldViewPass)return;
- if(!foldWindow.id){foldWindow=LoadShaderFromMemory(nullptr,foldWindowFragment);if(!IsShaderValid(foldWindow)||foldWindow.id==rlGetShaderIdDefault())throw std::runtime_error("Fold aperture shader failed");}
+ if(!foldWindow.id){foldWindow=spaceShader(spacePrimitiveVertex,foldWindowFragment,"vertexPosition");if(!IsShaderValid(foldWindow)||foldWindow.id==rlGetShaderIdDefault())throw std::runtime_error("Fold aperture shader failed");}
  for(int index=0;index<int(g.folds.size());index++){
   const auto& gate=g.folds[index];if(length(gate.position-g.ship.position)>9000)continue;
   ++foldDrawn;
   auto right=foldRight(gate);const FoldPreview* preview=nullptr;for(const auto& p:foldPreviews)if(p.gate==index)preview=&p;
   if(preview){
-   BeginShaderMode(foldWindow);pair(foldWindow,"resolution",{float(scene.texture.width),float(scene.texture.height)});
+   applySpace(foldWindow);BeginShaderMode(foldWindow);pair(foldWindow,"resolution",{float(scene.texture.width),float(scene.texture.height)});
    rlDrawRenderBatchActive();rlDisableBackfaceCulling();rlBegin(RL_TRIANGLES);rlSetTexture(preview->image.texture.id);rlColor4ub(255,255,255,255);
    for(int k=0;k<96;k++)for(auto p:{gate.position,gate.position+(right*std::cos(k*2*pi/96)+gate.up*std::sin(k*2*pi/96))*gate.radius,gate.position+(right*std::cos((k+1)*2*pi/96)+gate.up*std::sin((k+1)*2*pi/96))*gate.radius})rlVertex3f(float(p.x),float(p.y),float(p.z));
-   rlEnd();rlDrawRenderBatchActive();rlSetTexture(0);rlEnableBackfaceCulling();EndShaderMode();
+   rlEnd();rlDrawRenderBatchActive();rlSetTexture(0);rlEnableBackfaceCulling();EndShaderMode();resumeSpace();
   }
   Color tint=wireframe?(gate.nil?Color{255,85,255,255}:Color{85,255,255,255}):gate.nil?Color{232,96,255,255}:Color{102,246,218,255};
   for(int layer=0;layer<3;layer++)for(int k=0;k<128;k++){

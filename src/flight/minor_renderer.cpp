@@ -36,7 +36,7 @@ RenderTexture2D Renderer::bakeMinorField(const MinorBody& body,int width){
 void Renderer::prepareMinorBodies(const Game& g){
  V3 eye{camera.position.x,camera.position.y,camera.position.z};std::vector<MinorDetailCandidate> candidates;
  for(int i=0;i<int(g.minorBodies.size());i++){const auto& b=g.minorBodies[i];if(b.destroyed)continue;auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
-  if(dot(offset,g.ship.forward)<-b.source.radius*1.3||distance>58000||pixels<.65)continue;
+  if(!inFront(b.centre,b.source.radius*1.3)||distance>58000||pixels<.65)continue;
   if(!minorModels.count(b.source.id)){auto model=LoadModelFromMesh(bodyMesh(b.source,extremeGraphics));model.materials[0].shader=minorShader;minorModels.emplace(b.source.id,model);minorFields[b.source.id].base=bakeMinorField(b.source,256);}
   candidates.push_back({i,pixels,minorFields.at(b.source.id).detail.id!=0});
  }
@@ -57,7 +57,7 @@ void Renderer::drawMinorBodies(const Game& g,bool depth){
  if(depth){uniform(planetDepth,"patchCos",0.f);uniform(planetDepth,"groundPass",0.f);}
  else{minorDrawn=0;uniform(minorShader,"wireframe",wireframe?1.f:0.f);uniform(minorShader,"wireEGA",egaGraphics?1.f:0.f);uniform(minorShader,"wirePixelScale",std::max(1.f,float(scene.texture.width)/std::max(1,GetRenderWidth())));uniform(minorShader,"lightDirection",sunDirection);uniform(minorShader,"eye",eye);}
  for(const auto& b:g.minorBodies){if(b.destroyed)continue;auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
-  if(dot(offset,g.ship.forward)<-b.source.radius*1.3||distance>58000||pixels<.65)continue;
+  if(!inFront(b.centre,b.source.radius*1.3)||distance>58000||pixels<.65)continue;
   auto it=minorModels.find(b.source.id);if(it==minorModels.end())continue;
   auto& model=it->second;model.materials[0].shader=depth?planetDepth:minorShader;
   if(!depth){++minorDrawn;auto& field=minorFields.at(b.source.id);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=detailMap.texture;model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture=field.base.texture;model.materials[0].maps[MATERIAL_MAP_ROUGHNESS].texture=field.detail.id?field.detail.texture:field.base.texture;uniform(minorShader,"detailBlend",field.blend);uniform(minorShader,"radius",float(b.source.radius));uniform(minorShader,"hue",float(b.source.hue));uniform(minorShader,"ice",float(b.source.ice));uniform(minorShader,"metal",float(b.source.metal));uniform(minorShader,"visibility",float(std::clamp((pixels-.65)/1.5,0.,1.)));}
