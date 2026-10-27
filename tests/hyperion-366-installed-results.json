@@ -1,0 +1,56 @@
+{
+  "version": "3.66.0",
+  "binarySHA256": "4f06f2ccb9c836436bf8fe49eaf1dc10bb863c6ee4f0cb1163f4a11aaafd8d96",
+  "runs": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 4.89
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 4.87
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 4.82
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 4.87
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 4.85
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 5.32
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 4.93
+    },
+    {
+      "check": "wreck-at-sea",
+      "exit": 0,
+      "seconds": 4.87
+    },
+    {
+      "check": "wreck-delivered",
+      "exit": 0,
+      "seconds": 4.95
+    }
+  ],
+  "frozenSaveRoundtripsExact": true
+}

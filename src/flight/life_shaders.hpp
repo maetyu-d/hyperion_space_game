@@ -2,7 +2,7 @@
 #include "wire_shaders.hpp"
 namespace hyperion::flight {
 inline constexpr const char* lifeVertex=R"GLSL(#version 330
-in vec2 vertexTexCoord2;in vec4 vertexTangent;noperspective out vec3 vectorBary;flat out vec3 vectorFeatures;
+ )GLSL" HYPERION_WIRE_VERTEX_GLSL R"GLSL(
 in vec3 vertexPosition;in vec3 vertexNormal;in vec4 vertexColor;
 uniform mat4 mvp,matModel,matNormal;
 uniform float clock,phase,gait,activity,rooted,feeding,bodyPlan,resting;uniform vec3 shape;
@@ -15,7 +15,7 @@ void main(){vec3 p=vertexPosition;float t=clock*gait+phase,part=vertexColor.b*12
   else if(bodyPlan<4.5){p.x+=sin(t*1.2+part)*.025;p.z+=sin(t*3.+part)*flex*.06;}
   else{p.z+=sin(t*1.3+part)*flex*.055*motion;p.y+=sin(t+part)*flex*.018;}
   p.y*=1.-resting*.18;p.y+=sin(t*.8)*.009*min(1.,p.y);p.y-=feeding*max(0.,-p.z-.6)*(.035+.02*sin(t*5.));}
- vectorBary=vec3(vertexTexCoord2,1.-vertexTexCoord2.x-vertexTexCoord2.y);vectorFeatures=vertexTangent.xyz;localPos=p;p*=shape;worldPos=(matModel*vec4(p,1)).xyz;vec3 n=vertexNormal/shape;if(rooted<.5)n.y/=1.-resting*.18;normal=normalize((matNormal*vec4(n,0)).xyz);material=vertexColor;gl_Position=mvp*vec4(p,1);}
+ vectorGeometry(matNormal,shape);localPos=p;p*=shape;worldPos=(matModel*vec4(p,1)).xyz;vec3 n=vertexNormal/shape;if(rooted<.5)n.y/=1.-resting*.18;normal=normalize((matNormal*vec4(n,0)).xyz);material=vertexColor;gl_Position=mvp*vec4(p,1);}
 )GLSL";
 inline constexpr const char* lifeFragment=R"GLSL(#version 330
 in vec3 localPos,worldPos,normal;in vec4 material;uniform vec3 sun,eye;uniform float pigment,phase,genes,clock,rooted;uniform vec2 coverageRange;uniform float lowGraphics;
@@ -29,7 +29,7 @@ void main(){
  const float bayer[16]=float[16](0.,8.,2.,10.,12.,4.,14.,6.,3.,11.,1.,9.,15.,7.,13.,5.);
  ivec2 pixel=ivec2(gl_FragCoord.xy);float coverage=(bayer[(pixel.y%4)*4+pixel.x%4]+.5)/16.;
  if(coverage<coverageRange.x||coverage>=coverageRange.y)discard;
- if(wireframe>.5){finalColor=vec4(vectorInk(normal,eye-worldPos,mix(vec3(.18,.86,.94),palette(pigment+.1),.38)),1.);return;}
+ if(wireframe>.5){finalColor=vec4(vectorInk(normal,eye-worldPos,rooted>.5?vectorMagenta:vectorCyan),1.);return;}
  vec3 n=normalize(normal);if(!gl_FrontFacing)n=-n;vec3 view=normalize(eye-worldPos),light=normalize(sun),p=localPos;
  float role=material.r,shell=1.-smoothstep(.025,.09,abs(role-.47)),membrane=1.-smoothstep(.03,.1,abs(role-.667));
  float frequency=11.+genes*8.,bands=sin(p.z*frequency+sin(p.x*8.+genes*19.)*1.1),cells=sin(p.x*16.+p.z*5.)*cos(p.z*13.-p.y*7.);float rings=sin(length(p.xz)*23.+p.y*9.);

@@ -448,7 +448,7 @@ void Renderer::drawFactionCraft(const Traffic& traffic,const Scene& sceneView){
  uniform(structure,"craftScale",float(size));uniform(structure,"craftIdentity",float(traffic.genome.seed%65521)/65521.f);
  uniform(structure,"serviceWear",traffic.pirate?.22f:traffic.kind==1?.10f:.04f);
  uniform(structure,"useSunShadow",0.f);uniform(structure,"structureAir",0.f);uniform(structure,"skyRadial",up);
- drawVectorModel(it->second,vec(traffic.position),float(size),0,wireframe?colour(factionStyle(traffic.faction).accent):WHITE);
+ drawVectorModel(it->second,vec(traffic.position),float(size),5,wireframe?colour(factionStyle(traffic.faction).accent):WHITE);
  if(traffic.charge>.025&&length(traffic.position-V3{camera.position.x,camera.position.y,camera.position.z})<1500){
   Color c=traffic.chargeWeapon==Resonance?Color{180,125,255,220}:traffic.chargeWeapon==Seeker?Color{255,173,110,220}:Color{255,110,197,220};
   BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();

@@ -1,6 +1,7 @@
 #pragma once
 #include "game.hpp"
 #include "display_preferences.hpp"
+#include "cga_palette.hpp"
 #include "wildlife.hpp"
 #include "raylib.h"
 #include "flight/renderer.hpp"
@@ -38,6 +39,7 @@ struct Hotspot {Vector2 p;float radius;std::string type,id;int index=0;Contact o
 class Renderer {
  hyperion::flight::Renderer flightGraphics;
  hyperion::flight::Scene flightPresentation;
+ Shader cgaShader{};RenderTexture2D cgaFrame{};bool cgaActive=false;
  Font sans{},mono{};Shader scene{},orb{},blur{},post{};RenderTexture2D history[2]{},bloom[2]{},composite{},handoffFrame{};int presentedMode=-1;Texture2D terrain{};
  int current=0,width=0,height=0;std::string terrainKey;V2 terrainOrigin{};float terrainSpan=1536;
  double lifeHours=0,lifeFrom=0,lifeTarget=0,lifeBlend=1;std::string lifeKey;
@@ -61,6 +63,7 @@ class Renderer {
  void flightDirector(const hyperion::flight::LandingInfo&,double);void flightHUD();void flightPanel(float,float&,float);void combatPanel(float,float&,float);void boardingPanel(float,float&,float);void recoveryPanel(float,float&,float);
  void overlay();void panel();void modal();void notification();void menus();void heading(const std::string&,float,float);void row(const std::string&,const std::string&,float,float&,float);
 public:
+ struct CGAStats {bool active;int pixels=0,outside=0;std::array<int,4> colours{};};CGAStats cgaStats()const;
  hyperion::flight::Renderer::VectorStats flightVectorStats()const{return flightGraphics.vectorStats();}
  hyperion::flight::Renderer::BreakupStats flightBreakupStats()const{return flightGraphics.breakupStats();}
  hyperion::flight::Renderer::QualityStats flightQualityStats()const{return flightGraphics.qualityStats();}

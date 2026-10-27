@@ -128,7 +128,7 @@ Mesh globe(const Planet&p,int lon=192,int lat=96){Mesh mesh{};mesh.vertexCount=(
 }
 }
 bool Renderer::init(GraphicsQuality initialQuality){
- wireShader=LoadShaderFromMemory(wireVertex,wireFragment);if(!IsShaderValid(wireShader))return false;
+ wireShader=LoadShaderFromMemory(wireVertex,wireFragment);if(!IsShaderValid(wireShader)||wireShader.id==rlGetShaderIdDefault())return false;
  quality=initialQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;
  uniforms.clear();noiseTexture=lookupNoise();sky=LoadShaderFromMemory(nullptr,skyFragment);world=LoadShaderFromMemory(worldVertex,worldFragment);
  // Distant globe fragments do not carry close material registers or work.
@@ -499,7 +499,7 @@ void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,b
    set(groundShader,"centre",body.centre);set(groundShader,"seed",float(body.seed));set(groundShader,"ringed",i==2||body.giant?1.f:0.f);set(groundShader,"sunShadowMatrix",sunMatrix);set(groundShader,"useSunShadow",shadowActive&&shadowBody==i?groundBlend:0.f);set(groundShader,"useSurface",surfaceMaps[i].texture.format==PIXELFORMAT_UNCOMPRESSED_R16G16B16A16?1.f:0.f);set(groundShader,"useGeology",geologyMaps[i].id?1.f:0.f);
    set(groundShader,"water",float(body.water));set(groundShader,"life",float(body.life));set(groundShader,"kind",float(body.kind));set(groundShader,"atmosphere",float(body.atmosphere));set(groundShader,"radius",float(body.radius));set(groundShader,"temperature",float(body.temperature));
    set(groundShader,"patchNormal",groundAnchor);set(groundShader,"patchCos",float(1/std::sqrt(1+std::pow(170/body.radius,2))));
-   set(groundShader,"groundPass",1.f);DrawModel(groundModel,vec(body.centre),1,WHITE);if(rockModel.meshCount){set(groundShader,"groundPass",2.f);DrawModel(rockModel,vec(body.centre),1,WHITE);}
+   set(groundShader,"groundPass",1.f);DrawModel(groundModel,vec(body.centre),1,WHITE);if(rockModel.meshCount){set(groundShader,"groundPass",2.f);if(wireframe)drawVectorModel(rockModel,vec(body.centre),1,6);else DrawModel(rockModel,vec(body.centre),1,WHITE);}
   }
  }
  drawMinorBodies(g);

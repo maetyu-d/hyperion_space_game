@@ -1,0 +1,140 @@
+{
+  "version": "3.66.0",
+  "binarySHA256": "4f06f2ccb9c836436bf8fe49eaf1dc10bb863c6ee4f0cb1163f4a11aaafd8d96",
+  "cpuSuites": {
+    "passed": 42,
+    "failed": 0
+  },
+  "nativeVectorAudit": {
+    "scenarios": 10,
+    "frames": 280,
+    "qualities": [
+      "low",
+      "high",
+      "extreme"
+    ],
+    "checks": [
+      "pointer-selected looks",
+      "frozen flight and campaign state",
+      "independent quality and HUD",
+      "ships, settlements, animated wildlife and terrain",
+      "small paused settings",
+      "strategy return",
+      "vector cache release on leaving the look"
+    ]
+  },
+  "CGAOutput": {
+    "paletteRGB": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        85,
+        255,
+        255
+      ],
+      [
+        255,
+        85,
+        255
+      ],
+      [
+        255,
+        255,
+        255
+      ]
+    ],
+    "auditedFrames": 8,
+    "testedPixels": 13168000,
+    "offPalettePixels": 0,
+    "includesCockpitUI": true,
+    "losslessCaptures": true
+  },
+  "closeDetailChecks": [
+    {
+      "scene": "ship-detail",
+      "size": [
+        1440,
+        900
+      ],
+      "paletteColours": 4,
+      "offPalettePixels": 0
+    },
+    {
+      "scene": "settlement-detail",
+      "size": [
+        1440,
+        900
+      ],
+      "paletteColours": 4,
+      "offPalettePixels": 0
+    },
+    {
+      "scene": "surface-detail",
+      "size": [
+        1440,
+        900
+      ],
+      "paletteColours": 4,
+      "offPalettePixels": 0
+    }
+  ],
+  "previousLooksPreservedExactly": [
+    {
+      "case": "building-standard",
+      "reference": "3.65",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "enemy-standard",
+      "reference": "3.65",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "asteroid-low-standard",
+      "reference": "3.65",
+      "quality": "low",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "building-psychedelic",
+      "reference": "3.65",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    }
+  ],
+  "installedLaunchChecks": 10,
+  "copiedCampaignsUnchanged": 9,
+  "playerSaveAndPreferencesUnchanged": true,
+  "previousApp": "releases/Hyperion 3.65.app",
+  "defaultLook": "standard",
+  "lookIndependentOfQualityAndHUD": true
+}

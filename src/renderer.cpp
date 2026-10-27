@@ -44,9 +44,10 @@ void polygon(const std::vector<Vector2>& points,Color fill,Color rim){
 bool Renderer::init(GraphicsQuality initialQuality){auto assets=std::filesystem::path(GetApplicationDirectory())/"assets/fonts";
  sans=LoadFontEx((assets/"Karla-Regular.ttf").c_str(),64,nullptr,0);mono=LoadFontEx((assets/"Cousine-Regular.ttf").c_str(),32,nullptr,0);
  SetTextureFilter(sans.texture,TEXTURE_FILTER_BILINEAR);SetTextureFilter(mono.texture,TEXTURE_FILTER_BILINEAR);
+ cgaShader=LoadShaderFromMemory(nullptr,cgaResolveFragment);
  scene=LoadShaderFromMemory(nullptr,sceneFragment);orb=LoadShaderFromMemory(nullptr,orbFragment);blur=LoadShaderFromMemory(nullptr,blurFragment);post=LoadShaderFromMemory(nullptr,postFragment);targets();return flightGraphics.init(initialQuality)&&ready();}
-bool Renderer::ready()const{return scene.id>0&&orb.id>0&&blur.id>0&&post.id>0&&scene.id!=rlGetShaderIdDefault()&&orb.id!=rlGetShaderIdDefault()&&blur.id!=rlGetShaderIdDefault()&&post.id!=rlGetShaderIdDefault()&&IsRenderTextureValid(history[0])&&IsRenderTextureValid(history[1])&&IsRenderTextureValid(bloom[0])&&IsRenderTextureValid(bloom[1])&&IsRenderTextureValid(composite);}
-void Renderer::close(){flightGraphics.shutdown();for(auto& t:history)if(t.id)UnloadRenderTexture(t);for(auto& t:bloom)if(t.id)UnloadRenderTexture(t);if(terrain.id)UnloadTexture(terrain);if(composite.id)UnloadRenderTexture(composite);if(handoffFrame.id)UnloadRenderTexture(handoffFrame);UnloadShader(scene);UnloadShader(orb);UnloadShader(blur);UnloadShader(post);UnloadFont(sans);UnloadFont(mono);}
+bool Renderer::ready()const{return cgaShader.id>0&&cgaShader.id!=rlGetShaderIdDefault()&&scene.id>0&&orb.id>0&&blur.id>0&&post.id>0&&scene.id!=rlGetShaderIdDefault()&&orb.id!=rlGetShaderIdDefault()&&blur.id!=rlGetShaderIdDefault()&&post.id!=rlGetShaderIdDefault()&&IsRenderTextureValid(history[0])&&IsRenderTextureValid(history[1])&&IsRenderTextureValid(bloom[0])&&IsRenderTextureValid(bloom[1])&&IsRenderTextureValid(composite);}
+void Renderer::close(){flightGraphics.shutdown();if(cgaFrame.id)UnloadRenderTexture(cgaFrame);UnloadShader(cgaShader);for(auto& t:history)if(t.id)UnloadRenderTexture(t);for(auto& t:bloom)if(t.id)UnloadRenderTexture(t);if(terrain.id)UnloadTexture(terrain);if(composite.id)UnloadRenderTexture(composite);if(handoffFrame.id)UnloadRenderTexture(handoffFrame);UnloadShader(scene);UnloadShader(orb);UnloadShader(blur);UnloadShader(post);UnloadFont(sans);UnloadFont(mono);}
 void Renderer::targets(){int x=GetRenderWidth(),y=GetRenderHeight();if(x==width&&y==height)return;width=x;height=y;presentedMode=-1;
  for(auto& t:history){if(t.id)UnloadRenderTexture(t);t=LoadRenderTexture(width,height);SetTextureFilter(t.texture,TEXTURE_FILTER_BILINEAR);BeginTextureMode(t);ClearBackground(ink);EndTextureMode();}
  for(auto& t:bloom){if(t.id)UnloadRenderTexture(t);t=LoadRenderTexture(std::max(1,width/3),std::max(1,height/3));SetTextureFilter(t.texture,TEXTURE_FILTER_BILINEAR);}current=0;if(composite.id)UnloadRenderTexture(composite);composite=LoadRenderTexture(width,height);SetTextureFilter(composite.texture,TEXTURE_FILTER_BILINEAR);}
@@ -68,7 +69,7 @@ void Renderer::background(double dt){int next=1-current;State& s=game->s;Vector2
  vector(blur,"direction",i==0?v(2.f/src.width,0):v(0,2.f/src.height));uniform(blur,"extractLight",i==0?1.f:0.f);BeginShaderMode(blur);
  DrawTexturePro(src,{0,0,float(src.width),float(src.height)},{0,0,float(bloom[i].texture.width),float(bloom[i].texture.height)},{0,0},0,WHITE);EndShaderMode();EndTextureMode();}
 }
-void Renderer::text(const std::string& s,float x,float y,float size,Color c,bool code){if(panelContent&&(y+size<UILayout::contentTop||y>UILayout::contentBottom(h)))return;DrawTextEx(code?mono:sans,s.c_str(),{x,y},size,code?.1f:.15f,c);}
+void Renderer::text(const std::string& s,float x,float y,float size,Color c,bool code){if(panelContent&&(y+size<UILayout::contentTop||y>UILayout::contentBottom(h)))return;if(ui&&game&&ui->wireframe&&game->s.mode==Mode::Flight){unsigned char a=c.a;if(int(c.r)+c.g+c.b<85)c={0,0,0,a};else if(c.r>c.g*1.22f||c.b>c.g*1.25f)c={255,85,255,a};else if(c.g>c.r*1.22f)c={85,255,255,a};else c={255,255,255,a};}DrawTextEx(code?mono:sans,s.c_str(),{x,y},size,code?.1f:.15f,c);}
 void Renderer::right(const std::string& s,float x,float y,float size,Color c,bool code){Vector2 sz=MeasureTextEx(code?mono:sans,s.c_str(),size,code?.1f:.15f);text(s,x-sz.x,y,size,c,code);}
 std::string Renderer::elide(std::string value,float maxWidth,float size,bool code)const{
  auto measure=[&](const std::string& str){return MeasureTextEx(code?mono:sans,str.c_str(),size,code?.1f:.15f).x;};
@@ -443,8 +444,18 @@ void Renderer::draw(Game& g,UI& state,double dt){g.ensureEconomy();game=&g;ui=&s
   fitted(title,edge*.5f-202,121,404,12,mint,true);fitted(hint,edge*.5f-202,144,404,10,muted,true);
  }
  rlPopMatrix();EndTextureMode();
- BeginDrawing();ClearBackground(ink);DrawTexturePro(composite.texture,{0,0,float(width),-float(height)},{0,0,float(GetScreenWidth()),float(GetScreenHeight())},{0,0},0,WHITE);EndDrawing();}
-bool Renderer::screenshot(const std::string& path,bool centreCrop){auto p=std::filesystem::path(path);if(p.has_parent_path())std::filesystem::create_directories(p.parent_path());Image im=LoadImageFromTexture(composite.texture);if(centreCrop){int side=std::min({640,im.width,im.height});ImageCrop(&im,{float((im.width-side)/2),float((im.height-side)/2),float(side),float(side)});}ImageFlipVertical(&im);bool result=ExportImage(im,path.c_str());UnloadImage(im);return result;}
+ cgaActive=g.s.mode==Mode::Flight&&state.wireframe;
+ if(cgaActive){
+  if(cgaFrame.id&&(cgaFrame.texture.width!=width||cgaFrame.texture.height!=height)){UnloadRenderTexture(cgaFrame);cgaFrame={};}
+  if(!cgaFrame.id){cgaFrame=LoadRenderTexture(width,height);if(!cgaFrame.id)throw std::runtime_error("CGA output allocation failed");SetTextureFilter(cgaFrame.texture,TEXTURE_FILTER_POINT);}
+  BeginTextureMode(cgaFrame);ClearBackground(BLACK);rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(cgaShader);
+  DrawTexturePro(composite.texture,{0,0,float(width),-float(height)},{0,0,float(width),float(height)},{0,0},0,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
+ }
+ const auto output=cgaActive?cgaFrame.texture:composite.texture;
+ BeginDrawing();ClearBackground(ink);DrawTexturePro(output,{0,0,float(width),-float(height)},{0,0,float(GetScreenWidth()),float(GetScreenHeight())},{0,0},0,WHITE);EndDrawing();}
+Renderer::CGAStats Renderer::cgaStats()const{CGAStats s;s.active=cgaActive;if(!s.active||!cgaFrame.id)return s;auto image=LoadImageFromTexture(cgaFrame.texture);if(!image.data)return s;auto* pixels=LoadImageColors(image);s.pixels=image.width*image.height;for(int i=0;i<s.pixels;i++){auto c=pixels[i];int index=cgaPaletteIndex(c.r,c.g,c.b);if(index<0)++s.outside;else ++s.colours[index];}UnloadImageColors(pixels);UnloadImage(image);return s;}
+
+bool Renderer::screenshot(const std::string& path,bool centreCrop){auto p=std::filesystem::path(path);if(p.has_parent_path())std::filesystem::create_directories(p.parent_path());Image im=LoadImageFromTexture(cgaActive?cgaFrame.texture:composite.texture);if(centreCrop){int side=std::min({640,im.width,im.height});ImageCrop(&im,{float((im.width-side)/2),float((im.height-side)/2),float(side),float(side)});}ImageFlipVertical(&im);bool result=ExportImage(im,path.c_str());UnloadImage(im);return result;}
 
 bool Renderer::makeIcon(const std::string& path){
  float oldW=w,oldH=h;int oldWidth=width,oldHeight=height;w=h=1024;width=height=1024;

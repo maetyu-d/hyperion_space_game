@@ -1,4 +1,4 @@
-# HYPERION 3.65
+# HYPERION 3.66
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,36 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## CGA vector detail in 3.66
+
+**Menu → Settings → Look: Wireframe** now uses four colours throughout the
+flight view and cockpit UI: **black `#000000`, cyan `#55FFFF`, magenta `#FF55FF`
+and white `#FFFFFF`**. These are selected from the canonical RGBI swatches
+[documented by DOSBox Staging](https://github.com/dosbox-staging/dosbox-staging/wiki/Video-cards#cga-palette-override).
+The final output remains within those four colours; fixed ordered coverage
+retains fine edges without temporal noise. Text and primary strokes have
+stronger contrast, with black space and clear silhouettes carrying the image.
+
+Planets gain magenta coastlines from their real generated geography, sparse
+orbital grids, slope-sensitive ground triangulation and elevation contours.
+Nearby rocks show their actual facets. Ships gain view-dependent curved-hull
+silhouettes, hull ribs, canopy framing, service hatches and magenta engine
+vanes. Settlements gain facade windows, mullions and selected service panels;
+roof detail stays restrained and landing pads remain clear. Rear edges and
+coplanar triangle diagonals remain hidden.
+
+The palette, higher close detail and line hierarchy apply at all three quality
+presets. Standard/Psychedelic looks, campaign geography, collisions and the
+simulation retain their existing behaviour. The previous app is preserved.
+
+![Close CGA ship detail against a generated planet coastline](docs/screenshots/cga-wireframe-ship-detail.png)
+
+![CGA settlement detail and terrain contours](docs/screenshots/cga-wireframe-settlement.png)
+
+`--wireframe-check` also reads the final GPU output and rejects any pixel outside
+the four-colour palette, including paused settings and the cockpit UI. Lossless
+PNG captures retain the exact palette.
 
 ## Vector wireframe flight in 3.65
 

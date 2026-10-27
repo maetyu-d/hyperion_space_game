@@ -980,8 +980,9 @@ int main(int argc,char** argv){try{Options opt;
    if((scene==1||scene==2||scene==3)&&stats.draws<=1)throw std::runtime_error("Vector fixture only rendered the cockpit");
    for(auto look:{"standard","psychedelic","wireframe"}){auto hit=ui.auditButtons.find(std::string("look|")+look);if(scene==6&&(hit==ui.auditButtons.end()||hit->second.x<0||hit->second.x+hit->second.width>uiViewport().width||hit->second.y+hit->second.height>uiViewport().height))throw std::runtime_error("Vector setting exceeds small window");}
    if(ui.enhancedHUD!=(scene==1))throw std::runtime_error("Vector look changed HUD");
-   wireScenes.push_back({{"scene",scene},{"look",flightLookName(ui.flightLook())},{"graphics",graphicsQualityName(ui.graphicsQuality)},{"mode",modeName(game.s.mode)},{"active",stats.active},{"draws",stats.draws},{"triangles",stats.triangles},{"featureEdges",stats.featureEdges},{"cached",stats.cached},{"organisms",renderer.flightVisibleOrganisms()},{"hours",game.s.hours}});
-   if(!opt.captures.empty()){fs::create_directories(opt.captures);renderer.screenshot((fs::path(opt.captures)/("wireframe-"+std::to_string(scene)+".jpg")).string());}
+   auto palette=renderer.cgaStats();if(flight&&expected==FlightLook::Wireframe&&(!palette.active||palette.pixels==0||palette.outside!=0||palette.colours[1]==0||palette.colours[3]==0))throw std::runtime_error("CGA presentation escaped its four-colour palette");
+   wireScenes.push_back({{"scene",scene},{"look",flightLookName(ui.flightLook())},{"graphics",graphicsQualityName(ui.graphicsQuality)},{"mode",modeName(game.s.mode)},{"active",stats.active},{"draws",stats.draws},{"triangles",stats.triangles},{"featureEdges",stats.featureEdges},{"cached",stats.cached},{"organisms",renderer.flightVisibleOrganisms()},{"cga",palette.active},{"palettePixels",palette.pixels},{"offPalettePixels",palette.outside},{"paletteCounts",palette.colours},{"hours",game.s.hours}});
+   if(!opt.captures.empty()){fs::create_directories(opt.captures);renderer.screenshot((fs::path(opt.captures)/("wireframe-"+std::to_string(scene)+".png")).string());}
   }
  }
  if(opt.extremeCheck&&frame%qualityPeriod==24&&(ui.action!="graphics"||ui.arg!=graphicsQualityName(extremeExpected[frame/qualityPeriod])))throw std::runtime_error("Quality pointer missed its control");

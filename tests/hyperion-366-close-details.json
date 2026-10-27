@@ -1,0 +1,29 @@
+[
+  {
+    "scene": "ship-detail",
+    "size": [
+      1440,
+      900
+    ],
+    "paletteColours": 4,
+    "offPalettePixels": 0
+  },
+  {
+    "scene": "settlement-detail",
+    "size": [
+      1440,
+      900
+    ],
+    "paletteColours": 4,
+    "offPalettePixels": 0
+  },
+  {
+    "scene": "surface-detail",
+    "size": [
+      1440,
+      900
+    ],
+    "paletteColours": 4,
+    "offPalettePixels": 0
+  }
+]

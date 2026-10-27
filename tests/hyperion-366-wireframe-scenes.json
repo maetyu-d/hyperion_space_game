@@ -1,0 +1,222 @@
+[
+  {
+    "active": true,
+    "cached": 6,
+    "cga": true,
+    "draws": 6,
+    "featureEdges": 13304,
+    "graphics": "high",
+    "hours": 0.0,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 0,
+    "paletteCounts": [
+      1229010,
+      40694,
+      12343,
+      13953
+    ],
+    "palettePixels": 1296000,
+    "scene": 0,
+    "triangles": 7472
+  },
+  {
+    "active": true,
+    "cached": 7,
+    "cga": true,
+    "draws": 7,
+    "featureEdges": 21882,
+    "graphics": "high",
+    "hours": 0.0,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 0,
+    "paletteCounts": [
+      1217989,
+      46516,
+      13493,
+      18002
+    ],
+    "palettePixels": 1296000,
+    "scene": 1,
+    "triangles": 12044
+  },
+  {
+    "active": true,
+    "cached": 20,
+    "cga": true,
+    "draws": 281,
+    "featureEdges": 671390,
+    "graphics": "high",
+    "hours": 0.25,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 246,
+    "paletteCounts": [
+      1259541,
+      19052,
+      424,
+      16983
+    ],
+    "palettePixels": 1296000,
+    "scene": 2,
+    "triangles": 512658
+  },
+  {
+    "active": true,
+    "cached": 29,
+    "cga": true,
+    "draws": 183,
+    "featureEdges": 389212,
+    "graphics": "low",
+    "hours": 0.0,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 147,
+    "paletteCounts": [
+      1225026,
+      47380,
+      5992,
+      17602
+    ],
+    "palettePixels": 1296000,
+    "scene": 3,
+    "triangles": 313400
+  },
+  {
+    "active": true,
+    "cached": 5,
+    "cga": true,
+    "draws": 5,
+    "featureEdges": 161064,
+    "graphics": "extreme",
+    "hours": 0.0,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 0,
+    "paletteCounts": [
+      1224513,
+      54477,
+      2592,
+      14418
+    ],
+    "palettePixels": 1296000,
+    "scene": 4,
+    "triangles": 110734
+  },
+  {
+    "active": true,
+    "cached": 6,
+    "cga": true,
+    "draws": 6,
+    "featureEdges": 18968,
+    "graphics": "extreme",
+    "hours": 0.0,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 0,
+    "paletteCounts": [
+      1254893,
+      29966,
+      466,
+      10675
+    ],
+    "palettePixels": 1296000,
+    "scene": 5,
+    "triangles": 10916
+  },
+  {
+    "active": true,
+    "cached": 14,
+    "cga": true,
+    "draws": 260,
+    "featureEdges": 586720,
+    "graphics": "high",
+    "hours": 0.0,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 254,
+    "paletteCounts": [
+      1181210,
+      109546,
+      0,
+      5244
+    ],
+    "palettePixels": 1296000,
+    "scene": 6,
+    "triangles": 432326
+  },
+  {
+    "active": true,
+    "cached": 14,
+    "cga": false,
+    "draws": 260,
+    "featureEdges": 586720,
+    "graphics": "high",
+    "hours": 0.0,
+    "look": "standard",
+    "mode": "ORBIT",
+    "offPalettePixels": 0,
+    "organisms": 254,
+    "paletteCounts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "palettePixels": 0,
+    "scene": 7,
+    "triangles": 432326
+  },
+  {
+    "active": false,
+    "cached": 0,
+    "cga": false,
+    "draws": 0,
+    "featureEdges": 0,
+    "graphics": "high",
+    "hours": 0.0,
+    "look": "psychedelic",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 254,
+    "paletteCounts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "palettePixels": 0,
+    "scene": 8,
+    "triangles": 0
+  },
+  {
+    "active": true,
+    "cached": 14,
+    "cga": true,
+    "draws": 260,
+    "featureEdges": 586720,
+    "graphics": "high",
+    "hours": 0.0,
+    "look": "wireframe",
+    "mode": "FLIGHT",
+    "offPalettePixels": 0,
+    "organisms": 254,
+    "paletteCounts": [
+      3858548,
+      172744,
+      15324,
+      49384
+    ],
+    "palettePixels": 4096000,
+    "scene": 9,
+    "triangles": 432326
+  }
+]

@@ -77,7 +77,7 @@ vec3 stars(vec3 d,float density,float layer){
 void main(){
  vec2 uv=gl_FragCoord.xy/resolution*2.-1.;uv.x*=resolution.x/resolution.y;
  vec3 d=normalize(forward+right*uv.x*.7002+up*uv.y*.7002);
- if(wireframe>.5){vec3 c=vec3(.0002,.00045,.0011)+(stars(d,115.,1.)+stars(d,245.,11.)*.24)*.52;float haze=exp(-pow((d.y*.75+d.x*.31+.09)*5.,2.));c+=vec3(.0008,.0011,.003)*haze;c+=vec3(.55,.76,.92)*pow(max(0.,dot(d,lightDirection)),7500.)*.7;finalColor=vec4(c,1.);return;}
+ if(wireframe>.5){vec3 light=stars(d,115.,1.)+stars(d,245.,11.)*.24;float star=dot(light,vec3(.3,.59,.11));vec3 c=vec3(star*.52);c+=vec3(1.)*pow(max(0.,dot(d,lightDirection)),7500.)*.7;finalColor=vec4(c,1.);return;}
  vec3 q=d*3.1+vec3(seed*.013,0,seed*.007);
  float wisps=dust(q*1.7),band=exp(-pow((d.y*.75+d.x*.31+d.z*.12+.09+sin(d.z*3.)*.1)*3.8,2.));
  float cloud=pow(max(0.,wisps-.23),2.1)*band;
@@ -236,7 +236,11 @@ void main(){
  vec3 n=normalize(localPosition),q=n*3.2+vec3(seed*.17,seed*.073,seed*.11);
  float pixelAngle=max(length(dFdx(n)),length(dFdy(n))),normalResolved=1.-smoothstep(.006,.035,pixelAngle);
  if(patchCos>0.){float cap=dot(n,patchNormal)-patchCos;if(groundPass<.5&&cap>0.)discard;if(groundPass>.5&&groundPass<1.5&&cap<0.)discard;}
- if(wireframe>.5){finalColor=vec4(vectorSurface(localPosition,normal,eye-worldPosition,radius,seed,groundPass),1.);return;}
+ if(wireframe>.5){
+  vec3 c=vectorSurface(localPosition,normal,eye-worldPosition,radius,seed,groundPass);
+  if(water>.025&&kind<5.5&&useSurface>.5){vec4 field=surface(n);float coast=field.r-mix(.28,.72,water);float width=max(fwidth(coast),.000001);float shoreline=(1.-smoothstep(.45*wirePixelScale,1.15*wirePixelScale,abs(coast)/width));float resolved=1.-smoothstep(.015,.07,max(length(dFdx(n)),length(dFdy(n))));c=max(c,vectorMagenta*shoreline*resolved*.88);}
+  finalColor=vec4(c,1.);return;
+ }
  vec4 data=surface(n);float elevation=useSurface>.5?data.r:fbm(q+noise(q*1.9)*.6),detail=useSurface>.5?data.g:fbm(q*27.);
  float sea=mix(.28,.72,water),land=smoothstep(sea-.008,sea+.013,elevation),latitude=abs(n.y);
  float ridge=useSurface>.5?data.b:pow(1.-abs(noise(q*23.)*2.-1.),2.);
@@ -604,7 +608,7 @@ in vec3 worldPosition,normal,localPosition;out vec4 finalColor;
 uniform vec3 centre,eye,lightDirection;uniform float radius,seed,time;
 )GLSL" PRISM_PIGMENT_GLSL HYPERION_VECTOR_GLSL PRISM_RING_LIGHT_GLSL R"GLSL(
 void main(){
- if(wireframe>.5){float r=length(localPosition),line=vectorLine((r-1.29)*18.);float spoke=vectorLine(atan(localPosition.z,localPosition.x)/6.283185*72.);finalColor=vec4(vec3(.38,.65,1.)*(line*.7+spoke*.18),max(line*.58,spoke*.16));return;}
+ if(wireframe>.5){float r=length(localPosition),line=vectorLine((r-1.29)*18.);float spoke=vectorLine(atan(localPosition.z,localPosition.x)/6.283185*72.);finalColor=vec4(vectorCyan*(line*.7+spoke*.18),max(line*.58,spoke*.16));return;}
  float r=length(localPosition),x=(r-1.29)/.48;vec2 field=ringField(r,fwidth(r),seed);
  vec3 p=worldPosition-centre,L=normalize(lightDirection),V=normalize(eye-worldPosition),N=normalize(normal);
  float along=dot(p,L),distance=length(cross(p,L)),penumbra=radius*.009+fwidth(distance);
@@ -684,6 +688,10 @@ uniform vec3 impactColour;uniform vec2 impactDirection;uniform float shieldBreak
 float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
 void main(){
  vec2 uv=fragTexCoord;vec3 c=texture(texture0,uv).rgb;
+ if(wireframe>.5){
+  c+=texture(bloomTexture,uv).rgb*.16*effects;vec2 v=(uv-.5)*2.;float rim=smoothstep(.62,1.28,length(v));c+=vec3(1.,.09,1.)*hit*rim*.7*effects;c+=vec3(1.)*shieldBreak*rim*.25*effects;
+  c=max(c*1.6,vec3(0.));c=(c*(2.51*c+.03))/(c*(2.43*c+.59)+.14);finalColor=vec4(pow(clamp(c,0.,1.),vec3(1./2.2)),1.);return;
+ }
  vec3 a=texture(texture0,uv+vec2(-1,-1)*texel).rgb,b=texture(texture0,uv+vec2(1,-1)*texel).rgb;
  vec3 d=texture(texture0,uv+vec2(-1,1)*texel).rgb,e=texture(texture0,uv+vec2(1,1)*texel).rgb;
  float lo=min(luma(c),min(min(luma(a),luma(b)),min(luma(d),luma(e))));
