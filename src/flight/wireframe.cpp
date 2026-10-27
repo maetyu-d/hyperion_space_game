@@ -29,9 +29,9 @@ void Renderer::drawVectorModel(const Model& source,Vector3 at,float scale,int ki
   auto& asset=found->second;asset.used=wireSerial;asset.model.transform=source.transform;
   Shader shader=kind==3?lifeShader:wireShader;asset.model.materials[0].shader=shader;
   auto setFloat=[&](const char* name,float value){int loc=GetShaderLocation(shader,name);if(loc>=0)SetShaderValue(shader,loc,&value,SHADER_UNIFORM_FLOAT);};
-  setFloat("wirePixelScale",std::max(1.f,float(scene.texture.width)/std::max(1,GetRenderWidth())));setFloat("wireKind",float(kind));setFloat("wireGroundBlend",groundBlend);
+  setFloat("wirePixelScale",std::max(1.f,float(scene.texture.width)/std::max(1,GetRenderWidth())));setFloat("wireEGA",egaGraphics?1.f:0.f);setFloat("wireKind",float(kind));setFloat("wireGroundBlend",groundBlend);
   Vector3 eye=kind==2?Vector3{}:camera.position;int loc=GetShaderLocation(shader,"eye");SetShaderValue(shader,loc,&eye,SHADER_UNIFORM_VEC3);
-  Vector3 ink{.09f,1.f,1.f};
+  Vector3 ink{.09f,1.f,1.f};if(egaGraphics&&(tint.r!=255||tint.g!=255||tint.b!=255))ink={.06f+tint.r/255.f*.8f,.06f+tint.g/255.f*.8f,.06f+tint.b/255.f*.8f};
   loc=GetShaderLocation(shader,"wireTint");if(loc>=0)SetShaderValue(shader,loc,&ink,SHADER_UNIFORM_VEC3);
   DrawModel(asset.model,at,scale,WHITE);wireDraws++;wireTriangles+=input.triangleCount;wireEdges+=asset.edges;
  }

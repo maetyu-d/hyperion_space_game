@@ -29,7 +29,7 @@ void main(){
  const float bayer[16]=float[16](0.,8.,2.,10.,12.,4.,14.,6.,3.,11.,1.,9.,15.,7.,13.,5.);
  ivec2 pixel=ivec2(gl_FragCoord.xy);float coverage=(bayer[(pixel.y%4)*4+pixel.x%4]+.5)/16.;
  if(coverage<coverageRange.x||coverage>=coverageRange.y)discard;
- if(wireframe>.5){finalColor=vec4(vectorInk(normal,eye-worldPos,rooted>.5?vectorMagenta:vectorCyan),1.);return;}
+ if(wireframe>.5){finalColor=vec4(vectorInk(normal,eye-worldPos,wireEGA>.5?palette(pigment+.1):(rooted>.5?vectorMagenta:vectorCyan)),1.);return;}
  vec3 n=normalize(normal);if(!gl_FrontFacing)n=-n;vec3 view=normalize(eye-worldPos),light=normalize(sun),p=localPos;
  float role=material.r,shell=1.-smoothstep(.025,.09,abs(role-.47)),membrane=1.-smoothstep(.03,.1,abs(role-.667));
  float frequency=11.+genes*8.,bands=sin(p.z*frequency+sin(p.x*8.+genes*19.)*1.1),cells=sin(p.x*16.+p.z*5.)*cos(p.z*13.-p.y*7.);float rings=sin(length(p.xz)*23.+p.y*9.);

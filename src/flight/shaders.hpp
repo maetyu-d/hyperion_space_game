@@ -51,7 +51,7 @@ in vec2 fragTexCoord;
 out vec4 finalColor;
 uniform vec2 resolution;
 uniform vec3 forward,up,right,radial,lightDirection;
-uniform float time,air,seed,altitude,storm,lightning,lowGraphics,wireframe;
+uniform float time,air,seed,altitude,storm,lightning,lowGraphics,wireframe,wireEGA;
 float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
 uniform sampler2D noiseTexture;
 float noise(vec3 p){vec3 cell=floor(p),f=fract(p);f=f*f*(3.-2.*f);vec2 uv=cell.xy+vec2(37.,17.)*cell.z+f.xy;vec2 rg=textureLod(noiseTexture,(uv+.5)/256.,0.).rg;return mix(rg.r,rg.g,f.z);}
@@ -77,7 +77,7 @@ vec3 stars(vec3 d,float density,float layer){
 void main(){
  vec2 uv=gl_FragCoord.xy/resolution*2.-1.;uv.x*=resolution.x/resolution.y;
  vec3 d=normalize(forward+right*uv.x*.7002+up*uv.y*.7002);
- if(wireframe>.5){vec3 light=stars(d,115.,1.)+stars(d,245.,11.)*.24;float star=dot(light,vec3(.3,.59,.11));vec3 c=vec3(star*.52);c+=vec3(1.)*pow(max(0.,dot(d,lightDirection)),7500.)*.7;finalColor=vec4(c,1.);return;}
+ if(wireframe>.5){vec3 light=stars(d,115.,1.)+stars(d,245.,11.)*.24;float star=dot(light,vec3(.3,.59,.11));vec3 c=wireEGA>.5?light*.52:vec3(star*.52);c+=vec3(1.)*pow(max(0.,dot(d,lightDirection)),7500.)*.7;finalColor=vec4(c,1.);return;}
  vec3 q=d*3.1+vec3(seed*.013,0,seed*.007);
  float wisps=dust(q*1.7),band=exp(-pow((d.y*.75+d.x*.31+d.z*.12+.09+sin(d.z*3.)*.1)*3.8,2.));
  float cloud=pow(max(0.,wisps-.23),2.1)*band;
@@ -238,7 +238,7 @@ void main(){
  if(patchCos>0.){float cap=dot(n,patchNormal)-patchCos;if(groundPass<.5&&cap>0.)discard;if(groundPass>.5&&groundPass<1.5&&cap<0.)discard;}
  if(wireframe>.5){
   vec3 c=vectorSurface(localPosition,normal,eye-worldPosition,radius,seed,groundPass);
-  if(water>.025&&kind<5.5&&useSurface>.5){vec4 field=surface(n);float coast=field.r-mix(.28,.72,water);float width=max(fwidth(coast),.000001);float shoreline=(1.-smoothstep(.45*wirePixelScale,1.15*wirePixelScale,abs(coast)/width));float resolved=1.-smoothstep(.015,.07,max(length(dFdx(n)),length(dFdy(n))));c=max(c,vectorMagenta*shoreline*resolved*.88);}
+  if(water>.025&&kind<5.5&&useSurface>.5){vec4 field=surface(n);float coast=field.r-mix(.28,.72,water);float width=max(fwidth(coast),.000001);float shoreline=(1.-smoothstep(.45*wirePixelScale,1.15*wirePixelScale,abs(coast)/width));float resolved=1.-smoothstep(.015,.07,max(length(dFdx(n)),length(dFdy(n))));c=max(c,(wireEGA>.5?vec3(.09,1.,.09):vectorMagenta)*shoreline*resolved*.88);}
   finalColor=vec4(c,1.);return;
  }
  vec4 data=surface(n);float elevation=useSurface>.5?data.r:fbm(q+noise(q*1.9)*.6),detail=useSurface>.5?data.g:fbm(q*27.);
@@ -608,7 +608,7 @@ in vec3 worldPosition,normal,localPosition;out vec4 finalColor;
 uniform vec3 centre,eye,lightDirection;uniform float radius,seed,time;
 )GLSL" PRISM_PIGMENT_GLSL HYPERION_VECTOR_GLSL PRISM_RING_LIGHT_GLSL R"GLSL(
 void main(){
- if(wireframe>.5){float r=length(localPosition),line=vectorLine((r-1.29)*18.);float spoke=vectorLine(atan(localPosition.z,localPosition.x)/6.283185*72.);finalColor=vec4(vectorCyan*(line*.7+spoke*.18),max(line*.58,spoke*.16));return;}
+ if(wireframe>.5){float r=length(localPosition),line=vectorLine((r-1.29)*18.);float spoke=vectorLine(atan(localPosition.z,localPosition.x)/6.283185*72.);finalColor=vec4((wireEGA>.5?vec3(.9,.45,.08):vectorCyan)*(line*.7+spoke*.18),max(line*.58,spoke*.16));return;}
  float r=length(localPosition),x=(r-1.29)/.48;vec2 field=ringField(r,fwidth(r),seed);
  vec3 p=worldPosition-centre,L=normalize(lightDirection),V=normalize(eye-worldPosition),N=normalize(normal);
  float along=dot(p,L),distance=length(cross(p,L)),penumbra=radius*.009+fwidth(distance);

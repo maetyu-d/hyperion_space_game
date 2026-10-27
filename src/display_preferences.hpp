@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include "graphics_quality.hpp"
+#include "cga_palette.hpp"
 namespace hyperion {
 inline GraphicsQuality loadGraphicsQuality(const std::filesystem::path& path){
  std::error_code ec;if(std::filesystem::file_size(path,ec)>80||ec)return GraphicsQuality::High;
@@ -52,4 +53,18 @@ inline bool saveFlightLook(const std::filesystem::path& path,FlightLook look){
 }
 inline bool loadPsychedelicLook(const std::filesystem::path& path){return loadFlightLook(path)==FlightLook::Psychedelic;}
 inline bool savePsychedelicLook(const std::filesystem::path& path,bool psychedelic){return saveFlightLook(path,psychedelic?FlightLook::Psychedelic:FlightLook::Standard);}
+inline WirePalette loadWirePalette(const std::filesystem::path& path){
+ std::error_code ec;if(std::filesystem::file_size(path,ec)>80||ec)return WirePalette::CGA;
+ std::ifstream in(path);std::string header,value;WirePalette p=WirePalette::CGA;
+ if(!std::getline(in,header)||!std::getline(in,value)||in.peek()!=std::char_traits<char>::eof()||header!="HYPERION WIRE PALETTE 1"||value.rfind("palette=",0)!=0)return WirePalette::CGA;
+ return parseWirePalette(std::string_view(value).substr(8),p)?p:WirePalette::CGA;
+}
+inline bool saveWirePalette(const std::filesystem::path& path,WirePalette p){
+ namespace fs=std::filesystem;std::error_code ec;auto pending=path;pending+=".pending";
+ if(fs::is_symlink(path,ec)||fs::is_symlink(pending,ec))return false;
+ if(!path.parent_path().empty()){fs::create_directories(path.parent_path(),ec);if(ec)return false;}
+ {std::ofstream out(pending,std::ios::trunc);out<<"HYPERION WIRE PALETTE 1\npalette="<<wirePaletteName(p)<<'\n';out.flush();if(!out){out.close();fs::remove(pending,ec);return false;}}
+ fs::rename(pending,path,ec);if(!ec)return true;fs::remove(pending,ec);return false;
+}
+
 }

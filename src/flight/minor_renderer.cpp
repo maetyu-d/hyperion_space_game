@@ -55,7 +55,7 @@ void Renderer::clearMinorBodies(){for(auto& entry:minorModels)UnloadModel(entry.
 void Renderer::drawMinorBodies(const Game& g,bool depth){
  V3 eye{camera.position.x,camera.position.y,camera.position.z};
  if(depth){uniform(planetDepth,"patchCos",0.f);uniform(planetDepth,"groundPass",0.f);}
- else{minorDrawn=0;uniform(minorShader,"wireframe",wireframe?1.f:0.f);uniform(minorShader,"wirePixelScale",std::max(1.f,float(scene.texture.width)/std::max(1,GetRenderWidth())));uniform(minorShader,"lightDirection",sunDirection);uniform(minorShader,"eye",eye);}
+ else{minorDrawn=0;uniform(minorShader,"wireframe",wireframe?1.f:0.f);uniform(minorShader,"wireEGA",egaGraphics?1.f:0.f);uniform(minorShader,"wirePixelScale",std::max(1.f,float(scene.texture.width)/std::max(1,GetRenderWidth())));uniform(minorShader,"lightDirection",sunDirection);uniform(minorShader,"eye",eye);}
  for(const auto& b:g.minorBodies){if(b.destroyed)continue;auto offset=b.centre-eye;double distance=length(offset),pixels=b.source.radius/std::max(1.,distance)*scene.texture.height/.7002;
   if(dot(offset,g.ship.forward)<-b.source.radius*1.3||distance>58000||pixels<.65)continue;
   auto it=minorModels.find(b.source.id);if(it==minorModels.end())continue;

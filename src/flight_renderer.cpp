@@ -180,7 +180,7 @@ void Renderer::flightHUD(){
   const std::string phase=f.launchAssist>0?(landing.altitude<100?(f.launchAssist<1.1?"DEPARTURE / FORWARD FLIGHT":"DEPARTURE / VERTICAL LIFT"):"DEPARTURE / BERTH RELEASE"):f.docked?"TOUCHDOWN / SECURE":f.autopilot?"LANDING / FINAL FLARE":"SURFACE APPROACH";
   const Color tint=landing.safe||f.docked||f.launchAssist>0?mint:amber;
   hudCard({x,y,width,57},tint);label(phase,x+12,y+8,width-24,tint);
-  std::string advice=!f.ship.gear?"G: lower gear":landing.sink>6?"Reduce descent":landing.drift>10?"Brake drift":landing.tilt>35?"Level ship":hyperion::flight::length(f.ship.angularVelocity)>=.35?"Settle rotation":landing.slope>25?"Find level ground":"Approach stable";
+  std::string advice=!f.ship.gear?(ui->wireframe?"Alt+G: lower gear":"G: lower gear"):landing.sink>6?"Reduce descent":landing.drift>10?"Brake drift":landing.tilt>35?"Level ship":hyperion::flight::length(f.ship.angularVelocity)>=.35?"Settle rotation":landing.slope>25?"Find level ground":"Approach stable";
   if(f.docked)advice="Gear secure";else if(f.launchAssist>0)advice="Steer to take control";
   fitted(advice,x+12,y+23,width-24,12,pearl);
   fitted("Drift "+n(landing.drift,1)+" / Tilt "+n(landing.tilt)+" / Slope "+n(landing.slope),x+12,y+42,width-24,9,tint,true);
@@ -267,7 +267,7 @@ void Renderer::flightHUD(){
   if(f.autopilot)actions.push_back({"Take helm","J","navigate",""});
   else if(nearby){actions.push_back({f.ports[berth].planet>=0?"Land":"Dock","ENTER","flightDock",""});actions.push_back({"Navigate","J","navigate",""});}
   else actions.push_back({"Navigate","J","navigate",""});
-  if(surfaceApproach&&!departing)actions.push_back({f.ship.gear?"Gear down":"Lower gear","G","gear",""});
+  if(surfaceApproach&&!departing)actions.push_back({f.ship.gear?"Gear down":"Lower gear",ui->wireframe?"Alt+G":"G","gear",""});
   else if(speed>3||f.launchAssist>0)actions.push_back({"Brake","BKSP","brake",""});
  }
  const float actionWidth=std::min(140.f,(navWidth-24-6*float(actions.size()-1))/float(actions.size()));
@@ -390,7 +390,7 @@ void Renderer::flightPanel(float x,float& y,float width){
  if(disclosure("Flight systems","flight-systems",x,y,width)){
   wrapped("W/S sets throttle. R/F lifts, A/D strafes. Hold Option/Alt for precision thrust and steering. X restores assist at your forward speed; Backspace commands a stop. Rotation and drift persist with assist off.",x,y,width,12,muted);y+=18;
   row("Thruster load / cargo mass",n(f.engineLoad*100)+"% / "+n(f.cargoMass),x,y,width);
-  for(auto& item:std::vector<std::pair<std::string,std::string>>{{"Brake / Backspace","brake"},{"Flight assist / X","assist"},{"Cruise / C","cruise"},{"Landing gear / G","gear"}}){button(item.first,{x,y,width,30},item.second);y+=38;}
+  for(auto& item:std::vector<std::pair<std::string,std::string>>{{"Brake / Backspace","brake"},{"Flight assist / X","assist"},{"Cruise / C","cruise"},{ui->wireframe?"Landing gear / Alt+G":"Landing gear / G","gear"}}){button(item.first,{x,y,width,30},item.second);y+=38;}
  }
 }
 }

@@ -1,0 +1,26 @@
+[
+  {
+    "case": "building-cga",
+    "reference": "3.66",
+    "quality": "high",
+    "meanChannelDifference": 0.0,
+    "maximumChannelDifference": 0,
+    "pixelsDifferentByMoreThan3": 0,
+    "size": [
+      1920,
+      1200
+    ]
+  },
+  {
+    "case": "building-standard",
+    "reference": "3.66",
+    "quality": "high",
+    "meanChannelDifference": 0.0,
+    "maximumChannelDifference": 0,
+    "pixelsDifferentByMoreThan3": 0,
+    "size": [
+      1920,
+      1200
+    ]
+  }
+]

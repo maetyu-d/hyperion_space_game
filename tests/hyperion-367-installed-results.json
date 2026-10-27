@@ -1,0 +1,15 @@
+{
+  "version": "3.67.0",
+  "binarySHA256": "b23475103807e80eee846306593deabe8876d1a046fcedfe169a22a32922574e",
+  "runs": [
+    {
+      "check": "EGA wireframe installed startup",
+      "exit": 0
+    },
+    {
+      "check": "Copied campaign exact frozen roundtrip",
+      "exit": 0
+    }
+  ],
+  "frozenSaveRoundtripExact": true
+}

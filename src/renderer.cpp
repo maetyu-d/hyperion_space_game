@@ -44,10 +44,10 @@ void polygon(const std::vector<Vector2>& points,Color fill,Color rim){
 bool Renderer::init(GraphicsQuality initialQuality){auto assets=std::filesystem::path(GetApplicationDirectory())/"assets/fonts";
  sans=LoadFontEx((assets/"Karla-Regular.ttf").c_str(),64,nullptr,0);mono=LoadFontEx((assets/"Cousine-Regular.ttf").c_str(),32,nullptr,0);
  SetTextureFilter(sans.texture,TEXTURE_FILTER_BILINEAR);SetTextureFilter(mono.texture,TEXTURE_FILTER_BILINEAR);
- cgaShader=LoadShaderFromMemory(nullptr,cgaResolveFragment);
+ paletteShader=LoadShaderFromMemory(nullptr,vectorPaletteResolveFragment);
  scene=LoadShaderFromMemory(nullptr,sceneFragment);orb=LoadShaderFromMemory(nullptr,orbFragment);blur=LoadShaderFromMemory(nullptr,blurFragment);post=LoadShaderFromMemory(nullptr,postFragment);targets();return flightGraphics.init(initialQuality)&&ready();}
-bool Renderer::ready()const{return cgaShader.id>0&&cgaShader.id!=rlGetShaderIdDefault()&&scene.id>0&&orb.id>0&&blur.id>0&&post.id>0&&scene.id!=rlGetShaderIdDefault()&&orb.id!=rlGetShaderIdDefault()&&blur.id!=rlGetShaderIdDefault()&&post.id!=rlGetShaderIdDefault()&&IsRenderTextureValid(history[0])&&IsRenderTextureValid(history[1])&&IsRenderTextureValid(bloom[0])&&IsRenderTextureValid(bloom[1])&&IsRenderTextureValid(composite);}
-void Renderer::close(){flightGraphics.shutdown();if(cgaFrame.id)UnloadRenderTexture(cgaFrame);UnloadShader(cgaShader);for(auto& t:history)if(t.id)UnloadRenderTexture(t);for(auto& t:bloom)if(t.id)UnloadRenderTexture(t);if(terrain.id)UnloadTexture(terrain);if(composite.id)UnloadRenderTexture(composite);if(handoffFrame.id)UnloadRenderTexture(handoffFrame);UnloadShader(scene);UnloadShader(orb);UnloadShader(blur);UnloadShader(post);UnloadFont(sans);UnloadFont(mono);}
+bool Renderer::ready()const{return paletteShader.id>0&&paletteShader.id!=rlGetShaderIdDefault()&&scene.id>0&&orb.id>0&&blur.id>0&&post.id>0&&scene.id!=rlGetShaderIdDefault()&&orb.id!=rlGetShaderIdDefault()&&blur.id!=rlGetShaderIdDefault()&&post.id!=rlGetShaderIdDefault()&&IsRenderTextureValid(history[0])&&IsRenderTextureValid(history[1])&&IsRenderTextureValid(bloom[0])&&IsRenderTextureValid(bloom[1])&&IsRenderTextureValid(composite);}
+void Renderer::close(){flightGraphics.shutdown();if(paletteFrame.id)UnloadRenderTexture(paletteFrame);UnloadShader(paletteShader);for(auto& t:history)if(t.id)UnloadRenderTexture(t);for(auto& t:bloom)if(t.id)UnloadRenderTexture(t);if(terrain.id)UnloadTexture(terrain);if(composite.id)UnloadRenderTexture(composite);if(handoffFrame.id)UnloadRenderTexture(handoffFrame);UnloadShader(scene);UnloadShader(orb);UnloadShader(blur);UnloadShader(post);UnloadFont(sans);UnloadFont(mono);}
 void Renderer::targets(){int x=GetRenderWidth(),y=GetRenderHeight();if(x==width&&y==height)return;width=x;height=y;presentedMode=-1;
  for(auto& t:history){if(t.id)UnloadRenderTexture(t);t=LoadRenderTexture(width,height);SetTextureFilter(t.texture,TEXTURE_FILTER_BILINEAR);BeginTextureMode(t);ClearBackground(ink);EndTextureMode();}
  for(auto& t:bloom){if(t.id)UnloadRenderTexture(t);t=LoadRenderTexture(std::max(1,width/3),std::max(1,height/3));SetTextureFilter(t.texture,TEXTURE_FILTER_BILINEAR);}current=0;if(composite.id)UnloadRenderTexture(composite);composite=LoadRenderTexture(width,height);SetTextureFilter(composite.texture,TEXTURE_FILTER_BILINEAR);}
@@ -69,7 +69,7 @@ void Renderer::background(double dt){int next=1-current;State& s=game->s;Vector2
  vector(blur,"direction",i==0?v(2.f/src.width,0):v(0,2.f/src.height));uniform(blur,"extractLight",i==0?1.f:0.f);BeginShaderMode(blur);
  DrawTexturePro(src,{0,0,float(src.width),float(src.height)},{0,0,float(bloom[i].texture.width),float(bloom[i].texture.height)},{0,0},0,WHITE);EndShaderMode();EndTextureMode();}
 }
-void Renderer::text(const std::string& s,float x,float y,float size,Color c,bool code){if(panelContent&&(y+size<UILayout::contentTop||y>UILayout::contentBottom(h)))return;if(ui&&game&&ui->wireframe&&game->s.mode==Mode::Flight){unsigned char a=c.a;if(int(c.r)+c.g+c.b<85)c={0,0,0,a};else if(c.r>c.g*1.22f||c.b>c.g*1.25f)c={255,85,255,a};else if(c.g>c.r*1.22f)c={85,255,255,a};else c={255,255,255,a};}DrawTextEx(code?mono:sans,s.c_str(),{x,y},size,code?.1f:.15f,c);}
+void Renderer::text(const std::string& s,float x,float y,float size,Color c,bool code){if(panelContent&&(y+size<UILayout::contentTop||y>UILayout::contentBottom(h)))return;if(ui&&game&&ui->wireframe&&ui->wirePalette==WirePalette::CGA&&game->s.mode==Mode::Flight){unsigned char a=c.a;if(int(c.r)+c.g+c.b<85)c={0,0,0,a};else if(c.r>c.g*1.22f||c.b>c.g*1.25f)c={255,85,255,a};else if(c.g>c.r*1.22f)c={85,255,255,a};else c={255,255,255,a};}DrawTextEx(code?mono:sans,s.c_str(),{x,y},size,code?.1f:.15f,c);}
 void Renderer::right(const std::string& s,float x,float y,float size,Color c,bool code){Vector2 sz=MeasureTextEx(code?mono:sans,s.c_str(),size,code?.1f:.15f);text(s,x-sz.x,y,size,c,code);}
 std::string Renderer::elide(std::string value,float maxWidth,float size,bool code)const{
  auto measure=[&](const std::string& str){return MeasureTextEx(code?mono:sans,str.c_str(),size,code?.1f:.15f).x;};
@@ -402,7 +402,7 @@ void Renderer::modal(){modalDrawing=true;DrawRectangle(0,0,int(w),int(h),alpha(i
   const std::vector<std::pair<std::string,std::string>> lines=game->s.mode==Mode::Flight?std::vector<std::pair<std::string,std::string>>{
    {"FLIGHT","W/S throttle, arrows steer, Q/E roll, A/D strafe, R/F vertical thrust. Shift boosts; hold Option/Alt for fine thrust and steering. C cruises, X matches assist to forward speed, Backspace stops."},
    {"NAVIGATE","I lists ports; Tab cycles; J flies and docks automatically. Steering takes control. Enter launches or docks nearby below 55 km/s."},
-   {"LANDING","Enter requests nearby landing assist. G lowers gear. Keep descent under 6 km/s, drift under 10 and tilt under 35 degrees; the landing display checks the ground slope. L deploys after touchdown."},
+   {"LANDING","Enter requests nearby landing assist. G lowers gear; in wireframe use Alt+G (G switches CGA/EGA). Keep descent under 6 km/s, drift under 10 and tilt under 35 degrees; the landing display checks the ground slope. L deploys after touchdown."},
    {"COMMERCE","E opens the docked exchange. Port service uses real local supplies. Courier pouches pay reserved escrow. Civilian kills carry fines and faction penalties."},
    {"COMBAT","Space / left mouse fires. 1/2/3/4 selects pulse, kinetic, plasma or resonance; U cycles subsystem focus. T cycles hostiles. Keep the target in the reticle to lock, Z launches a seeker, Y releases countermeasures. I opens ship systems and orders."},
    {"STRATEGY","O or M opens system strategy. B opens settlements, markets, factions and history. Outside the cockpit, R opens the turn planner; N ends a turn and the world waits between orders. K resumes real time."}
@@ -414,7 +414,7 @@ void Renderer::modal(){modalDrawing=true;DrawRectangle(0,0,int(w),int(h),alpha(i
    {"SOCIETIES","B opens outposts, markets, factions, patrols and pirate vendettas. Factions offers safe-passage deals and warrant restitution. Freight routes offer funded escorts. N resolves an hour. R opens field choices, objectives and forecasts. Shift+Enter follows a plotted field route. Shift+N waits up to six hours. I opens details. Research fabricates upgrades. Atlas holds discoveries."}
   };
   for(auto& item:lines){text(item.first,tx,ty,10,mint,true);float lineY=ty;wrapped(item.second,tx+84,lineY,mw-152,14,pearl);ty=std::max(ty+43,lineY+15);}
-  wrapped("F8 flight HUD / P pause / F9 hide UI / F10 sound / F11 fullscreen / F12 capture / K switch mode / O strategy / Cmd or Ctrl+Q quit",tx,ty,mw-68,12,muted,true);
+  wrapped("Wireframe: G CGA/EGA / Alt+G gear / F8 flight HUD / P pause / F9 hide UI / F10 sound / F11 fullscreen / F12 capture / K switch mode / O strategy / Cmd or Ctrl+Q quit",tx,ty,mw-68,12,muted,true);
  }
  button("CLOSE / ESC",{x+mw-171,y+mh-53,137,33},"close");modalDrawing=false;
 }
@@ -428,7 +428,7 @@ void Renderer::draw(Game& g,UI& state,double dt){g.ensureEconomy();game=&g;ui=&s
   BeginTextureMode(handoffFrame);ClearBackground(ink);DrawTexturePro(composite.texture,{0,0,float(width),-float(height)},{0,0,float(width),float(height)},{0,0},0,WHITE);EndTextureMode();
  }
  presentedMode=int(g.s.mode);
- if(g.s.mode==Mode::Flight){g.ensureFlight();flightPresentation=flightScene(g);if(auditHideWildlife)flightPresentation.organisms.clear();flightGraphics.prepare(g.s.flight,flightPresentation,state.reduced,!state.clean,state.graphicsQuality,state.psychedelic,state.wireframe);}else background(dt);BeginTextureMode(composite);ClearBackground(ink);rlPushMatrix();rlScalef(width/w,height/h,1);
+ if(g.s.mode==Mode::Flight){g.ensureFlight();flightPresentation=flightScene(g);if(auditHideWildlife)flightPresentation.organisms.clear();flightGraphics.prepare(g.s.flight,flightPresentation,state.reduced,!state.clean,state.graphicsQuality,state.psychedelic,state.wireframe,state.wirePalette==WirePalette::EGA);}else background(dt);BeginTextureMode(composite);ClearBackground(ink);rlPushMatrix();rlScalef(width/w,height/h,1);
  if(g.s.mode==Mode::Flight)flightGraphics.present(w,h);else{BeginShaderMode(post);texture(post,"bloomTexture",bloom[1].texture);DrawTexturePro(history[current].texture,{0,0,float(width),-float(height)},{0,0,w,h},{0,0},0,WHITE);EndShaderMode();}
  switch(g.s.mode){case Mode::Galaxy:galaxy();break;case Mode::System:system();break;case Mode::Surface:surface();break;case Mode::Ocean:ocean();break;case Mode::Flight:break;}
  if(g.s.mode!=Mode::Flight)colonyMarkers();
@@ -444,18 +444,18 @@ void Renderer::draw(Game& g,UI& state,double dt){g.ensureEconomy();game=&g;ui=&s
   fitted(title,edge*.5f-202,121,404,12,mint,true);fitted(hint,edge*.5f-202,144,404,10,muted,true);
  }
  rlPopMatrix();EndTextureMode();
- cgaActive=g.s.mode==Mode::Flight&&state.wireframe;
- if(cgaActive){
-  if(cgaFrame.id&&(cgaFrame.texture.width!=width||cgaFrame.texture.height!=height)){UnloadRenderTexture(cgaFrame);cgaFrame={};}
-  if(!cgaFrame.id){cgaFrame=LoadRenderTexture(width,height);if(!cgaFrame.id)throw std::runtime_error("CGA output allocation failed");SetTextureFilter(cgaFrame.texture,TEXTURE_FILTER_POINT);}
-  BeginTextureMode(cgaFrame);ClearBackground(BLACK);rlDrawRenderBatchActive();rlDisableColorBlend();BeginShaderMode(cgaShader);
+ paletteActive=g.s.mode==Mode::Flight&&state.wireframe;
+ if(paletteActive){
+  if(paletteFrame.id&&(paletteFrame.texture.width!=width||paletteFrame.texture.height!=height)){UnloadRenderTexture(paletteFrame);paletteFrame={};}
+  if(!paletteFrame.id){paletteFrame=LoadRenderTexture(width,height);if(!paletteFrame.id)throw std::runtime_error("Wire palette output allocation failed");SetTextureFilter(paletteFrame.texture,TEXTURE_FILTER_POINT);}
+  BeginTextureMode(paletteFrame);ClearBackground(BLACK);rlDrawRenderBatchActive();rlDisableColorBlend();uniform(paletteShader,"ega",state.wirePalette==WirePalette::EGA?1.f:0.f);BeginShaderMode(paletteShader);
   DrawTexturePro(composite.texture,{0,0,float(width),-float(height)},{0,0,float(width),float(height)},{0,0},0,WHITE);EndShaderMode();rlDrawRenderBatchActive();rlEnableColorBlend();EndTextureMode();
  }
- const auto output=cgaActive?cgaFrame.texture:composite.texture;
+ const auto output=paletteActive?paletteFrame.texture:composite.texture;
  BeginDrawing();ClearBackground(ink);DrawTexturePro(output,{0,0,float(width),-float(height)},{0,0,float(GetScreenWidth()),float(GetScreenHeight())},{0,0},0,WHITE);EndDrawing();}
-Renderer::CGAStats Renderer::cgaStats()const{CGAStats s;s.active=cgaActive;if(!s.active||!cgaFrame.id)return s;auto image=LoadImageFromTexture(cgaFrame.texture);if(!image.data)return s;auto* pixels=LoadImageColors(image);s.pixels=image.width*image.height;for(int i=0;i<s.pixels;i++){auto c=pixels[i];int index=cgaPaletteIndex(c.r,c.g,c.b);if(index<0)++s.outside;else ++s.colours[index];}UnloadImageColors(pixels);UnloadImage(image);return s;}
+Renderer::PaletteStats Renderer::paletteStats()const{PaletteStats s;s.active=paletteActive;s.mode=ui?ui->wirePalette:WirePalette::CGA;if(!s.active||!paletteFrame.id)return s;auto image=LoadImageFromTexture(paletteFrame.texture);if(!image.data)return s;auto* pixels=LoadImageColors(image);s.pixels=image.width*image.height;for(int i=0;i<s.pixels;i++){auto c=pixels[i];int index=wirePaletteIndex(s.mode,c.r,c.g,c.b);if(index<0)++s.outside;else ++s.colours[index];}UnloadImageColors(pixels);UnloadImage(image);return s;}
 
-bool Renderer::screenshot(const std::string& path,bool centreCrop){auto p=std::filesystem::path(path);if(p.has_parent_path())std::filesystem::create_directories(p.parent_path());Image im=LoadImageFromTexture(cgaActive?cgaFrame.texture:composite.texture);if(centreCrop){int side=std::min({640,im.width,im.height});ImageCrop(&im,{float((im.width-side)/2),float((im.height-side)/2),float(side),float(side)});}ImageFlipVertical(&im);bool result=ExportImage(im,path.c_str());UnloadImage(im);return result;}
+bool Renderer::screenshot(const std::string& path,bool centreCrop){auto p=std::filesystem::path(path);if(p.has_parent_path())std::filesystem::create_directories(p.parent_path());Image im=LoadImageFromTexture(paletteActive?paletteFrame.texture:composite.texture);if(centreCrop){int side=std::min({640,im.width,im.height});ImageCrop(&im,{float((im.width-side)/2),float((im.height-side)/2),float(side),float(side)});}ImageFlipVertical(&im);bool result=ExportImage(im,path.c_str());UnloadImage(im);return result;}
 
 bool Renderer::makeIcon(const std::string& path){
  float oldW=w,oldH=h;int oldWidth=width,oldHeight=height;w=h=1024;width=height=1024;

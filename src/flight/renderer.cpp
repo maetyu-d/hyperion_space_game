@@ -417,14 +417,14 @@ void Renderer::drawMotion(const Game& g){
  }
  rlEnableDepthMask();EndBlendMode();
 }
-void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,GraphicsQuality graphicsQuality,bool psychedelicLook,bool wireframeLook){
+void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,GraphicsQuality graphicsQuality,bool psychedelicLook,bool wireframeLook,bool egaPalette){
  if(g.planets.empty()||g.ports.empty())return;
  if(quality!=graphicsQuality){shutdown();quality=graphicsQuality;lowGraphics=quality==GraphicsQuality::Low;extremeGraphics=quality==GraphicsQuality::Extreme;worldKey.clear();bodiesKey.clear();cockpitWidth=cockpitHeight=0;groundBody=shadowBody=-1;if(!init(quality))throw std::runtime_error("Graphics quality initialization failed");}
  for(auto shader:{sky,world,groundShader,cloud,post})set(shader,"lowGraphics",lowGraphics?1.f:0.f);
  const auto profile=flightQualityProfile(quality);
- wireframe=wireframeLook;psychedelic=psychedelicLook&&!wireframe;wireDraws=wireTriangles=wireEdges=0;++wireSerial;
+ egaGraphics=egaPalette;wireframe=wireframeLook;psychedelic=psychedelicLook&&!wireframe;wireDraws=wireTriangles=wireEdges=0;++wireSerial;
  for(auto it=wireModels.begin();it!=wireModels.end();)if(!wireframe||wireSerial-it->second.used>2){UnloadModel(it->second.model);it=wireModels.erase(it);}else ++it;
- for(auto shader:{sky,world,groundShader,post,ringShader}){set(shader,"wireframe",wireframe?1.f:0.f);set(shader,"wirePixelScale",std::max(1.f,float(flightRenderSize(quality,reducedEffects,GetRenderWidth(),GetRenderHeight()).width)/std::max(1,GetRenderWidth())));}
+ for(auto shader:{sky,world,groundShader,post,ringShader}){set(shader,"wireEGA",egaGraphics?1.f:0.f);set(shader,"wireframe",wireframe?1.f:0.f);set(shader,"wirePixelScale",std::max(1.f,float(flightRenderSize(quality,reducedEffects,GetRenderWidth(),GetRenderHeight()).width)/std::max(1,GetRenderWidth())));}
  psychedelic=psychedelicLook&&!wireframe;
  for(auto shader:{sky,world,groundShader,cloud,atmo,ringShader,aurora,structure,cockpitShader,post})set(shader,"psychedelic",psychedelic?1.f:0.f);
  for(auto shader:{world,groundShader,cloud,atmo,aurora,structure})set(shader,"extremeQuality",extremeGraphics?1.f:0.f);

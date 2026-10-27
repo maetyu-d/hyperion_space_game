@@ -216,7 +216,7 @@ void Game::stepHandling(double dt,const Input& in){
    ship.position=contact.ground+contact.normal*.08;double impact=std::max(0.,contact.sink);
    ship.velocity=ship.velocity+contact.normal*(impact*1.25);ship.velocity=ship.velocity*.92;
    damageShip(impact*.35+std::max(0.,contact.drift-10)*.08,CollisionDamage,contact.ground);hitFlash=std::min(.6,impact*.06);
-   if(noticeAge>.8)message("Unsafe contact / reduce descent and drift / level the ship / G lowers gear.");
+   if(noticeAge>.8)message("Unsafe contact / reduce descent and drift / level the ship / lower landing gear.");
   }
  }
 }

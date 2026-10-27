@@ -14,6 +14,7 @@ void Renderer::drawLife(const Scene& sceneView){
  Vector3 light{float(sunDirection.x),float(sunDirection.y),float(sunDirection.z)};SetShaderValue(lifeShader,lifeUniforms[7],&light,SHADER_UNIFORM_VEC3);SetShaderValue(lifeShader,lifeUniforms[8],&camera.position,SHADER_UNIFORM_VEC3);set(0,float(std::fmod(sceneView.hours*55,100000.)));set(14,lowGraphics?1.f:0.f);
  V3 eye{camera.position.x,camera.position.y,camera.position.z},look=unit(V3{camera.target.x,camera.target.y,camera.target.z}-eye);double fadeSeconds=fixedVisualTime>=0?1./60:std::clamp(double(GetFrameTime()),1./240,.05);auto draws=lifeDrawList(sceneView,eye,look,reduced,lowGraphics,&lifeBudget,fadeSeconds,extremeGraphics);
  int vectorLoc=GetShaderLocation(lifeShader,"wireframe");float vectorMode=wireframe?1.f:0.f;SetShaderValue(lifeShader,vectorLoc,&vectorMode,SHADER_UNIFORM_FLOAT);
+ int egaLoc=GetShaderLocation(lifeShader,"wireEGA");float egaMode=egaGraphics?1.f:0.f;SetShaderValue(lifeShader,egaLoc,&egaMode,SHADER_UNIFORM_FLOAT);
  // One batched, terrain-aligned contact shadow pass anchors nearby land life.
  // Soft outer vertices blend into the existing ground instead of adding a decal texture.
  rlSetTexture(0);rlBegin(RL_TRIANGLES);

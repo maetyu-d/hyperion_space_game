@@ -3,7 +3,7 @@
 const vec3 vectorCyan=vec3(.09,1.,1.),vectorMagenta=vec3(1.,.09,1.),vectorWhite=vec3(1.);
 )GLSL"
 #define HYPERION_VECTOR_GLSL HYPERION_CGA_INK_GLSL R"GLSL(
-uniform float wireframe,wirePixelScale;
+uniform float wireframe,wirePixelScale,wireEGA;
 float vectorLine(float coordinate){float footprint=fwidth(coordinate);float d=abs(fract(coordinate+.5)-.5)/max(footprint,.000001);return (1.-smoothstep(.45*wirePixelScale,1.05*wirePixelScale,d))*(1.-smoothstep(.22,.55,footprint));}
 vec3 vectorSurface(vec3 p,vec3 normal,vec3 view,float radius,float seed,float closePass){
  vec3 n=normalize(p);float longitude=atan(n.z,n.x)/6.283185,latitude=acos(clamp(n.y,-1.,1.))/3.14159265;
@@ -17,7 +17,7 @@ vec3 vectorSurface(vec3 p,vec3 normal,vec3 view,float radius,float seed,float cl
  float elevation=(length(p)-radius)/(spacing*.35),contours=vectorLine(elevation)*smoothstep(.002,.04,fwidth(elevation));
  float detail=1.-smoothstep(.0001,.0007,max(length(dFdx(n)),length(dFdy(n))));
  float nv=abs(dot(normalize(normal),normalize(view))),rim=1.-smoothstep(0.,max(.001,fwidth(nv)*1.4*wirePixelScale),nv);
- return vectorCyan*(mix(orbital,closeGrid,detail)*.60+diagonals*detail*.25)+vectorMagenta*contours*detail*.40+vectorWhite*rim*.90;
+ return (wireEGA>.5?vec3(.06,.30,1.):vectorCyan)*(mix(orbital,closeGrid,detail)*.60+diagonals*detail*.25)+(wireEGA>.5?vec3(1.,.65,.09):vectorMagenta)*contours*detail*.40+vectorWhite*rim*.90;
 }
 )GLSL"
 #define HYPERION_WIRE_VERTEX_GLSL R"GLSL(
@@ -32,7 +32,7 @@ void vectorGeometry(mat4 normalMatrix,vec3 shape){
 )GLSL"
 #define HYPERION_WIRE_EDGE_GLSL HYPERION_CGA_INK_GLSL R"GLSL(
 noperspective in vec3 vectorBary;flat in vec3 vectorFeatures,vectorAdjacentA,vectorAdjacentB,vectorAdjacentC;
-uniform float wirePixelScale;
+uniform float wirePixelScale,wireEGA;
 vec3 vectorInk(vec3 n,vec3 view,vec3 tint){
  view=normalize(view);vec3 facing=vec3(dot(vectorAdjacentA,view),dot(vectorAdjacentB,view),dot(vectorAdjacentC,view));
  vec3 silhouettes=1.-smoothstep(vec3(-.008),vec3(.008),facing),enabled=max(vectorFeatures,silhouettes);
@@ -64,7 +64,8 @@ uniform vec3 eye,wireTint;uniform float wireKind;
 void main(){
  gl_FragDepth=gl_FragCoord.z*(abs(wireKind-2.)<.1?.0001:1.);
  bool ship=abs(wireKind-5.)<.1,building=abs(wireKind-4.)<.1;vec3 ink=vectorRole==3.||vectorRole==2.?vectorMagenta:vectorCyan;
- if(abs(wireKind-2.)<.1)ink=vectorCyan;vec3 c=vectorInk(normal,eye-worldPosition,ink);
+ if(wireEGA>.5){if(ship)ink=vectorRole==3.||vectorRole==2.?vec3(1.,.3,.03):mix(vectorCyan,wireTint,.75);else if(building)ink=vectorRole==3.||vectorRole==2.?vec3(1.,.65,.09):vec3(.08,.68,.85);}
+ if(abs(wireKind-2.)<.1)ink=wireEGA>.5?vec3(.14,.24,.70):vectorCyan;vec3 c=vectorInk(normal,eye-worldPosition,ink);
  if(ship||building){
   vec3 axis=abs(vectorLocalNormal);vec2 uv=axis.y>.65?localPosition.xz:axis.x>axis.z?localPosition.zy:localPosition.xy;
   vec2 size=ship?vec2(.65,.85):vec2(7.,4.5),cell=uv/size,id=floor(cell),q=fract(cell)-.5;
@@ -77,7 +78,7 @@ void main(){
    else{float hatch=panel*step(.62,signature),rib=vectorRule(uv.y/1.2)*.24;c=max(c,vectorCyan*max(hatch*.42,rib)*resolved);if(signature>.88)c=max(c,vectorMagenta*panel*resolved*.45);}
   }else if(facade){
    float lit=step(.28,signature),mullion=vectorRule(cell.x*2.)*step(abs(q.y),.24)*step(abs(q.x),.32);
-   c=max(c,vectorCyan*panel*resolved*.55);c=max(c,vectorWhite*mullion*resolved*.32*lit);if(signature>.82)c=max(c,vectorMagenta*panel*resolved*.65);
+   c=max(c,vectorCyan*panel*resolved*.55);c=max(c,(wireEGA>.5?vec3(1.,.65,.09):vectorWhite)*mullion*resolved*.32*lit);if(signature>.82)c=max(c,vectorMagenta*panel*resolved*.65);
   }else if(roof){float hatch=panel*step(.74,signature);c=max(c,vectorCyan*hatch*resolved*.33);}
  }
  finalColor=vec4(c,1.);

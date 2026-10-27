@@ -1,0 +1,62 @@
+{
+  "version": "3.67.0",
+  "binarySHA256": "b23475103807e80eee846306593deabe8876d1a046fcedfe169a22a32922574e",
+  "cpuSuites": {
+    "passed": 42,
+    "failed": 0
+  },
+  "nativeShortcutAudit": {
+    "frames": 180,
+    "scenarios": 9,
+    "checks": [
+      "G selects CGA/EGA",
+      "paused palette switching",
+      "Alt+G gear in wireframe",
+      "G gear in Standard",
+      "settings typing guard",
+      "command-modifier guard",
+      "G galaxy outside flight",
+      "strategy return",
+      "frozen simulation, HUD and quality"
+    ]
+  },
+  "paletteOutput": {
+    "testedPixels": 9072000,
+    "offPalettePixels": 0,
+    "CGAColours": 4,
+    "EGAAvailableColours": 16,
+    "EGAMaximumObservedColours": 14
+  },
+  "previousRendersPreservedExactly": [
+    {
+      "case": "building-cga",
+      "reference": "3.66",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "case": "building-standard",
+      "reference": "3.66",
+      "quality": "high",
+      "meanChannelDifference": 0.0,
+      "maximumChannelDifference": 0,
+      "pixelsDifferentByMoreThan3": 0,
+      "size": [
+        1920,
+        1200
+      ]
+    }
+  ],
+  "installedLaunchChecks": 2,
+  "copiedCampaignUnchanged": true,
+  "playerSaveAndPreferencesUnchanged": true,
+  "previousApp": "releases/Hyperion 3.66.app",
+  "defaultWirePalette": "cga",
+  "palettePreferenceIndependent": true
+}
