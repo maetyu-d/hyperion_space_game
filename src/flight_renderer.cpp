@@ -33,20 +33,41 @@ void hudDiamond(Vector2 at,float radius,Color tint){
 }
 
 }
+void Renderer::boardingPanel(float x,float& y,float width){
+ auto& e=game->s.economy;auto& f=game->s.flight;int target=f.combatTargetIndex();std::string id=target>=0?f.traffic[target].id:"";for(const auto& [key,b]:e.boardings)if(b.status==0)id=key;
+ const Boarding* party=nullptr;auto found=e.boardings.find(id);if(found!=e.boardings.end())party=&found->second;
+ bool disabled=target>=0&&f.traffic[target].kind==1&&f.traffic[target].modules[0]<=2&&!f.traffic[target].dead;
+ bool prisoners=false;for(const auto& [key,b]:e.boardings)prisoners|=b.status==2&&b.defenders>0;
+ if(!disabled&&(!party||party->status!=0)&&!prisoners)return;
+ if(!disclosure("Boarding and captured crews","boarding",x,y,width))return;
+ if(!game->turnBased()){button("Plan boarding / pause",{x,y,width,30},"boardingPlan",id);y+=40;return;}
+ auto order=[&](const std::string& label,const std::string& action,const std::string& key){auto q=game->boardingQuote(action,key);button(label+" / 1 h",{x,y,width,29},action,key,q.available);y+=37;wrapped(q.available?q.text:q.reason,x,y,width,11,muted);y+=11;};
+ for(const auto& [key,b]:e.boardings)if(b.status==2&&b.defenders>0){wrapped(std::to_string(b.defenders)+" captured crew aboard / shared rescue berths",x,y,width,12,mint);y+=11;order("Disembark captives","boardingRelease",key);}
+ if(party&&party->status==0){const auto& b=*party;row("Party / defenders",std::to_string(b.party)+" / "+std::to_string(b.defenders),x,y,width);wrapped(b.surrendered?"Defenders surrendered / all compartments secured":"Isolate engineering, press the bridge, or seize the cargo bay. Every order resolves the world.",x,y,width,11,b.surrendered?mint:muted);y+=12;
+  const char* labels[]={"Power","Bridge","Cargo"};const char* actions[]={"boardingPower","boardingBridge","boardingCargo"};for(int i=0;i<3;i++){auto q=game->boardingQuote(actions[i],id);button(std::string(labels[i])+((b.rooms&(1<<i))?" / secure":""),{x+i*(width+6)/3,y,(width-12)/3,28},actions[i],id,q.available);}y+=38;
+  std::string next=(b.rooms&3)==3||b.surrendered?"boardingCapture":game->boardingQuote("boardingNegotiate",id).available?"boardingNegotiate":"boardingPower";order(next=="boardingCapture"?"Capture hull":next=="boardingPower"?"Isolate engineering":"Negotiate surrender",next,id);
+  if(disclosure("Other boarding orders","boarding-orders",x,y,width)){order("Transfer finite cargo","boardingLoot",id);order("Withdraw surviving party","boardingWithdraw",id);}
+ }else if(disabled)order("Board disabled hull / 3 volunteers","boardingBegin",id);
+}
 void Renderer::recoveryPanel(float x,float& y,float width){
- auto& e=game->s.economy;auto& f=game->s.flight;std::vector<std::pair<double,std::string>> sites;for(const auto& [id,d]:e.worldDamage)if(d.recovery.valid&&(d.star==game->s.currentStar||d.recovery.aboard>0)){double distance=hyperion::flight::length(d.position-f.ship.position);if(distance<2500||d.recovery.aboard>0||game->recoveryTarget==id)sites.push_back({distance,id});}if(sites.empty())return;std::sort(sites.begin(),sites.end());
+ boardingPanel(x,y,width);
+ auto& e=game->s.economy;auto& f=game->s.flight;int responding=0;for(const auto& c:e.recoveryCrews)if(c.star==game->s.currentStar&&c.phase<3)responding++;
+ if(responding&&disclosure("Recovery vessels / "+std::to_string(responding),"recovery-vessels",x,y,width))for(const auto& c:e.recoveryCrews)if(c.star==game->s.currentStar&&c.phase<3){wrapped(c.name+" / "+e.factions[c.faction].name,x,y,width,12,mint);y+=9;wrapped(std::string(c.phase==0?"Inbound":c.phase==1?"Working wreck":"Returning")+" / "+n(hyperion::flight::length(c.position-f.ship.position))+" km / "+std::to_string(c.rescued)+" rescued / "+n(stockTotal(c.cargo))+" supplies",x,y,width,11,muted);y+=10;button("Track responder",{x,y,width,27},"inspectContact",c.id);y+=35;}
+ std::vector<std::pair<double,std::string>> sites;for(const auto& [id,d]:e.worldDamage)if(d.recovery.valid&&(d.star==game->s.currentStar||d.recovery.aboard>0)){double distance=hyperion::flight::length(d.position-f.ship.position);if(distance<2500||d.recovery.aboard>0||game->recoveryTarget==id)sites.push_back({distance,id});}if(sites.empty())return;std::sort(sites.begin(),sites.end());
  if(!disclosure("Recovery / "+std::to_string(sites.size())+" sites","recovery",x,y,width))return;
  auto name=[&](const WorldDamage& d){auto* site=findSettlement(e,d.owner);return std::string(d.kind==FacilityObject?buildings[d.slot/24].name:d.recovery.shipModel>=0?"Ship wreck":"Orbital equipment")+" / "+(site?site->name:d.star);};
  auto selected=e.worldDamage.find(game->recoveryTarget);if(selected==e.worldDamage.end()||!selected->second.recovery.valid){game->recoveryTarget=sites.front().second;selected=e.worldDamage.find(game->recoveryTarget);}auto& d=selected->second;auto& r=d.recovery;auto id=selected->first;
  if(disclosure(name(d),"recovery-sites",x,y,width)){for(size_t i=0;i<std::min(size_t(6),sites.size());i++){button(name(e.worldDamage.at(sites[i].second)),{x,y,width,28},"recoverySelect",sites[i].second);y+=35;}}
  wrapped(n(hyperion::flight::length(d.position-f.ship.position))+" km / "+(recoveryHazard(r,game->s.hours)>.02?"Live fuel and circuits":"Safe containment")+" / "+std::to_string(r.crew)+" stranded / "+std::to_string(r.aboard)+" aboard",x,y,width,11,recoveryHazard(r,game->s.hours)>.02?pink:mint);y+=12;
+ if(r.claimRules){wrapped(r.claim<0?"Unclaimed salvage":r.claim==0?"NOMA salvage claim":e.factions[r.claim].name+std::string(r.permit?" / licensed":r.contested?" / contested title":" / bonded salvage"),x,y,width,11,r.contested?pink:muted);y+=11;}
  if(!game->turnBased()){button("Plan recovery / pause",{x,y,width,30},"recoveryPlan",id);y+=40;return;}
- std::string next=recoveryHazard(r,game->s.hours)>.02?"recoveryStabilize":r.crew>0?"recoveryRescue":r.aboard>0?"recoveryDeliver":!r.cut?"recoveryCut":r.box&&!r.boxRecovered?"recoveryBox":"salvage";
- auto label=[&](const std::string& a)->std::string{return a=="recoveryStabilize"?"Stabilize hazards":a=="recoveryRescue"?"Rescue survivors":a=="recoveryDeliver"?"Deliver evacuees":a=="recoveryCut"?"Cut equipment free":a=="recoveryBox"?"Recover black box":a=="recoveryTow"?"Attach tow":a=="recoveryDetach"?"Release tow":a=="recoveryRebuild"?"Reconstruct original site":"Collect released salvage";};
+ std::string next=recoveryHazard(r,game->s.hours)>.02?"recoveryStabilize":r.crew>0?"recoveryRescue":r.aboard>0?"recoveryDeliver":r.intact?(f.docked||r.towed?"recoveryPrize":"recoveryTow"):!r.cut?"recoveryCut":r.box&&!r.boxRecovered?"recoveryBox":"salvage";
+ if(!game->salvageAuthorized(id)&&next!="recoveryStabilize"&&next!="recoveryRescue"&&next!="recoveryDeliver")next="recoveryPermit";
+ auto label=[&](const std::string& a)->std::string{return a=="recoveryPermit"?"Buy salvage licence":a=="recoveryContest"?"Defy faction salvage claim":a=="recoveryClaim"?"Register NOMA claim":a=="recoveryPrize"?"Deliver captured hull": a=="recoveryStabilize"?"Stabilize hazards":a=="recoveryRescue"?"Rescue survivors":a=="recoveryDeliver"?"Deliver evacuees":a=="recoveryCut"?"Cut equipment free":a=="recoveryBox"?"Recover black box":a=="recoveryTow"?"Attach tow":a=="recoveryDetach"?"Release tow":a=="recoveryRebuild"?"Reconstruct original site":"Collect released salvage";};
  if(next=="salvage"){bool available=stockTotal(d.salvage)>0&&f.speed()<=15&&!f.docked&&hyperion::flight::length(d.position-f.ship.position)<55;button(label(next),{x,y,width,30},next,"",available);y+=39;}
  else{auto quote=game->recoveryQuote(next,id);button(label(next)+" / 1 h",{x,y,width,30},next,id,quote.available);y+=38;wrapped(quote.available?quote.text:quote.reason,x,y,width,11,muted);y+=13;}
  button("Plot approach",{x,y,width,28},"recoveryPlot",id,game->recoveryQuote("recoveryPlot",id).available);y+=36;
- if(disclosure("Other recovery orders","recovery-orders",x,y,width))for(const char* a:{"recoveryStabilize","recoveryRescue","recoveryCut","recoveryBox","recoveryDeliver","recoveryTow","recoveryDetach","recoveryRebuild"}){if(next==a)continue;auto quote=game->recoveryQuote(a,id);button(label(a)+" / 1 h",{x,y,width,27},a,id,quote.available);y+=34;if(quote.available){wrapped(quote.text,x,y,width,10,muted);y+=8;}}
+ if(disclosure("Other recovery orders","recovery-orders",x,y,width))for(const char* a:{"recoveryStabilize","recoveryRescue","recoveryCut","recoveryBox","recoveryDeliver","recoveryTow","recoveryDetach","recoveryRebuild","recoveryPermit","recoveryContest","recoveryClaim"}){if(next==a)continue;auto quote=game->recoveryQuote(a,id);button(label(a)+" / 1 h",{x,y,width,27},a,id,quote.available);y+=34;if(quote.available){wrapped(quote.text,x,y,width,10,muted);y+=8;}}
 }
 void Renderer::combatPanel(float x,float& y,float width){
  recoveryPanel(x,y,width);
@@ -76,6 +97,7 @@ void Renderer::flightHUD(){
  const float edge=UILayout::worldRight(w,ui->panel),cx=w*.5f,cy=h*.5f;
  const bool compact=ui->panel;std::string recoveryPrompt;double nearestRecovery=55;for(const auto& [id,d]:game->s.economy.worldDamage)if(d.recovery.valid&&d.star==game->s.currentStar&&(!d.recovery.cut||d.recovery.crew||d.recovery.aboard||d.recovery.towed||(d.recovery.box&&!d.recovery.boxRecovered))){double distance=hyperion::flight::length(d.position-f.ship.position);if(distance<nearestRecovery){nearestRecovery=distance;recoveryPrompt=id;}}
 
+ const int boardingIndex=f.combatTargetIndex();const bool boardingPrompt=boardingIndex>=0&&f.traffic[boardingIndex].kind==1&&f.traffic[boardingIndex].modules[0]<=2&&hyperion::flight::length(f.traffic[boardingIndex].position-f.ship.position)<55;
  const auto landing=f.landing();
  const float inset=UILayout::safeInset(w,h),deckY=h-inset-(compact?104:80),deckWidth=edge-2*inset,markerBottom=deckY-80;
  const float systemsWidth=compact?180.f:clamp(deckWidth*.31f,270.f,330.f);
@@ -215,7 +237,8 @@ void Renderer::flightHUD(){
    float pulse=float(std::min(1.,f.hitConfirm*8)),outer=19+4*pulse,inner=15+2*pulse;tint.a=static_cast<unsigned char>(230*pulse);
    for(int side:{-1,1}){DrawLineEx({cx+side*outer,cy-outer},{cx+side*inner,cy-inner},1.7f,tint);DrawLineEx({cx+side*outer,cy+outer},{cx+side*inner,cy+inner},1.7f,tint);}
   }
-  if(!compact&&speed<=15&&recoveryPrompt.empty())for(const auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&(std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)+std::accumulate(wreck.supplies.begin(),wreck.supplies.end(),0.))>0){button("Collect salvage",{24,deckY-73,150,30},"salvage");break;}
+  if(!compact&&speed<=15&&recoveryPrompt.empty()&&!boardingPrompt)for(const auto& wreck:f.wrecks)if(hyperion::flight::length(wreck.position-f.ship.position)<55&&(std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)+std::accumulate(wreck.supplies.begin(),wreck.supplies.end(),0.))>0){button("Collect salvage",{24,deckY-73,150,30},"salvage");break;}
+  if(!compact&&recoveryPrompt.empty()&&boardingPrompt)button("Plan boarding",{24,deckY-73,150,30},"boardingPlan",f.traffic[boardingIndex].id);
   if(!compact&&!recoveryPrompt.empty())button("Plan recovery",{24,deckY-73,150,30},"recoveryPlan",recoveryPrompt);
 
  }

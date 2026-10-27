@@ -17,7 +17,7 @@ void Game::registerExpeditionHabitat(){
  if(ocean){for(int x=int(std::floor((centre.x-150)/130));x<=int(std::floor((centre.x+150)/130));x++)for(const auto& c:universe.oceanObjects(p,x,centre.y))if(c.kind=="life"||c.kind=="flora")ensureContactHabitat(s.economy,universe,p,c);}
  else for(int x=int(std::floor((centre.x-150)/86));x<=int(std::floor((centre.x+150)/86));x++)for(int y=int(std::floor((centre.y-150)/86));y<=int(std::floor((centre.y+150)/86));y++)for(const auto& c:universe.surfaceObjects(p,x,y))if(c.kind=="life"||c.kind=="flora")ensureContactHabitat(s.economy,universe,p,c);
 }
-void Game::syncEconomy() { ensureEconomy();s.economy.securityWitness=s.flight.valid&&s.flight.star==s.currentStar&&!s.flight.deployed?s.currentStar:"";double before=s.economy.hour;advanceEconomy(s.economy,universe,s.hours);updateRecovery(0);if(!s.flight.events.empty())processFlightEvents();if(s.economy.hour>before+1e-8){advanceOceanWrecks(s.economy);observeMissions();advanceMissions(s.economy,universe,s.currentStar,&s.scanned);} }
+void Game::syncEconomy() { ensureEconomy();s.economy.securityWitness=s.flight.valid&&s.flight.star==s.currentStar&&!s.flight.deployed?s.currentStar:"";double before=s.economy.hour;advanceEconomy(s.economy,universe,s.hours);updateRecovery(0);if(!s.flight.events.empty())processFlightEvents();if(s.economy.hour>before+1e-8){advanceRecoverySociety(true);advanceOceanWrecks(s.economy);observeMissions();advanceMissions(s.economy,universe,s.currentStar,&s.scanned);} }
 Stock Game::shipStock()const {
     Stock cargo=s.economy.hold;
     cargo[Alloy]=s.resources[0];cargo[Crystal]=s.resources[1];cargo[Biomass]=s.resources[2];cargo[Research]=s.resources[3];

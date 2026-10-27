@@ -10,6 +10,8 @@ enum WorldKind {FacilityObject,PortObject,PanelObject,CargoObject,PlantObject,Li
 struct RecoveryState {
  bool valid=false,stabilized=false,cut=false,box=false,boxRecovered=false,failed=false,towed=false;
  std::string culprit,shipId;int shipModel=-1;uint32_t shipSeed=0;flight::V3 shipForward{0,0,-1},towOffset{};int faction=0,initialCrew=0,crew=0,aboard=0,delivered=0,lost=0;double born=0,charge=0,failureAt=0,supportUntil=0;
+ // Optional 3.62 rules; absent on older wrecks until time advances.
+ bool claimRules=false,permit=false,contested=false,intact=false;int claim=-1,npcAboard=0,npcDelivered=0;double nextDispatch=0;
  std::array<double,9> sealed{},initial{},recovered{},destroyed{};
 };
 inline void destroyRecoveryContents(RecoveryState& r){for(int i=0;i<9;i++){r.destroyed[i]+=r.sealed[i];r.sealed[i]=0;}r.lost+=r.crew;r.crew=0;r.box=r.boxRecovered;r.cut=true;r.towed=false;}

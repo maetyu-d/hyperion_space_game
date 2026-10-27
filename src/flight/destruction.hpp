@@ -1,8 +1,8 @@
 #pragma once
 #include "game.hpp"
 namespace hyperion::flight {
-inline int craftModel(const Traffic& t){return (t.kind==1?3+std::clamp(t.role,0,3):t.kind)+(t.managed&&!t.pirate&&t.kind==1?10:0)+hullVariant(t.genome)*32;}
-inline HullRemains hullRemains(const Traffic& t){return {true,t.faction,craftModel(t),t.genome.seed,t.kind==2?11:t.kind==1?enemyDef(t).radius:5,unit(t.forward,{0,0,-1})};}
+inline int craftModel(const Traffic& t){return (t.kind==1?3+std::clamp(t.role,0,3):t.kind==3?2:t.kind)+(t.managed&&!t.pirate&&t.kind==1?10:0)+hullVariant(t.genome)*32;}
+inline HullRemains hullRemains(const Traffic& t){return {true,t.faction,craftModel(t),t.genome.seed,(t.kind==2||t.kind==3)?11:t.kind==1?enemyDef(t).radius:5,unit(t.forward,{0,0,-1})};}
 inline double debrisNoise(uint32_t seed,int index){uint32_t h=seed^uint32_t(index+1)*0x9e3779b9u;h^=h>>16;h*=0x7feb352du;h^=h>>15;h*=0x846ca68bu;h^=h>>16;return double(h>>8)/16777215.;}
 // Whole triangles belong to exactly one fragment, retaining all hull geometry.
 inline int hullFragment(V3 centre){return centre.x<-.5?0:centre.x>.5?1:centre.z<-.35?2:centre.z>.35?3:4;}

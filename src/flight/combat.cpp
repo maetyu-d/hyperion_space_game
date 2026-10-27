@@ -30,14 +30,14 @@ double interceptTime(V3 offset,V3 velocity,double speed){
  if(std::abs(a)<1e-8)return b<0?-c/b:0;double discriminant=b*b-4*a*c;if(discriminant<0)return 0;
  double root=std::sqrt(discriminant),t1=(-b-root)/(2*a),t2=(-b+root)/(2*a);if(t1>0&&t2>0)return std::min(t1,t2);return t1>0?t1:t2>0?t2:0;
 }
-const char* enemyStateName(const Traffic& t){static const char* states[]={"Patrol","Closing","Attack run","Breaking away","Withdrawing","Evasive burn","Venting heat","At workshop","Drive disabled / drifting"};return states[std::clamp(t.state,0,8)];}
+const char* enemyStateName(const Traffic& t){static const char* states[]={"Patrol","Closing","Attack run","Breaking away","Withdrawing","Evasive burn","Venting heat","At workshop","Drive disabled / drifting","Boarding clamps attached"};return states[std::clamp(t.state,0,9)];}
 const char* systemName(int index){static const char* names[]={"Drive","Reactor","Shield generator","Weapon mounts","Sensors"};return names[std::clamp(index,0,SystemCount-1)];}
 const EnemyDef& enemyDef(int role){static const std::array<EnemyDef,4> types{{{"Raider",100,30,105,360,8,0},{"Interceptor",80,40,155,210,6,1},{"Marauder",180,65,68,540,13,2},{"Prism disruptor",115,80,90,430,10,Resonance}}};return types[std::clamp(role,0,3)];}
 bool Game::enemiesOf(const Traffic& a,const Traffic& b)const{
  if(a.kind!=1||a.id==b.id)return false;
- if(!a.managed)return b.kind==2;
+ if(!a.managed)return b.kind==2||b.kind==3;
  if(a.pirate&&b.kind==2&&a.band==b.band)return false;
- if(a.pirate)return b.pirate?a.band!=b.band:b.kind==1||b.kind==2;
+ if(a.pirate)return b.pirate?a.band!=b.band:b.kind==1||b.kind==2||b.kind==3;
  if(b.pirate)return true;return b.faction>=0&&b.faction<5&&a.enemies[b.faction];
 }
 bool Game::protectedPort(V3 at)const{for(const auto& p:ports)if(!p.disabled&&!p.settlement.empty()&&length(at-p.position)<150)return true;return false;}
@@ -122,6 +122,7 @@ void Game::damageTraffic(int index,double amount,int weapon,V3 at,bool credited,
   else if(credited){kills++;events.push_back({"bounty",t.home,t.faction,"","NOMA",t.id});message("Hostile destroyed / bounty reported / salvage available nearby.");}
   if(wrecks.size()>=48)wrecks.erase(wrecks.begin());wrecks.push_back({t.position,t.velocity*.08,180,t.managed?std::array<double,3>{2.+t.role*.5,.5,.5}:std::array<double,3>{4.+t.role*2,1.+t.role,2.},t.id});wrecks.back().hull=hullRemains(t);if(!credited&&!t.managed)events.push_back({"wreckCreated",t.home,t.faction,"",attacker,t.id});
  }else if(credited){events.push_back({"civilian",t.home,t.faction,""});message("Civilian destroyed / authority notified.");}
+ if(t.kind==3)events.push_back({"recoveryLoss",t.home,t.faction,"",credited?"NOMA":attacker,t.id});
  if(!t.routeId.empty())events.push_back({"freightLoss",t.home,t.faction,t.routeId,credited?"NOMA":attacker,t.id});
 }
 void Game::chainArc(int first,double damage){
@@ -159,13 +160,15 @@ void Game::updateCombat(double dt,const Input& input){
  if(decoyPressed&&!docked&&c.decoys>0&&c.decoyClock<=0){c.decoys--;c.decoyClock=2;effect(ship.position-ship.forward*6,3,ship.velocity*.4);for(auto& b:bolts)if(b.hostile&&b.weapon==3&&b.target=="NOMA"&&length(b.position-ship.position)<900)b.target.clear();message("Countermeasure burst / nearby seekers lost lock.");}
  for(int i=0;i<int(traffic.size());i++){
   auto& t=traffic[i];t.hitFlash=std::max(0.,t.hitFlash-dt);
-  if(t.dead){if(t.managed)continue;t.respawn-=dt;if(t.respawn>0)continue;
+  if(t.dead){if(t.managed||t.captured)continue;t.respawn-=dt;if(t.respawn>0)continue;
    if(length(t.position-ship.position)<2000||length(ports[std::clamp(t.home,0,int(ports.size())-1)].position-ship.position)<3000){t.respawn=10;continue;}
    t.dead=false;t.health=t.kind==1?enemyDef(t).hull:100;t.shield=t.kind==1?enemyDef(t).shield:0;t.armour=100;t.modules={100,100,100};t.energy=100;t.heat=t.charge=0;t.ammunition=180;t.missiles=t.countermeasures=2;t.salvos=0;t.chargeWeapon=-1;t.venting=false;t.decoyClock=t.evadeClock=t.serviceClock=0;t.positioned=false;
   }
   if(t.kind!=2||!t.positioned)t.previous=t.position;
   const auto& home=ports[std::clamp(t.home,0,int(ports.size())-1)];
   if(!t.positioned&&t.kind!=2){double a=time*(t.kind==1?.035:.023)+t.phase;t.position=home.position+V3{std::cos(a)*(t.kind==1?360:240),std::sin(a*(t.kind==1?1.5:1.3))*(t.kind==1?160:95),std::sin(a)*(t.kind==1?360:240)};t.previous=t.position;t.forward=unit(cross(home.normal,{0,1,0}),{0,0,-1});}t.positioned=true;
+  if(t.kind==3)continue;
+  if(t.boarding){t.state=9;t.velocity={};t.charge=0;t.chargeWeapon=-1;continue;}
   if(t.kind==0){double a=time*.023+t.phase;t.position=home.position+V3{std::cos(a)*240,std::sin(a*1.3)*95,std::sin(a)*240};t.velocity=dt>0?(t.position-t.previous)/dt:V3{};t.forward=unit(t.velocity,t.forward);continue;}
   if(t.kind!=1)continue;
   const auto& type=enemyDef(t);t.fireClock-=dt;t.stateClock=std::max(0.,t.stateClock-dt);t.shieldDelay=std::max(0.,t.shieldDelay-dt);t.decoyClock=std::max(0.,t.decoyClock-dt);t.evadeClock=std::max(0.,t.evadeClock-dt);
@@ -198,7 +201,7 @@ void Game::updateCombat(double dt,const Input& input){
    else if(distance<70||(t.state==3&&t.stateClock>0)){t.state=3;desired=(-toward+side*.7)*speed;if(t.stateClock<=0)t.stateClock=1.8;}
    else{t.state=distance<type.range?2:1;double standOff=type.range*(type.standOff>0?type.standOff:t.role==1?.58:t.role==2?.83:.72);double radial=std::clamp((distance-standOff)/100.,-.6,1.);desired=(toward*radial+side*(type.strafe>0?type.strafe:t.role==1?.8:t.role==2?.18:.38))*speed;}
   }else{t.state=0;t.serviceClock=0;double a=time*.035+t.phase;V3 patrol=home.position+V3{std::cos(a)*360,std::sin(a*1.5)*160,std::sin(a)*360};
-   if(t.managed&&t.pirate){double closest=10000;for(const auto& convoy:traffic)if(convoy.kind==2&&!convoy.dead&&enemiesOf(t,convoy)&&!protectedPort(convoy.position)){double d=length(convoy.position-t.position);if(d<closest){closest=d;patrol=convoy.position;}}}
+   if(t.managed&&t.pirate){double closest=10000;for(const auto& convoy:traffic)if((convoy.kind==2||convoy.kind==3)&&!convoy.dead&&enemiesOf(t,convoy)&&!protectedPort(convoy.position)){double d=length(convoy.position-t.position);if(d<closest){closest=d;patrol=convoy.position;}}}
    if(t.managed&&!t.pirate&&t.escortDuty)for(const auto& convoy:traffic)if(convoy.kind==2&&!convoy.dead&&convoy.reason=="Commissioned escort"&&!t.enemies[convoy.faction]){patrol=convoy.position+home.normal*90;break;}
    desired=unit(patrol-t.position,t.forward)*std::min(speed,length(patrol-t.position));}
   // Separated wing slots stop all four roles collapsing into the same firing line.

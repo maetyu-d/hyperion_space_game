@@ -7,6 +7,7 @@ J encodeSecurity(const Economy& e){
  J j={{"schema",2},{"systems",e.securitySystems},{"pirates",J::array()},{"captains",J::array()}};
  for(const auto& b:e.pirates)j["pirates"].push_back({{"id",b.id},{"name",b.name},{"star",b.star},{"haven",b.haven},{"stock",b.stock},{"treasury",b.treasury},{"grievance",b.grievance},{"truceUntil",b.truceUntil},{"nextRaid",b.nextRaid},{"stolen",b.stolen},{"raids",b.raids}});
  for(const auto& c:e.captains)j["captains"].push_back({{"genome",encodeGenome(c.genome)},{"id",c.id},{"name",c.name},{"star",c.star},{"home",c.home},{"band",c.band},{"faction",c.faction},{"role",c.role},{"defeats",c.defeats},{"victories",c.victories},{"destroyed",c.destroyed},{"readyAt",c.readyAt},{"grudge",c.grudge},{"hull",c.hull},{"shield",c.shield},{"armour",c.armour},{"energy",c.energy},{"heat",c.heat},{"modules",c.modules},{"rounds",c.rounds},{"missiles",c.missiles},{"decoys",c.decoys}});
+ for(size_t i=0;i<e.captains.size();i++)if(e.captains[i].captured)j["captains"][i]["captured"]=true;
  return j;
 }
 namespace {
@@ -27,7 +28,7 @@ void decodeSecurity(Economy& e,const J& j){
  const auto& captains=j.at("captains");collection(captains,160000);ids.clear();
  for(const auto& v:captains){Captain c;if(j.at("schema")==2)c.genome=decodeGenome(v.at("genome"));c.id=text(v,"id");c.name=text(v,"name");c.star=text(v,"star");c.home=text(v,"home");c.band=text(v,"band");auto* p=findSettlement(e,c.home);auto* band=findPirates(e,c.band);
   if(c.id.empty()||!ids.insert(c.id).second||!e.securitySystems.count(c.star)||!p||p->star!=c.star||(!c.band.empty()&&(!band||band->star!=c.star||band->haven!=c.home)))throw std::runtime_error("Invalid captain allegiance graph");
-  c.faction=int(integer(v,"faction",1,4));c.role=int(integer(v,"role",0,3));c.defeats=int(integer(v,"defeats",0,1000000));c.victories=int(integer(v,"victories",0,1000000));c.destroyed=v.at("destroyed").get<bool>();c.readyAt=n(v,"readyAt",0,1e12);c.grudge=n(v,"grudge",0,100);
+  c.faction=int(integer(v,"faction",1,4));c.role=int(integer(v,"role",0,3));c.defeats=int(integer(v,"defeats",0,1000000));c.victories=int(integer(v,"victories",0,1000000));c.destroyed=v.at("destroyed").get<bool>();c.captured=v.value("captured",false);if(c.captured&&!c.destroyed)throw std::runtime_error("Captured captain still owns a ship");c.readyAt=n(v,"readyAt",0,1e12);c.grudge=n(v,"grudge",0,100);
   c.hull=n(v,"hull",0,240);c.shield=n(v,"shield",0,100);c.armour=n(v,"armour",0,100);c.energy=n(v,"energy",0,100);c.heat=n(v,"heat",0,100);
   const auto& modules=v.at("modules");collection(modules,3);if(modules.size()!=3)throw std::runtime_error("Invalid captain modules");for(int i=0;i<3;i++){c.modules[i]=modules[i].get<double>();if(!std::isfinite(c.modules[i])||c.modules[i]<0||c.modules[i]>100)throw std::runtime_error("Invalid captain module");}
   c.rounds=int(integer(v,"rounds",0,180));c.missiles=int(integer(v,"missiles",0,2));c.decoys=int(integer(v,"decoys",0,2));

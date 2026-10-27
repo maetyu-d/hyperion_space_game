@@ -54,7 +54,7 @@ void advanceSecurity(Economy& e){
   else if(!c.destroyed){c.destroyed=true;c.hull=0;c.readyAt=e.hour+24;economicEvent(e,c.name,"Patrol withdrawn after its home charter changed. Its former authority cannot outfit ships from the new owner's warehouse.");}
  }
 
- for(auto& c:e.captains)if(c.destroyed&&e.hour+1e-8>=c.readyAt){
+ for(auto& c:e.captains)if(c.destroyed&&!c.captured&&e.hour+1e-8>=c.readyAt){
   if(fitShip(e,c,true))economicEvent(e,c.name,"Returned in a replacement ship paid for with finite funds, alloy, components and fuel. Previous defeats and grudges remain on record.");
   c.readyAt=e.hour+6;
  }

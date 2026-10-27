@@ -40,6 +40,7 @@ std::vector<TurnEvent> Game::upcoming(double horizon)const {
  std::vector<TurnEvent> events;if(!std::isfinite(horizon))return events;horizon=clamp(horizon,0.,24.);
  auto add=[&](double eta,Notice priority,const std::string& text,const std::string& site=std::string{},bool estimate=false){if(!std::isfinite(eta)||eta>horizon+1e-8)return;events.push_back({std::max(0.,eta),priority,estimate,text,site});};
  for(const auto& [id,d]:s.economy.worldDamage)if(d.recovery.valid&&(d.star==s.currentStar||d.recovery.faction==0)){const auto& r=d.recovery;if(r.crew>0)add(r.supportUntil-s.hours,Notice::Critical,"Wreck life support / "+std::to_string(r.crew)+" survivors",d.owner);if(!r.failed&&!r.stabilized&&r.failureAt>s.hours)add(r.failureAt-s.hours,Notice::Important,"Wreck secondary failure",d.owner);}
+ for(const auto& c:s.economy.recoveryCrews)if(c.phase<3&&c.star==s.currentStar){double distance=0;auto at=c.position;for(size_t i=c.leg;i<c.route.size();i++){distance+=flight::length(c.route[i]-at);at=c.route[i];}add(distance/3200+(c.phase==1?std::max(0.,.5-c.work):0),Notice::Status,c.name+(c.phase==2?" returning survivors and equipment":" rescue and salvage response"),c.home,true);}
  if(s.flight.courier.active)add(s.flight.courier.deadline-s.hours,Notice::Important,"Courier deadline",s.flight.courier.destination);
  for(const auto& c:s.economy.contracts)if(c.accepted&&!c.closed){auto* site=findSettlement(s.economy,c.settlement);add(c.deadline-s.hours,Notice::Important,"Delivery deadline / "+(site?site->name:c.settlement),c.settlement);}
  for(const auto& m:s.economy.missions)if(missionOpen(m))add(m.deadline-s.hours,Notice::Important,"Mission deadline / "+m.title,m.issuer);
@@ -57,6 +58,7 @@ void Game::waitPlanned(const std::string& duration){
  notify("Choose a wait of 1, 3, 6, 12 or 24 hours");
 }
 std::string Game::orderHint(const std::string& action,const std::string& arg){
+ if(action.rfind("boarding",0)==0){auto q=boardingQuote(action,arg.empty()?s.flight.combatTarget:arg);return q.available?q.text:q.reason;}
  if(action.rfind("recovery",0)==0){auto q=recoveryQuote(action,arg.empty()?recoveryTarget:arg);return q.available?q.text:q.reason;}
  if(action=="wreckRescue"||action=="wreckSalvage"||action=="wreckCut"||action=="wreckDeliver"){auto quote=wreckQuote(action,arg);return quote.available?quote.text:quote.reason;}
  if(action=="oceanRoute")return "Free route planning / estimates include headwind power and vent exposure; work costs extra";

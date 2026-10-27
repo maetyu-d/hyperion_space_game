@@ -1,0 +1,159 @@
+{
+  "version": "3.62.0",
+  "binarySHA256": "82b3ac53224c08035ef5baac26b7402eb5d854714f275e440f81f2d35130cec6",
+  "runs": [
+    {
+      "check": "fresh",
+      "exit": 0
+    },
+    {
+      "check": "campaign",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "advanced",
+      "exit": 0,
+      "seconds": 1.53
+    },
+    {
+      "check": "accepted",
+      "exit": 0,
+      "seconds": 1.62
+    },
+    {
+      "check": "relief-ready",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "survey-ready",
+      "exit": 0,
+      "seconds": 1.59
+    },
+    {
+      "check": "escort",
+      "exit": 0,
+      "seconds": 1.61
+    },
+    {
+      "check": "minor-survey",
+      "exit": 0,
+      "seconds": 1.56
+    },
+    {
+      "check": "wreck-at-sea",
+      "exit": 0,
+      "seconds": 2.66
+    },
+    {
+      "check": "wreck-delivered",
+      "exit": 0,
+      "seconds": 3.1
+    },
+    {
+      "check": "old-damaged-world",
+      "exit": 0,
+      "seconds": 11.63,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "old-dismantled-wreck",
+      "exit": 0,
+      "seconds": 12.03,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "structural-fragments",
+      "exit": 0,
+      "seconds": 11.66,
+      "initialJSONExact": true,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "derivedTrafficStanceRefreshed": false
+    },
+    {
+      "check": "fragments-in-cockpit",
+      "exit": 0,
+      "noSave": true,
+      "frames": 4
+    },
+    {
+      "check": "legacy-ruins-in-cockpit",
+      "exit": 0,
+      "noSave": true,
+      "frames": 4
+    },
+    {
+      "check": "old-recovery-side-breach",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "old-recovery-live-station",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "old-recovery-ship-recorder",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "old-recovery-tow-wing",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "recovery-exposed-machinery",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "recovery-rescue-vessel",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "recovery-boarding-clamps",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    },
+    {
+      "check": "recovery-captured-hull",
+      "exit": 0,
+      "authoritativeStateExact": true,
+      "settledFrozenRoundtripExact": true,
+      "renderFixtureTrafficRegenerated": true
+    }
+  ],
+  "frozenSaveRoundtripsExact": true,
+  "rawStructuralFixture": {
+    "renderOnlyTrafficRemoved": true,
+    "restoredTrafficCount": 11,
+    "onlyTrafficRegenerated": true,
+    "economyAndShipStateUnchanged": true
+  },
+  "oldCampaignRoundtripsExact": true,
+  "damageCampaignsAuthoritativeExact": true
+}

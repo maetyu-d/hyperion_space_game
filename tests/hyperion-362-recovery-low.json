@@ -1,0 +1,93 @@
+[
+  {
+    "caps": 587,
+    "frames": 70,
+    "name": "side-breach",
+    "objects": 1,
+    "partArea": 3254.342265996649,
+    "parts": 18,
+    "profile": "low",
+    "scene": 0,
+    "sourceArea": 3254.3422659966204,
+    "sourceTriangles": 1120,
+    "triangles": 2775
+  },
+  {
+    "caps": 274,
+    "frames": 70,
+    "name": "live-station",
+    "objects": 1,
+    "partArea": 52078.49128556071,
+    "parts": 18,
+    "profile": "low",
+    "scene": 1,
+    "sourceArea": 52078.49128556046,
+    "sourceTriangles": 2674,
+    "triangles": 3768
+  },
+  {
+    "caps": 587,
+    "frames": 70,
+    "name": "shoot-debris",
+    "objects": 1,
+    "partArea": 3254.342265996649,
+    "parts": 17,
+    "profile": "low",
+    "scene": 2,
+    "sourceArea": 3254.3422659966204,
+    "sourceTriangles": 1120,
+    "triangles": 2775
+  },
+  {
+    "caps": 716,
+    "frames": 70,
+    "name": "cut-equipment",
+    "objects": 1,
+    "partArea": 4173.480367286548,
+    "parts": 18,
+    "profile": "low",
+    "scene": 3,
+    "sourceArea": 4173.48036728656,
+    "sourceTriangles": 694,
+    "triangles": 2674
+  },
+  {
+    "caps": 324,
+    "frames": 70,
+    "name": "ship-recorder",
+    "objects": 1,
+    "partArea": 2174.5242391134825,
+    "parts": 18,
+    "profile": "low",
+    "scene": 4,
+    "sourceArea": 2174.5242391134793,
+    "sourceTriangles": 324,
+    "triangles": 1416
+  },
+  {
+    "caps": 76,
+    "frames": 70,
+    "name": "tow-wing",
+    "objects": 1,
+    "partArea": 6152.532883356821,
+    "parts": 9,
+    "profile": "low",
+    "scene": 5,
+    "sourceArea": 6152.532883356824,
+    "sourceTriangles": 22,
+    "triangles": 218
+  },
+  {
+    "caps": 0,
+    "frames": 70,
+    "name": "reconstruction",
+    "objects": 0,
+    "partArea": 0.0,
+    "parts": 0,
+    "profile": "low",
+    "scene": 6,
+    "sourceArea": 0.0,
+    "sourceTriangles": 0,
+    "triangles": 0
+  }
+]

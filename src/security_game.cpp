@@ -1,7 +1,7 @@
 #include "game.hpp"
 namespace hyperion {
 void Game::storeSecurity(){
- auto& e=s.economy;for(const auto& t:s.flight.traffic)if(t.managed){auto* c=findCaptain(e,t.id);if(!c||c->destroyed||t.dead)continue;
+ auto& e=s.economy;for(const auto& t:s.flight.traffic)if(t.kind==3)for(auto& crew:e.recoveryCrews)if(crew.id==t.id&&crew.phase<3)crew.health=std::min(crew.health,std::max(0.,t.health));for(const auto& t:s.flight.traffic)if(t.managed){auto* c=findCaptain(e,t.id);if(!c||c->destroyed||t.dead)continue;
   c->hull=t.health;c->shield=t.shield;c->armour=t.armour;c->modules=t.modules;c->rounds=t.ammunition;c->missiles=t.missiles;c->decoys=t.countermeasures;c->energy=t.energy;c->heat=t.heat;
  }
 }
@@ -14,7 +14,7 @@ void Game::refreshSecurity(){
   if(it==f.traffic.end()){hyperion::flight::Traffic t;t.id=c.id;t.kind=1;t.managed=true;t.dead=true;f.traffic.push_back(t);it=f.traffic.end()-1;}
   auto& t=*it;bool revive=t.dead&&!c.destroyed;t.managed=true;t.name=c.name;t.band=c.band;t.pirate=!c.band.empty();t.role=c.role;t.genome=c.genome;t.faction=c.faction;t.home=home;
   auto* base=findSettlement(e,c.home);if(!t.pirate&&(!base||base->owner!=c.faction)){t.dead=true;t.respawn=1e6;continue;}
-  if(c.destroyed){t.dead=true;t.respawn=1e6;}else if(revive){t.dead=false;t.respawn=0;t.health=c.hull;t.shield=c.shield;t.armour=c.armour;t.modules=c.modules;t.ammunition=c.rounds;t.missiles=c.missiles;t.countermeasures=c.decoys;t.energy=c.energy;t.heat=c.heat;t.positioned=false;t.fireClock=3;t.charge=0;t.chargeWeapon=-1;t.salvos=0;t.serviceClock=t.decoyClock=t.evadeClock=0;t.assaultReported=false;}
+  if(c.destroyed||c.captured){t.dead=true;t.captured=c.captured;t.respawn=1e6;}else if(revive){t.dead=false;t.respawn=0;t.health=c.hull;t.shield=c.shield;t.armour=c.armour;t.modules=c.modules;t.ammunition=c.rounds;t.missiles=c.missiles;t.countermeasures=c.decoys;t.energy=c.energy;t.heat=c.heat;t.positioned=false;t.fireClock=3;t.charge=0;t.chargeWeapon=-1;t.salvos=0;t.serviceClock=t.decoyClock=t.evadeClock=0;t.assaultReported=false;}
   auto* band=findPirates(e,c.band);t.enemies.fill(false);t.escortDuty=false;
   if(band){t.allegiance=band->name;bool feud=band->grievance>=10||c.grudge>=10;bool truce=band->truceUntil>e.hour&&!feud;
    t.hostile=feud||(!truce&&stockTotal(shipStock())>=20);t.reason=feud?"Vendetta / crew losses attributed to NOMA":truce?"Paid truce / "+std::to_string(int(std::ceil(band->truceUntil-e.hour)))+" h remaining":t.hostile?"Piracy / demanding ship cargo":"Pirate crew / seeking loaded convoys";
@@ -23,6 +23,7 @@ void Game::refreshSecurity(){
    t.enemies[0]=t.hostile;for(int i=1;i<factionCount;i++)t.enemies[i]=factionsAtWar(e,c.faction,i);
   }
  }
+ syncRecoveryTraffic();syncBoarding();
 }
 bool Game::securityEvent(const hyperion::flight::Event& event){
  auto& e=s.economy;auto* captain=findCaptain(e,event.victim);

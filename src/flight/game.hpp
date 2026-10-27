@@ -50,7 +50,7 @@ struct Traffic {V3 position,previous,forward;double phase=0,health=100,fireClock
  V3 velocity;std::string id;int role=0,state=0;double shield=0,armour=100,shieldDelay=0,stateClock=0,hitFlash=0;bool positioned=false;
  std::array<double,3> modules{100,100,100};double energy=100,heat=0,charge=0,decoyClock=0,evadeClock=0,serviceClock=0;
  int ammunition=180,missiles=2,countermeasures=2,chargeWeapon=-1,salvos=0;bool venting=false;
- bool managed=false,pirate=false,hostile=true,assaultReported=false,escortDuty=false;
+ bool managed=false,pirate=false,hostile=true,assaultReported=false,escortDuty=false,boarding=false,captured=false;
  std::string name,allegiance,band,reason;std::array<bool,5> enemies{};EnemyGenome genome;
 };
 inline EnemyDef enemyDef(const Traffic& t){return enemyDef(t.role,t.genome);}

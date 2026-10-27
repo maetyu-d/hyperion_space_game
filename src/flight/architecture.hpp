@@ -228,7 +228,7 @@ void main(){
  }else if(group==0)c+=pigment(fresnel*.42+(localPosition+fracturePivot).y*.009)*fresnel*.018*condition;
  if(inlay)c+=mix(accent,pigment((localPosition+fracturePivot).y*.035+(localPosition+fracturePivot).x*.012+time*.004),.62)*(.11+.31*working);
  if(group==5)c+=pigment((localPosition+fracturePivot).y*.05)*fresnel*ecology*.012;
- if(code==16)c+=mix(accent,pigment(materialP.y*.08+materialP.x*.04+time*.025),.65)*fractureHeat*(.18+fresnel*.65);
+ if(code==16){float strata=.5+.5*sin(materialP.y*5.0+sin(materialP.x*1.7)*.4);c*=.74+strata*.26;c+=pigment(materialP.y*.08+materialP.x*.04)*(.004+fresnel*.006);c+=mix(accent,pigment(materialP.y*.08+materialP.x*.04+time*.025),.65)*fractureHeat*(.18+fresnel*.65);}
  float haze=clamp(1.-exp(-length(eye-worldPosition)*.00055*structureAir),0.,.45);
  vec3 air=mix(vec3(.010,.018,.032),vec3(.13,.21,.28),smoothstep(-.15,.18,sunHeight));
  finalColor=vec4(mix(c,air,haze),1.);

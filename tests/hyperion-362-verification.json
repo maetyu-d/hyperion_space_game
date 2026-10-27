@@ -1,0 +1,33 @@
+{
+  "version": "3.62.0",
+  "cpuSuites": 40,
+  "cpuFailures": 0,
+  "societyChecks": 65,
+  "recoveryChecks": 108,
+  "addressSanitizer": true,
+  "undefinedBehaviorSanitizer": true,
+  "wholeCoreInstrumented": true,
+  "leakDetection": false,
+  "playerSavesUsed": false,
+  "nativeScenes": 111,
+  "nativeFrames": 7095,
+  "nativeProfiles": [
+    "high",
+    "low",
+    "reduced"
+  ],
+  "singleResponderHullVerified": true,
+  "boardingDockingExitVerified": true,
+  "installedChecks": 23,
+  "copiedCampaignStates": 20,
+  "installedBinarySHA256": "82b3ac53224c08035ef5baac26b7402eb5d854714f275e440f81f2d35130cec6",
+  "oldCampaignRoundtripsExact": true,
+  "newSocietyAuthoritativeAndSettledRoundtripsExact": true,
+  "sanitizerSocietyChecks": 65,
+  "nativeCombatAndLandingPassed": true,
+  "uiShotsVerified": [
+    "boarding",
+    "responders",
+    "prize"
+  ]
+}

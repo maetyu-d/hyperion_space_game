@@ -1,4 +1,4 @@
-# HYPERION 3.61
+# HYPERION 3.62
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,72 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Living recovery, boarding and captured hulls in 3.62
+
+Faction settlements now dispatch named rescue and salvage vessels to actual
+wrecks. Each response reserves two residents, eight alloy, four components,
+one crystal, four propellant, two rations and an 80-credit service fee. Missing
+people, goods, funds or an intact berth delay the response. Up to two crews
+operate in each system. Their utility ships are visible, targetable and
+vulnerable to the existing pirates and faction combat.
+
+Responders approach a holding point, spend half an hour working, stabilize
+hazards, evacuate real survivors and recover finite equipment. Fuel burns during
+travel; unused stores and recovered goods return to the settlement warehouse.
+Destroyed transports lose their crew and passengers, and their remaining cargo
+becomes another wreck. Active crews keep travelling when the player leaves.
+![A funded recovery vessel follows its route above a psychedelic planet](docs/screenshots/recovery-vessel.jpg)
+
+Player recovery commissions take priority over new NPC dispatches; if another
+crew resolves a commissioned rescue, unused escrow returns without a standing
+penalty. The planner includes estimated responder arrivals.
+
+**Boarding is turn based.** Disable a warship's drive, suppress its shields and
+approach within 55 km below 5 km/s. Select **Plan boarding**, or open **Market → Boarding and captured crews**. Three real volunteers attach to the ship. Engineering,
+bridge and cargo compartments provide different orders: isolate power, demand
+surrender, secure a compartment, take finite supplies, capture the hull or
+withdraw. Direct attacks on defended compartments risk volunteers; medicine
+and engineering isolation reduce that risk. Every work order resolves one hour,
+including other ships' combat. Finish or withdraw the party before taking the
+helm or engaging FTL.
+
+![Compact turn-based boarding orders with engineering, bridge and cargo choices](docs/screenshots/boarding-orders.jpg)
+
+Captured crew share the twelve rescue berths with ocean and wreck survivors.
+Disembark them at an inhabited faction port. A captured captain remains out of
+service until released, then needs a funded replacement. Capturing a named
+pirate also fulfils an accepted interdiction commission. Pirate crews remember
+the seizure as a vendetta.
+
+Tow a captured hull to a powered, staffed shipyard with a fabricator, dock within
+100 km and choose **Deliver captured hull**. **Shipyard → Owned and captured
+hulls** lets you settle its title, sell it for money from the actual yard treasury,
+or commission it using repair materials and fuel. Commissioning maps the prize
+to a compatible player hull class, retains its finite magazines, repairs hull
+and systems to at least 70%, and stores your previous ship at that yard.
+
+New wrecks carry salvage claims. Emergency stabilization and rescue remain
+available. For protected equipment, accept a recovery commission, buy a licence
+or explicitly defy the claim. Defiance creates a 150-credit warrant, standing
+loss and captain grudges. Unclaimed wrecks can be registered to NOMA. Captured
+faction hulls retain disputed titles until the original faction is paid for the
+hull; an equipment salvage licence does not clear that title.
+Outstanding warrants remain separate. Pirate prizes have clear salvage title.
+
+Broken bulkheads now expose layered metal, equipment racks, cooling spectral
+seams, ceramic insulation and curled severed conduits. Machinery stays attached
+to moving fragments and the surviving sides of a breach. Decompression plumes
+follow recent damage. Low graphics reduces interior detail and effects while
+retaining the same simulation, claims and capture rules.
+
+![Machinery and severed conduits exposed on the surviving sides of a reactor breach](docs/screenshots/wreck-interiors.jpg)
+
+`hyperion_society_tests` checks responders, interception, population and cargo
+conservation, licences, warrants, boarding, surrender, capture, custody, title
+settlement, commissioning, prisoner delivery and save compatibility. The optional
+native `hyperion_society_check` renders five focused scenes in all three quality
+profiles alongside the existing recovery and architecture checks.
 
 ## Damage and recovery in 3.61
 

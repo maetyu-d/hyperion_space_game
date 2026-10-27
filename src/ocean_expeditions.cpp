@@ -4,7 +4,7 @@ namespace hyperion {
 OceanWreck* findOceanWreck(Economy& e,const std::string& id){for(auto& w:e.oceanWrecks)if(w.contact.id==id)return &w;return nullptr;}
 const OceanWreck* findOceanWreck(const Economy& e,const std::string& id){for(const auto& w:e.oceanWrecks)if(w.contact.id==id)return &w;return nullptr;}
 void advanceOceanWrecks(Economy& e){for(auto& w:e.oceanWrecks)if(w.crew&&e.hour>w.supportUntil){w.lost+=w.crew;w.crew=0;economicEvent(e,w.contact.name,"Life support exhausted / stranded crew lost");}}
-int Game::rescuedCrew()const{int n=0;for(const auto& w:s.economy.oceanWrecks)n+=w.aboard;for(const auto& [id,d]:s.economy.worldDamage)n+=d.recovery.aboard;return n;}
+int Game::rescuedCrew()const{int n=0;for(const auto& w:s.economy.oceanWrecks)n+=w.aboard;for(const auto& [id,d]:s.economy.worldDamage)n+=d.recovery.aboard;for(const auto& [id,b]:s.economy.boardings)if(b.status==2)n+=b.defenders;return n;}
 std::vector<Contact> Game::wreckSites()const{
  std::vector<Contact> out;if(!hasExpedition())return out;
  for(const auto& w:s.economy.oceanWrecks)if(objectIntegrity(s.economy.worldDamage,"field:"+w.contact.id)>0&&w.star==s.activeStar&&w.planet==s.activePlanet&&std::abs(w.contact.pos.y-s.oceanAtY)<=131&&std::abs(w.contact.pos.x-s.oceanX)<650)out.push_back(w.contact);

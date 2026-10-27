@@ -5,6 +5,7 @@
 #include "shipyard_storage.hpp"
 #include "missions_storage.hpp"
 #include "ocean_storage.hpp"
+#include "recovery_society_storage.hpp"
 #include <stdexcept>
 namespace hyperion {
 using J=nlohmann::json;
@@ -13,6 +14,7 @@ J encodeEconomy(const Economy& e) {
          {"colonists",e.colonists},{"ships",e.ships},{"nextId",e.nextId},{"hold",e.hold},
          {"systems",e.systems},{"researched",e.researched},{"research",e.research},
          {"researchProgress",e.researchProgress},{"docked",e.docked}};
+    if(!e.recoveryCrews.empty()||!e.boardings.empty()||!e.prizes.empty())j["recoverySociety"]=encodeRecoverySociety(e);
     if(!e.oceanWrecks.empty())j["oceanWrecks"]=encodeOceanWrecks(e);
     if(!e.missions.empty()||!e.missionClock.empty())j["missions"]=encodeMissions(e);
     j["ecosystems"]=encodeEcosystems(e);j["security"]=encodeSecurity(e);j["shipyard"]=encodeShipyard(e);
@@ -97,8 +99,8 @@ Economy decodeEconomy(const J& j,Universe& u,double hour) {
     if(j.contains("security"))decodeSecurity(e,j.at("security"));
     if(j.contains("shipyard"))decodeShipyard(e,j.at("shipyard"));
     if(j.contains("oceanWrecks"))decodeOceanWrecks(e,j.at("oceanWrecks"),u);
-    int recoveryTows=0,recoveryPassengers=0;for(const auto& [id,d]:e.worldDamage){recoveryTows+=d.recovery.towed;recoveryPassengers+=d.recovery.aboard;}for(const auto& w:e.oceanWrecks)recoveryPassengers+=w.aboard;
-    if(recoveryTows>1||recoveryPassengers>12)throw std::runtime_error("Recovery capacity exceeded");
+    if(j.contains("recoverySociety"))decodeRecoverySociety(e,j.at("recoverySociety"),hour);
+    validateRecoverySociety(e);
     if(j.contains("missions"))decodeMissions(e,j.at("missions"),u);
     return e;
 }

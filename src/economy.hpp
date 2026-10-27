@@ -98,16 +98,28 @@ struct PirateBand {
 struct Captain {
     hyperion::flight::EnemyGenome genome;
     std::string id,name,star,home,band;int faction=1,role=0,defeats=0,victories=0;
-    bool destroyed=false;double readyAt=0,grudge=0;
+    bool destroyed=false,captured=false;double readyAt=0,grudge=0;
     double hull=100,shield=30,armour=100,energy=100,heat=0;
     std::array<double,3> modules{100,100,100};int rounds=180,missiles=2,decoys=2;
 };
 struct ShipOffer {std::string port;hyperion::flight::Vessel vessel;hyperion::flight::CombatState equipment;double hull=100,fuel=0,tank=240,shield=100;};
+// Recovery vessels and boarding parties are finite campaign actors, not render effects.
+struct RecoveryCrew {
+ std::string id,name,star,home,target,band;int faction=1,phase=0,people=2,rescued=0;
+ double lastHour=0,work=0,health=100;flight::V3 position,origin,forward{0,0,-1};Stock cargo{};std::vector<flight::V3> route;int leg=0;
+};
+struct Boarding {
+ std::string id,star,home,band,prize;int faction=1,status=0,rooms=0,initialParty=0,party=0,partyLost=0,partyReturned=0;
+ int initialDefenders=0,defenders=0,defendersLost=0,defendersReturned=0;bool reserve=false,surrendered=false,crime=false;
+ double started=0,updated=0;uint32_t seed=0;Stock cargo{},initialCargo{},looted{},transferred{},destroyed{};
+};
+struct PrizeShip {ShipOffer ship;std::string id,source;int faction=-1;bool disputed=false;};
 struct VesselService {double fuel=0,hull=0,work=0;int64_t price=0;hyperion::flight::CombatState equipment;};
 VesselService quoteVesselService(const ShipOffer&,const Stock&);
 struct EconomicEvent { double hour = 0; std::string place, cause; };
 struct Economy {
     WorldDamageMap worldDamage;uint64_t damageRevision=1,geometryRevision=1;
+    std::vector<RecoveryCrew> recoveryCrews;std::map<std::string,Boarding> boardings;std::vector<PrizeShip> prizes;
     std::vector<OceanWreck> oceanWrecks;
     std::vector<Mission> missions;std::map<std::string,double> missionClock;
     int ecosystemRevision=1;std::map<std::string,Ecosystem> ecosystems;

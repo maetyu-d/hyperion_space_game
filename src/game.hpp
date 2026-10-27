@@ -52,6 +52,10 @@ public:
  std::string trackedMission,recoveryTarget;
  struct RecoveryQuote {bool available=false;std::string text,reason;};
  RecoveryQuote recoveryQuote(const std::string&,const std::string&)const;bool recoveryAction(const std::string&,const std::string&);void updateRecovery(double);void recoveryMissions();void registerSpaceWreck(const flight::Event&);
+ void advanceRecoverySociety(bool allowLegacy=false);void syncRecoveryTraffic();bool recoveryEvent(const flight::Event&);
+ bool salvageAuthorized(const std::string&)const;void initializeClaim(RecoveryState&,int,const std::string& band="");
+ RecoveryQuote boardingQuote(const std::string&,const std::string&)const;bool boardingAction(const std::string&,const std::string&);void syncBoarding();bool boardingActive()const;
+ bool prizeAction(const std::string&,const std::string&);
  int wreckGood=Components;
  std::string selectedMinor,focusedContact,transferNotice;ChartRecall chartRecall;SurveyRecall surveyRecall;DiveState diveState;DiveReport diveReport;std::string diveDebrief;
  const MinorBody* minorSelection(){for(const auto& b:universe.minorBodies(s.viewStar))if(b.id==selectedMinor)return &b;return nullptr;}

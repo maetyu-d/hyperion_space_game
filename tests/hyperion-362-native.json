@@ -1,0 +1,92 @@
+{
+  "version": "3.62.0",
+  "runs": [
+    {
+      "check": "society",
+      "profile": "high",
+      "exit": 0,
+      "scenarios": 5,
+      "frames": 250,
+      "seconds": 19.88,
+      "binarySHA256": "210fd4f26c66b6bcaa4537a7b0abed375234ac911c214ac079942048c2a56653",
+      "singleResponderHullVerified": true,
+      "singleResponderHullVerifiedEveryFrame": true
+    },
+    {
+      "check": "society",
+      "profile": "low",
+      "exit": 0,
+      "scenarios": 5,
+      "frames": 250,
+      "seconds": 14.35,
+      "binarySHA256": "210fd4f26c66b6bcaa4537a7b0abed375234ac911c214ac079942048c2a56653",
+      "singleResponderHullVerified": true,
+      "singleResponderHullVerifiedEveryFrame": true
+    },
+    {
+      "check": "society",
+      "profile": "reduced",
+      "exit": 0,
+      "scenarios": 5,
+      "frames": 250,
+      "seconds": 10.15,
+      "binarySHA256": "210fd4f26c66b6bcaa4537a7b0abed375234ac911c214ac079942048c2a56653",
+      "singleResponderHullVerified": true,
+      "singleResponderHullVerifiedEveryFrame": true
+    },
+    {
+      "check": "recovery",
+      "profile": "high",
+      "exit": 0,
+      "scenarios": 7,
+      "frames": 490,
+      "seconds": 25.43,
+      "binarySHA256": "8b32d8d0f22c3f2aa69f155e2ae001e27dd6624358f39a3c26cc9e577c838e66"
+    },
+    {
+      "check": "recovery",
+      "profile": "low",
+      "exit": 0,
+      "scenarios": 7,
+      "frames": 490,
+      "seconds": 21.7,
+      "binarySHA256": "8b32d8d0f22c3f2aa69f155e2ae001e27dd6624358f39a3c26cc9e577c838e66"
+    },
+    {
+      "check": "recovery",
+      "profile": "reduced",
+      "exit": 0,
+      "scenarios": 7,
+      "frames": 490,
+      "seconds": 14.39,
+      "binarySHA256": "8b32d8d0f22c3f2aa69f155e2ae001e27dd6624358f39a3c26cc9e577c838e66"
+    },
+    {
+      "check": "structural",
+      "profile": "high",
+      "exit": 0,
+      "scenarios": 25,
+      "frames": 1625,
+      "seconds": 101.83,
+      "binarySHA256": "0c8c749e3490912a8a151bc2280e891f2f125ba8bd6a3262856d6f9f2c093a14"
+    },
+    {
+      "check": "structural",
+      "profile": "low",
+      "exit": 0,
+      "scenarios": 25,
+      "frames": 1625,
+      "seconds": 59.4,
+      "binarySHA256": "0c8c749e3490912a8a151bc2280e891f2f125ba8bd6a3262856d6f9f2c093a14"
+    },
+    {
+      "check": "structural",
+      "profile": "reduced",
+      "exit": 0,
+      "scenarios": 25,
+      "frames": 1625,
+      "seconds": 39.82,
+      "binarySHA256": "0c8c749e3490912a8a151bc2280e891f2f125ba8bd6a3262856d6f9f2c093a14"
+    }
+  ]
+}

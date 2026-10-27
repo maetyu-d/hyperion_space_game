@@ -97,7 +97,7 @@ void Game::processWorldHit(const flight::Event& event){
   if(record&&record->structure.localized)for(int i=0;i<6;i++){if(record->structure.sections[i]>0)record->structure.separated[i]=s.hours;record->structure.sections[i]=0;}
   if(object.kind==PortObject&&object.owner.rfind("den:",0)==0)if(auto* band=findPirates(e,object.owner.substr(4))){band->stock={};band->truceUntil=0;if(event.actor=="NOMA"){band->grievance=std::min(100.,band->grievance+30);for(auto& captain:e.captains)if(captain.band==band->id)captain.grudge=std::min(100.,captain.grudge+25);}economicEvent(e,band->name,"Anchorage destroyed / stored supplies lost / surviving captains retain their vendetta.");}
   if(record)record->salvage=salvageFor(object);
-  if(record&&record->structure.valid&&!record->recovery.valid){auto& r=record->recovery;r.valid=true;r.born=s.hours;r.faction=object.faction;r.culprit=event.actor;r.supportUntil=s.hours+12;r.box=true;
+  if(record&&record->structure.valid&&!record->recovery.valid){auto& r=record->recovery;r.valid=true;r.born=s.hours;r.faction=object.faction;r.culprit=event.actor;r.supportUntil=s.hours+12;r.box=true;initializeClaim(r,object.faction);
    if(object.kind==FacilityObject){for(int good=0;good<goodCount;good++)r.sealed[good]=std::floor(buildings[object.slot/24].construction[good]*.25);}
    else{r.sealed[Components]=std::max(1.,std::floor(object.scale*.035));r.sealed[Alloy]=std::floor(object.scale*.1);}
    r.sealed[Research]=1;r.initial=r.sealed;
@@ -119,7 +119,7 @@ void Game::processWorldHit(const flight::Event& event){
   if(event.actor=="NOMA"&&object.faction>0&&object.kind<=PlantObject){auto& faction=e.factions[object.faction];faction.standing=std::max(-100.,faction.standing-10);faction.warrant=std::min(int64_t(1000000),faction.warrant+250);}
   e.geometryRevision++;notify(object.kind==LifeObject?"Organism lost / biomass returned to its ecosystem":object.kind==RockObject||object.kind==MinorObjectKind?"Material fractured / finite salvage released":"Object destroyed / consequences recorded",Notice::Important);
  }
- e.damageRevision++;syncWorldDamage();if(collapsed)recoveryMissions();
+ e.damageRevision++;syncWorldDamage();syncBoarding();if(collapsed)recoveryMissions();
  if(collapsed&&object.kind==PortObject&&f.docked&&f.dockedPort>=0&&portObjectId(f.ports[f.dockedPort].id)==object.id){f.docked=false;f.dockedPort=-1;f.savedDock.clear();e.docked.clear();f.ship.position+=object.up*8;f.damageShip(25,flight::CollisionDamage,object.position);notify("Berth destroyed / emergency launch",Notice::Critical);}
 }
 }

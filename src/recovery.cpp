@@ -15,7 +15,21 @@ Game::RecoveryQuote Game::recoveryQuote(const std::string& action,const std::str
  if(action=="recoveryDeliver"){
   auto* site=findSettlement(s.economy,s.economy.docked);if(!site||site->owner!=r.faction||!canDock(*site)||r.aboard<=0){q.reason="Dock at a friendly inhabited settlement with evacuees aboard";return q;}q.available=true;q.text="Deliver evacuees / 1 h / actual residents transferred";return q;
  }
+ if(action=="recoveryPrize"){
+  auto* site=findSettlement(s.economy,s.economy.docked);const PrizeShip* prize=nullptr;for(const auto& p:s.economy.prizes)if(p.source==id&&p.ship.port.empty())prize=&p;
+  if(!prize||!r.intact||!site||!canUseShipyard(*site)||s.currentStar!=d.star||flight::length(d.position-f.ship.position)>100){q.reason="Tow the captured hull to a staffed, powered shipyard and dock within 100 km";return q;}q.available=true;q.text="Deliver captured hull / 1 h / stored here for title settlement, sale or commission";return q;
+ }
  if(s.currentStar!=d.star||!f.valid||f.star!=d.star||f.deployed||f.docked||flight::length(f.ship.position-d.position)>55||f.speed()>5||f.autopilot){q.reason="Approach within 55 km, below 5 km/s, undocked; disengage navigation";return q;}
+ if(action=="recoveryPermit"){
+  if(!r.claimRules||r.claim<=0||r.permit){q.reason="No foreign salvage licence needed";return q;}int price=std::min(500,90+int(d.scale*2));if(s.economy.credits<price){q.reason="Salvage licence needs "+std::to_string(price)+" credits";return q;}q.available=true;q.text="Purchase salvage licence / "+std::to_string(price)+" cr to the claimant / 1 h / hull title is separate";return q;
+ }
+ if(action=="recoveryContest"){
+  if(salvageAuthorized(id)){q.reason="Salvage access already available";return q;}q.available=true;q.text="Defy faction claim / 1 h / warrant +150 cr, standing -12 and captain grudges";return q;
+ }
+ if(action=="recoveryClaim"){
+  if(!r.claimRules||r.claim>=0){q.reason="A claim already exists";return q;}q.available=true;q.text="Register NOMA salvage claim / 1 h / lawful rivals defer to your claim";return q;
+ }
+ if((action=="recoveryCut"||action=="recoveryBox"||action=="recoveryTow")&&!salvageAuthorized(id)){q.reason="Foreign salvage claim / accept a recovery commission, buy a licence or explicitly contest it";return q;}
  if(action=="recoveryDetach"){q.available=r.towed;q.text="Release tow / 1 h / wreck remains at its physical location";q.reason="No tow attached";return q;}
  if(action=="recoveryStabilize"){
   if(r.stabilized){q.reason="Containment already secure";return q;}if(cargo[Components]<2||cargo[Crystal]<1){q.reason="Containment needs 2 components and 1 crystal";return q;}q.available=true;q.text="Quench fuel and isolate circuits / 2 parts + 1 crystal / 1 h";return q;
@@ -38,7 +52,7 @@ Game::RecoveryQuote Game::recoveryQuote(const std::string& action,const std::str
  if(action=="recoveryRebuild"){
   if(d.kind!=FacilityObject&&d.kind!=PortObject&&d.kind!=PanelObject){q.reason="This wreck has no infrastructure blueprint to reconstruct";return q;}
   bool atSite=false;for(const auto& port:f.ports)if(port.settlement==d.owner&&!port.recovery&&flight::length(port.position-f.ship.position)<1000)atSite=true;if(!atSite){q.reason="Return wreckage to its original settlement before reconstruction";return q;}
-  auto* site=findSettlement(s.economy,d.owner);if(!site||(site->owner!=0&&!job(s.economy,id,ReconstructionMission))){q.reason="Accept the reconstruction commission or hold this charter";return q;}if(r.crew||r.aboard){q.reason="Evacuate and deliver all survivors before rebuilding";return q;}auto cost=repairCost(d);if(!hasStock(cargo,cost)){q.reason="Bring the full construction materials / see the commission";return q;}if(site->owner==0&&s.economy.credits<(d.kind==FacilityObject?buildings[d.slot/24].price:d.kind==PortObject?800:120)){q.reason="Insufficient reconstruction credits";return q;}q.available=true;q.text="Reconstruct original lot / real materials / 1 h";return q;
+  auto* site=findSettlement(s.economy,d.owner);if(!site||(site->owner!=0&&!job(s.economy,id,ReconstructionMission))){q.reason="Accept the reconstruction commission or hold this charter";return q;}if(r.crew||r.aboard||r.npcAboard){q.reason="Evacuate and deliver all survivors before rebuilding";return q;}auto cost=repairCost(d);if(!hasStock(cargo,cost)){q.reason="Bring the full construction materials / see the commission";return q;}if(site->owner==0&&s.economy.credits<(d.kind==FacilityObject?buildings[d.slot/24].price:d.kind==PortObject?800:120)){q.reason="Insufficient reconstruction credits";return q;}q.available=true;q.text="Reconstruct original lot / real materials / 1 h";return q;
  }
  q.reason="Unknown recovery order";return q;
 }
@@ -48,7 +62,11 @@ bool Game::recoveryAction(const std::string& action,const std::string& arg){
  if(action=="recoveryPlan"){openStrategy();recoveryTarget=arg;notify("Recovery planning / choose an order in Recovery / thinking time is paused");return true;}
  if(action=="recoverySelect"){recoveryTarget=arg;return true;}
  const auto id=arg.empty()?recoveryTarget:arg;auto quote=recoveryQuote(action,id);if(!quote.available){notify(quote.reason);return true;}auto& e=s.economy;auto it=e.worldDamage.find(id);auto& d=it->second;auto& r=d.recovery;auto cargo=shipStock();
- if(action=="recoveryStabilize"){cargo[Components]-=2;cargo[Crystal]-=1;r.stabilized=true;r.towed=false;}
+ if(action=="recoveryPermit"){int price=std::min(500,90+int(d.scale*2));e.credits-=price;e.factions[r.claim].treasury+=price;r.permit=true;}
+ else if(action=="recoveryContest"){r.contested=true;auto& faction=e.factions[r.claim];faction.warrant=std::min(int64_t(1000000),faction.warrant+150);faction.standing=std::max(-100.,faction.standing-12);for(auto& c:e.captains)if(c.faction==r.claim)c.grudge=std::min(100.,c.grudge+8);economicEvent(e,d.owner,"NOMA defied a bonded salvage claim / title remains disputed; authority warrant and vendettas recorded.");}
+ else if(action=="recoveryClaim")r.claim=0;
+ else if(action=="recoveryPrize"){for(auto& p:e.prizes)if(p.source==id)p.ship.port=e.docked;e.worldDamage.erase(it);e.geometryRevision++;}
+ else if(action=="recoveryStabilize"){cargo[Components]-=2;cargo[Crystal]-=1;r.stabilized=true;r.towed=false;}
  else if(action=="recoveryCut"){cargo[Components]-=1;r.cut=true;for(int i=0;i<goodCount;i++)if(i!=Research){d.salvage[i]+=r.sealed[i];r.recovered[i]+=r.sealed[i];r.sealed[i]=0;}}
  else if(action=="recoveryBox"){r.boxRecovered=true;double taken=r.sealed[Research];cargo[Research]+=taken;r.recovered[Research]+=taken;r.sealed[Research]=0;}
  else if(action=="recoveryRescue"){int aboard=rescuedCrew();int moved=std::min(r.crew,12-aboard);r.crew-=moved;r.aboard+=moved;}
@@ -71,13 +89,13 @@ void Game::updateRecovery(double dt){
   if(!r.failed&&r.failureAt>0&&s.hours>=r.failureAt){r.failed=true;changed=true;if(!r.stabilized){double burned=std::min(r.sealed[Propellant],r.initial[Propellant]*.5);r.sealed[Propellant]-=burned;r.destroyed[Propellant]+=burned;if(auto* site=findSettlement(e,d.owner)){site->condition=std::max(0.,site->condition-.015);site->pollution=std::min(1.,site->pollution+.015);}if(local){f.effect(d.position,flight::ShipExplosion,{}, {},d.normal,flight::Resonance,1,std::min(12.,d.scale));std::set<std::string> struck;for(int i=0;i<int(f.worldObjects.size());i++){const auto& o=f.worldObjects[i];if(o.id!=id&&o.kind!=DebrisObject&&flight::length(o.position-d.position)<35+d.scale*.25&&struck.insert(o.id).second)f.damageWorld(i,40,flight::Plasma,d.position,r.culprit=="NOMA",r.culprit);}}}}
   if(local&&dt>0&&!f.docked&&!f.deployed){double charge=recoveryHazard(r,s.hours),radius=12+std::min(35.,d.scale*.45),distance=flight::length(f.ship.position-d.position);if(charge>.02&&distance<radius){f.damageShip(dt*4*charge*(1-distance/radius),flight::Resonance,d.position);if(f.noticeAge>2)f.message("Live wreck / electrical discharge and leaking fuel / retreat or stabilize");}}
  }
- if(changed){e.damageRevision++;syncWorldDamage();}recoveryMissions();
+ if(changed){e.damageRevision++;syncWorldDamage();}advanceRecoverySociety(dt>0);recoveryMissions();
 }
 void Game::recoveryMissions(){
  auto& e=s.economy;
  for(auto& m:e.missions)if(m.kind>=ReconstructionMission&&m.state<=MissionReady){auto it=e.worldDamage.find(m.target);if(it==e.worldDamage.end()){if(m.state!=MissionReady)finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Recovery target rebuilt or removed before the commissioned work / escrow returned");continue;}auto& r=it->second.recovery;
-  if(m.kind==BlackBoxMission&&!r.box&&!r.boxRecovered)finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Recorder destroyed / escrow returned");
-  if(m.kind==EvacuationMission&&r.crew+r.aboard+r.delivered<m.quantity)finishMission(e,m,m.state==MissionOffered?MissionExpired:MissionFailed,"Commissioned survivors lost / escrow returned");
+  if(m.kind==BlackBoxMission&&!r.box&&!r.boxRecovered)finishMission(e,m,r.recovered[Research]>0?MissionExpired:m.state==MissionOffered?MissionExpired:MissionFailed,r.recovered[Research]>0?"Recorder secured by another recovery crew / escrow returned":"Recorder destroyed / escrow returned");
+  if(m.kind==EvacuationMission&&r.crew+r.aboard+r.delivered<m.quantity)finishMission(e,m,r.npcAboard+r.npcDelivered>0?MissionExpired:m.state==MissionOffered?MissionExpired:MissionFailed,r.npcAboard+r.npcDelivered>0?"Local rescue crew took over / survivors transferred / escrow returned":"Commissioned survivors lost / escrow returned");
   if(m.state==MissionActive&&((m.kind==EvacuationMission&&r.delivered>=m.quantity)||(m.kind==BlackBoxMission&&r.boxRecovered))){m.state=MissionReady;m.result=m.kind==EvacuationMission?"Survivors delivered to a friendly settlement":"Recorder recovered / return its research datum for debrief";}
  }
  if(e.missions.size()>=256)return;
@@ -89,7 +107,7 @@ void Game::recoveryMissions(){
 }
 void Game::registerSpaceWreck(const flight::Event& event){
  auto& e=s.economy;auto& f=s.flight;if(event.victim.empty()||e.worldDamage.size()>=60000)return;auto w=std::find_if(f.wrecks.begin(),f.wrecks.end(),[&](const auto& wreck){return wreck.id==event.victim&&std::accumulate(wreck.cargo.begin(),wreck.cargo.end(),0.)>0;});if(w==f.wrecks.end())return;
- WorldDamage d;d.star=s.currentStar;d.kind=SalvageObject;d.integrity=0;d.body=event.port>=0&&event.port<int(f.ports.size())?f.ports[event.port].body:-1;d.owner=event.port>=0&&event.port<int(f.ports.size())?f.ports[event.port].settlement:"";d.position=w->position;d.scale=w->hull.size;auto& r=d.recovery;r.valid=true;r.born=s.hours;r.charge=.3;r.failureAt=s.hours+.04;r.supportUntil=s.hours+12;r.faction=event.faction;r.culprit=event.actor;r.box=true;r.shipId=w->id;r.shipModel=w->hull.model;r.shipSeed=w->hull.seed;r.shipForward=w->hull.forward;r.sealed[Alloy]=w->cargo[0];r.sealed[Components]=w->cargo[1];r.sealed[Propellant]=w->cargo[2];r.sealed[Research]=1;r.initial=r.sealed;
+ WorldDamage d;d.star=s.currentStar;d.kind=SalvageObject;d.integrity=0;d.body=event.port>=0&&event.port<int(f.ports.size())?f.ports[event.port].body:-1;d.owner=event.port>=0&&event.port<int(f.ports.size())?f.ports[event.port].settlement:"";d.position=w->position;d.scale=w->hull.size;auto& r=d.recovery;r.valid=true;r.born=s.hours;r.charge=.3;r.failureAt=s.hours+.04;r.supportUntil=s.hours+12;r.faction=event.faction;r.culprit=event.actor;r.box=true;r.shipId=w->id;r.shipModel=w->hull.model;r.shipSeed=w->hull.seed;r.shipForward=w->hull.forward;std::string band;for(const auto& t:f.traffic)if(t.id==event.victim&&t.pirate)band=t.band.empty()?"independent":t.band;initializeClaim(r,r.faction,band);r.sealed[Alloy]=w->cargo[0];r.sealed[Components]=w->cargo[1];r.sealed[Propellant]=w->cargo[2];r.sealed[Research]=1;r.initial=r.sealed;
  if(auto* site=findSettlement(e,d.owner))if(site->residents>2){r.initialCrew=r.crew=1;site->residents--;e.geometryRevision++;}w->cargo={};e.worldDamage.emplace("shipwreck:"+event.victim+":"+std::to_string(e.nextId++),d);e.damageRevision++;syncWorldDamage();recoveryMissions();
 }
 

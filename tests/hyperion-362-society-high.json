@@ -1,0 +1,47 @@
+[
+  {
+    "frames": 50,
+    "interiorParts": 17,
+    "name": "exposed-machinery",
+    "partArea": 3367.813285902558,
+    "profile": "high",
+    "scene": 0,
+    "sourceArea": 3367.813285902515
+  },
+  {
+    "frames": 50,
+    "interiorParts": 18,
+    "name": "rescue-vessel",
+    "partArea": 54074.491285560725,
+    "profile": "high",
+    "scene": 1,
+    "sourceArea": 54074.49128556046
+  },
+  {
+    "frames": 50,
+    "interiorParts": 0,
+    "name": "boarding-clamps",
+    "partArea": 0.0,
+    "profile": "high",
+    "scene": 2,
+    "sourceArea": 0.0
+  },
+  {
+    "frames": 50,
+    "interiorParts": 0,
+    "name": "captured-hull",
+    "partArea": 0.0,
+    "profile": "high",
+    "scene": 3,
+    "sourceArea": 0.0
+  },
+  {
+    "frames": 50,
+    "interiorParts": 18,
+    "name": "responder-loss",
+    "partArea": 54074.491285560725,
+    "profile": "high",
+    "scene": 4,
+    "sourceArea": 54074.49128556046
+  }
+]

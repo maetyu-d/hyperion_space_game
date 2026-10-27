@@ -15,8 +15,8 @@ void Game::observeMissions(double dt){
  }
 }
 void Game::missionEvent(const hyperion::flight::Event& event){
- for(auto& m:s.economy.missions)if(m.state==MissionActive&&m.kind==InterdictionMission&&m.target==event.victim&&event.kind=="shipLoss"){
-  if(event.actor=="NOMA"&&s.hours<=m.deadline+1e-8){m.state=MissionReady;m.result="Named captain defeated / return for debrief";economicEvent(s.economy,m.star,m.title+" / "+m.result);notify(m.result,Notice::Important);}
+ for(auto& m:s.economy.missions)if(m.state==MissionActive&&m.kind==InterdictionMission&&m.target==event.victim&&(event.kind=="shipLoss"||event.kind=="shipCaptured")){
+  if(event.actor=="NOMA"&&s.hours<=m.deadline+1e-8){m.state=MissionReady;m.result=event.kind=="shipCaptured"?"Named captain captured alive / return for debrief":"Named captain defeated / return for debrief";economicEvent(s.economy,m.star,m.title+" / "+m.result);notify(m.result,Notice::Important);}
   else finishMission(s.economy,m,MissionFailed,"Another combatant defeated the named captain / escrow returned");
  }
 }

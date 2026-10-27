@@ -89,7 +89,7 @@ void Game::parkFlight(int body,V2 position,bool orbital){
  f.events.clear();f.recordIds();
 }
 void Game::enterFlight(){
- if(s.mode==Mode::Flight)return;
+ if(s.mode==Mode::Flight)return;if(boardingActive()){notify("Finish or withdraw the boarding party before taking the helm");return;}
  if(hasExpedition()&&expeditionLayer()==Mode::Ocean&&s.depth>80){notify("Recover from 80 m or less / return to the launch buoy first");return;}
  if(s.mode==Mode::Galaxy||s.mode==Mode::System)chartRecall={true,s.mode,s.currentStar,s.viewStar,s.selectedStar,selectedMinor,s.selectedPlanet,s.galaxy,s.galaxyZoom};
  else chartRecall={true,Mode::System,s.currentStar,s.activeStar,s.activeStar,"",s.activePlanet,s.galaxy,s.galaxyZoom};
@@ -118,6 +118,7 @@ bool Game::disembark(){
 void Game::processFlightEvents(){
  auto& f=s.flight;auto events=std::move(f.events);f.events.clear();auto& e=s.economy;
  for(auto& event:events){
+  if(recoveryEvent(event))continue;
   if(event.kind=="shipLoss"||event.kind=="bounty"||event.kind=="freightLoss"||event.kind=="wreckCreated")registerSpaceWreck(event);if(event.kind=="wreckCreated")continue;
   if(event.kind=="worldHit"||event.kind=="groundHit"||event.kind=="minorGroundHit"){processWorldHit(event);continue;}
   missionEvent(event);
@@ -214,6 +215,7 @@ bool Game::flightAction(const std::string& a,const std::string& arg){
  else if(a=="combatTarget")f.cycleCombatTarget();
  else if(a=="combatFocus"){if(arg.empty())f.aimSystem=(f.aimSystem+1)%4;else if(arg=="0"||arg=="1"||arg=="2"||arg=="3")f.aimSystem=arg[0]-'0';f.message(std::string("Precision focus / ")+hyperion::flight::focusName(f.aimSystem)+" / requires sustained target lock");}
  else if(a=="combatOrder"){
+  if(boardingActive()&&arg!="0"){notify("Finish or withdraw the boarding party before changing combat orders");return true;}
   if(arg=="0"||arg=="1"||arg=="2"){f.combatOrder=arg[0]-'0';if(f.combatOrder==1){f.cancelNavigation();if(f.combatTargetIndex()<0)f.cycleCombatTarget();}if(f.combatOrder==2&&!f.docked)f.navigate();f.message(f.combatOrder==1?"Engage orders / End Turn resolves combat outside the cockpit":f.combatOrder==2?"Evade / navigator routing to selected berth":"Hold / damp thrust on turns / cockpit helm retained");}
  }
  else if(a=="salvage"){
@@ -223,7 +225,7 @@ bool Game::flightAction(const std::string& a,const std::string& arg){
     for(int k=0;k<3;k++){double taken=std::min(wreck.cargo[k],room);if(k==0)taken=std::floor(taken);wreck.cargo[k]-=taken;cargo[goods[k]]+=taken;room-=taken;recovered+=taken;}
     if(wreck.id.rfind("world:",0)==0){auto record=s.economy.worldDamage.find(wreck.id.substr(6));if(record!=s.economy.worldDamage.end()&&!record->second.recovery.valid)for(int good=0;good<goodCount;good++){double taken=std::min(record->second.salvage[good],room);if(good==Alloy||good==Crystal||good==Biomass||good==Research)taken=std::floor(taken);record->second.salvage[good]-=taken;wreck.supplies[good]=record->second.salvage[good];cargo[good]+=taken;room-=taken;recovered+=taken;}}
    }
-   for(auto& [id,d]:s.economy.worldDamage)if(d.recovery.valid&&d.star==s.currentStar&&hyperion::flight::length(d.position-f.ship.position)<55)for(int good=0;good<goodCount;good++){double taken=std::min(d.salvage[good],room);if(good==Alloy||good==Crystal||good==Biomass||good==Research)taken=std::floor(taken);d.salvage[good]-=taken;cargo[good]+=taken;room-=taken;recovered+=taken;}
+   for(auto& [id,d]:s.economy.worldDamage)if(d.recovery.valid&&salvageAuthorized(id)&&d.star==s.currentStar&&hyperion::flight::length(d.position-f.ship.position)<55)for(int good=0;good<goodCount;good++){double taken=std::min(d.salvage[good],room);if(good==Alloy||good==Crystal||good==Biomass||good==Research)taken=std::floor(taken);d.salvage[good]-=taken;cargo[good]+=taken;room-=taken;recovered+=taken;}
    if(recovered>0){s.economy.damageRevision++;storeShipStock(cargo);completed=true;notify("Wreck salvage / "+std::to_string(int(recovered))+" units recovered into ship cargo");}else notify(room<=0?"Cargo hold full":"No salvage within 55 km");
   }
  }

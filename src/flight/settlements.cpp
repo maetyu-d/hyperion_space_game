@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "wreck_interior.hpp"
 #include "destruction.hpp"
 #include "rlgl.h"
 #include "settlement_detail.hpp"
@@ -218,7 +219,7 @@ GeometryStats Renderer::architectureStats()const{
    for(int t=0;t<mesh.triangleCount;t++){V3 p[3];for(int k=0;k<3;k++){int v=mesh.indices?mesh.indices[t*3+k]:t*3+k;p[k]={mesh.vertices[v*3],mesh.vertices[v*3+1],mesh.vertices[v*3+2]};}if(length(cross(p[1]-p[0],p[2]-p[0]))<1e-8)result.degenerateTriangles++;}
   }
  };
- for(const auto& [id,asset]:portAssets){inspect(asset.close,false);result.closeTriangles+=asset.close.meshes[0].triangleCount;inspect(asset.detailed,false);inspect(asset.distant,true);if(asset.detail==2)result.closePorts++;}for(const auto& [id,model]:craftAssets)inspect(model,false);for(const auto& [id,a]:brokenStructures)for(const auto& m:a.parts)inspect(m,false);return result;
+ for(const auto& [id,asset]:portAssets){inspect(asset.close,false);result.closeTriangles+=asset.close.meshes[0].triangleCount;inspect(asset.detailed,false);inspect(asset.distant,true);if(asset.detail==2)result.closePorts++;}for(const auto& [id,model]:craftAssets)inspect(model,false);for(const auto& [id,a]:brokenStructures){for(const auto& m:a.parts)inspect(m,false);for(const auto& m:a.interiors)if(m.meshCount)inspect(m,false);}for(const auto& [key,h]:fracturedHulls)for(const auto& m:h.interiors)if(m.meshCount)inspect(m,false);return result;
 }
 
 Renderer::FracturedHull Renderer::buildFracturedHull(const HullRemains& hull){
@@ -235,6 +236,7 @@ Renderer::FracturedHull Renderer::buildFracturedHull(const HullRemains& hull){
   auto& b=builders[part];result.pivots[part]=result.pivots[part]/counts[part];
   for(size_t i=0;i<b.vertices.size();i+=3){b.vertices[i]-=float(result.pivots[part].x);b.vertices[i+1]-=float(result.pivots[part].y);b.vertices[i+2]-=float(result.pivots[part].z);}
   auto model=b.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;result.triangles+=model.meshes[0].triangleCount;result.parts[part]=model;
+  V3 low{1e30,1e30,1e30},high{-1e30,-1e30,-1e30};for(size_t i=0;i<b.vertices.size();i+=3){V3 p{b.vertices[i],b.vertices[i+1],b.vertices[i+2]};low={std::min(low.x,p.x),std::min(low.y,p.y),std::min(low.z,p.z)};high={std::max(high.x,p.x),std::max(high.y,p.y),std::max(high.z,p.z)};}auto inside=architecture::hullInterior(low,high,hull.seed,part);if(!inside.vertices.empty()){auto m=inside.model(structure);m.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;m.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;m.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;result.interiors[part]=m;}
  }
  if(result.triangles!=mesh.triangleCount)throw std::runtime_error("Fractured hull lost geometry");UnloadModel(source);return result;
 }
@@ -242,7 +244,7 @@ void Renderer::drawRemains(const HullRemains& hull,V3 at,double age){
  auto key=std::make_pair(hull.faction,hull.model);auto it=fracturedHulls.find(key);
  if(it==fracturedHulls.end()){
   // At most twelve nearby wrecks are drawn, with a bounded cache across battles.
-  if(fracturedHulls.size()>=24){auto first=fracturedHulls.begin();for(auto& part:first->second.parts)if(part.meshCount)UnloadModel(part);fracturedHulls.erase(first);}
+  if(fracturedHulls.size()>=24){auto first=fracturedHulls.begin();for(auto& part:first->second.parts)if(part.meshCount)UnloadModel(part);for(auto& part:first->second.interiors)if(part.meshCount)UnloadModel(part);fracturedHulls.erase(first);}
   it=fracturedHulls.emplace(key,buildFracturedHull(hull)).first;
  }
  structureState(structure,factionStyle(hull.faction),{camera.position.x,camera.position.y,camera.position.z},sunDirection,visualTime,nullptr);
@@ -251,11 +253,11 @@ void Renderer::drawRemains(const HullRemains& hull,V3 at,double age){
  auto base=debrisPose(hull,0,0);debrisHulls++;
  for(int part=0;part<5;part++){auto& model=it->second.parts[part];if(!model.meshCount)continue;auto pose=debrisPose(hull,part,age);
   auto r=pose.right,u=pose.up,b=pose.back;model.transform={float(r.x),float(u.x),float(b.x),0,float(r.y),float(u.y),float(b.y),0,float(r.z),float(u.z),float(b.z),0,0,0,0,1};
-  auto centre=at+debrisPoint(base,it->second.pivots[part])*hull.size+pose.offset;DrawModel(model,vec(centre),float(hull.size),WHITE);debrisParts++;
+  auto centre=at+debrisPoint(base,it->second.pivots[part])*hull.size+pose.offset;uniform(structure,"fracturePivot",it->second.pivots[part]);uniform(structure,"fractureHeat",reduced?0.f:float(std::exp(-age*.32)));DrawModel(model,vec(centre),float(hull.size),WHITE);if(age>.01&&it->second.interiors[part].meshCount){auto& inside=it->second.interiors[part];inside.transform=model.transform;DrawModel(inside,vec(centre),float(hull.size),WHITE);}debrisParts++;
  }
 }
 void Renderer::drawShipRemains(const Game& game){
- debrisHulls=debrisParts=0;for(const auto& [id,d]:game.worldDamage)if(d.recovery.valid&&d.recovery.shipModel>=0&&objectIntegrity(game.worldDamage,"wreck:world:"+id)>0&&length(d.position-game.ship.position)<1700&&dot(d.position-game.ship.position,game.ship.forward)>-50){const auto& r=d.recovery;HullRemains hull{true,r.faction,r.shipModel,r.shipSeed,d.scale,r.shipForward};drawRemains(hull,d.position,std::max(0.,(presentation->hours-r.born)*55.));}
+ debrisHulls=debrisParts=0;for(const auto& [id,d]:game.worldDamage)if(d.recovery.valid&&d.recovery.shipModel>=0&&objectIntegrity(game.worldDamage,"wreck:world:"+id)>0&&length(d.position-game.ship.position)<1700&&dot(d.position-game.ship.position,game.ship.forward)>-50){const auto& r=d.recovery;HullRemains hull{true,r.faction,r.shipModel,r.shipSeed,d.scale,r.shipForward};drawRemains(hull,d.position,r.intact?0:std::max(0.,(presentation->hours-r.born)*55.));}
  std::vector<const Wreck*> near;
  for(const auto& wreck:game.wrecks)if(std::none_of(game.worldDamage.begin(),game.worldDamage.end(),[&](const auto& pair){return pair.second.recovery.valid&&pair.second.recovery.shipId==wreck.id;})&&wreck.debrisKind==0&&wreck.id.rfind("world:",0)!=0&&objectIntegrity(game.worldDamage,"wreck:"+wreck.id)>0&&length(wreck.position-game.ship.position)<1700&&dot(wreck.position-game.ship.position,game.ship.forward)>-50)near.push_back(&wreck);
  std::stable_sort(near.begin(),near.end(),[&](auto a,auto b){return length(a->position-game.ship.position)<length(b->position-game.ship.position);});
@@ -266,7 +268,7 @@ void Renderer::drawShipRemains(const Game& game){
  }
  // Civilian losses may have no salvage entry, but still retain their own hull.
  for(const auto& e:game.effects)if(e.kind==ShipExplosion&&e.hull.valid&&debrisHulls<12&&length(e.position-game.ship.position)<1700&&dot(e.position-game.ship.position,game.ship.forward)>-50){
-  bool hasWreck=std::any_of(game.wrecks.begin(),game.wrecks.end(),[&](const auto&w){return w.id==e.actor;});if(!hasWreck)drawRemains(e.hull,e.position,e.age);
+  bool hasWreck=std::any_of(game.wrecks.begin(),game.wrecks.end(),[&](const auto&w){return w.id==e.actor;})||std::any_of(game.worldDamage.begin(),game.worldDamage.end(),[&](const auto& p){return p.second.recovery.valid&&p.second.recovery.shipId==e.actor;});if(!hasWreck)drawRemains(e.hull,e.position,e.age);
  }
 }
 double Renderer::structureAge(const Game& game,const StructureRemains& shape)const{
@@ -279,6 +281,7 @@ Renderer::BrokenStructure Renderer::buildBrokenStructure(const StructureRemains&
  for(int cell=0;cell<int(fracture.parts.size());cell++){const auto& part=fracture.parts[cell];if(part.vertices.empty())continue;asset.indices.push_back(cell);Builder m;auto pivot=part.bounds.centre();for(const auto& v:part.vertices){auto p=v.position-pivot;for(double n:{p.x,p.y,p.z})m.vertices.push_back(float(n));for(double n:{v.normal.x,v.normal.y,v.normal.z})m.normals.push_back(float(n));for(float n:v.uv)m.uv.push_back(n);for(auto n:v.colour)m.colours.push_back(n);}
   auto model=m.model(structure);model.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;model.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;
   asset.parts.push_back(model);asset.bounds.push_back(part.bounds);asset.triangles+=int(part.vertices.size()/3);asset.caps+=part.capTriangles;
+  auto inside=architecture::fractureInterior(part,shape.seed^uint32_t(cell*997),lowGraphics?2:6);Model detail{};if(!inside.vertices.empty()){for(size_t i=0;i<inside.vertices.size();i+=3){inside.vertices[i]-=float(pivot.x);inside.vertices[i+1]-=float(pivot.y);inside.vertices[i+2]-=float(pivot.z);}detail=inside.model(structure);detail.materials[0].maps[MATERIAL_MAP_NORMAL].texture=buildingTexture;detail.materials[0].maps[MATERIAL_MAP_METALNESS].texture=buildingDetailTexture;detail.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture=sunScene.texture;}asset.interiors.push_back(detail);
  }return asset;
 }
 void Renderer::prepareStructures(const Game& game){
@@ -296,14 +299,14 @@ void Renderer::prepareStructures(const Game& game){
  // A whole nearby district can remain visibly ruined. Cap resident GPU assets;
  // returning to a culled district reconstructs exactly the same saved pieces.
  if(structuralInstances.size()>48)structuralInstances.resize(48);
- for(auto it=brokenStructures.begin();it!=brokenStructures.end();){bool keep=std::any_of(structuralInstances.begin(),structuralInstances.end(),[&](const auto& s){return s.id==it->first;});if(!keep){for(auto& m:it->second.parts)UnloadModel(m);it=brokenStructures.erase(it);}else ++it;}
+ for(auto it=brokenStructures.begin();it!=brokenStructures.end();){bool keep=std::any_of(structuralInstances.begin(),structuralInstances.end(),[&](const auto& s){return s.id==it->first;});if(!keep){for(auto& m:it->second.parts)UnloadModel(m);for(auto& m:it->second.interiors)if(m.meshCount)UnloadModel(m);it=brokenStructures.erase(it);}else ++it;}
  for(const auto& instance:structuralInstances){const auto& f=instance.shape;uint64_t key=f.seed;for(auto n:{f.profile,f.variant,f.ordinal,f.faction,int(lowGraphics),int(f.localized)})key=key*1099511628211ull+uint64_t(n+1);auto it=brokenStructures.find(instance.id);
-  if(it!=brokenStructures.end()&&it->second.key!=key){for(auto& m:it->second.parts)UnloadModel(m);brokenStructures.erase(it);it=brokenStructures.end();}
+  if(it!=brokenStructures.end()&&it->second.key!=key){for(auto& m:it->second.parts)UnloadModel(m);for(auto& m:it->second.interiors)if(m.meshCount)UnloadModel(m);brokenStructures.erase(it);it=brokenStructures.end();}
   if(it==brokenStructures.end()){auto asset=buildBrokenStructure(f);asset.key=key;brokenStructures.emplace(instance.id,std::move(asset));}
  }
 }
 void Renderer::drawStructuralRemains(const Game& game,bool shadow){
- if(!shadow)structuralDraws=structuralParts=0;
+ if(!shadow){structuralDraws=structuralParts=interiorDraws=0;}
  for(const auto& instance:structuralInstances){const auto& f=instance.shape;auto found=brokenStructures.find(instance.id);if(found==brokenStructures.end())continue;auto& asset=found->second;double age=structureAge(game,f);
   if(shadow&&(f.orbital||instance.body!=groundBody||length(f.origin-game.ship.position)>480))continue;
   if(!shadow&&dot(f.origin-game.ship.position,game.ship.forward)<-220)continue;
@@ -315,8 +318,9 @@ void Renderer::drawStructuralRemains(const Game& game,bool shadow){
    if(!f.orbital&&instance.body>=0&&!intact&&partAge>.3){const auto& planet=game.planets[instance.body];double lift=0;auto half=asset.bounds[part].half();for(int x:{-1,1})for(int z:{-1,1}){auto foot=structurePoint(f,fragmentPoint(pose,{x*half.x,-half.y,z*half.z}));auto radial=unit(foot-planet.centre);auto floor=planet.centre+radial*(planet.radius+terrain(planet,radial)+2.02);lift=std::max(lift,dot(floor-foot,f.up));}at+=f.up*(lift*std::clamp((partAge-.3)/.5,0.,1.));}
    auto rotateBasis=[&](V3 n){return f.right*n.x+f.up*n.y+f.back*n.z;};auto r=rotateBasis(pose.right),u=rotateBasis(pose.up),b=rotateBasis(pose.back);auto& model=asset.parts[part];model.transform={float(r.x),float(u.x),float(b.x),0,float(r.y),float(u.y),float(b.y),0,float(r.z),float(u.z),float(b.z),0,0,0,0,1};
    if(shadow){auto original=model.materials[0].shader;model.materials[0].shader=sunDepth;uniform(sunDepth,"groundPass",0.f);DrawModel(model,vec(at-game.planets[groundBody].centre),1,WHITE);model.materials[0].shader=original;}
-   else{uniform(structure,"fracturePivot",asset.bounds[part].centre());DrawModel(model,vec(at),1,WHITE);structuralParts++;}
+   else{uniform(structure,"fracturePivot",asset.bounds[part].centre());DrawModel(model,vec(at),1,WHITE);structuralParts++;if(part<int(asset.interiors.size())&&asset.interiors[part].meshCount){auto& interior=asset.interiors[part];interior.transform=model.transform;DrawModel(interior,vec(at),1,WHITE);interiorDraws++;}}
    if(shadow||intact||partAge<.08||partAge>7)continue;
+   if(!reduced&&partAge<10&&part%3==0){double pressure=std::exp(-partAge*.45);auto vent=at+u*asset.bounds[part].half().y*.4;BeginBlendMode(BLEND_ADDITIVE);rlDisableDepthMask();for(int jet=0;jet<(lowGraphics?2:4);jet++){double t=std::fmod(partAge*.7+jet*.23,1.);auto plume=vent+u*(t*(2+pressure*5))+r*(std::sin(t*pi+part)*pressure*.6);if(combatGlow.id)DrawBillboard(camera,combatGlow,vec(plume),float(.4+t*1.8),Color{137,169,184,static_cast<unsigned char>(pressure*(1-t)*30)});}rlEnableDepthMask();EndBlendMode();}
    // Cold mineral dust and spectral arcs originate on the moving architecture,
    // including delayed secondary failures after the main fireball has faded.
    double pulse=std::exp(-std::pow((partAge-(.6+fractureNoise(f.seed,part+80)*2.4))/.35,2));auto tint=colour(factionStyle(f.faction).accent,255);
@@ -326,7 +330,7 @@ void Renderer::drawStructuralRemains(const Game& game,bool shadow){
   }
  }
 }
-void Renderer::clearPortAssets(){for(auto& [id,a]:brokenStructures)for(auto& m:a.parts)UnloadModel(m);brokenStructures.clear();structuralInstances.clear();structureRevision=~uint64_t(0);for(auto& [key,hull]:fracturedHulls)for(auto& part:hull.parts)if(part.meshCount)UnloadModel(part);fracturedHulls.clear();for(auto& [id,a]:portAssets)for(auto* m:{&a.close,&a.detailed,&a.distant})if(m->meshCount)UnloadModel(*m);portAssets.clear();for(auto& [key,m]:craftAssets)if(m.meshCount)UnloadModel(m);craftAssets.clear();}
+void Renderer::clearPortAssets(){for(auto& [id,a]:brokenStructures){for(auto& m:a.parts)UnloadModel(m);for(auto& m:a.interiors)if(m.meshCount)UnloadModel(m);}brokenStructures.clear();structuralInstances.clear();structureRevision=~uint64_t(0);for(auto& [key,hull]:fracturedHulls){for(auto& part:hull.parts)if(part.meshCount)UnloadModel(part);for(auto& part:hull.interiors)if(part.meshCount)UnloadModel(part);}fracturedHulls.clear();for(auto& [id,a]:portAssets)for(auto* m:{&a.close,&a.detailed,&a.distant})if(m->meshCount)UnloadModel(*m);portAssets.clear();for(auto& [key,m]:craftAssets)if(m.meshCount)UnloadModel(m);craftAssets.clear();}
 Renderer::PortAsset Renderer::buildPort(const Port& port,const SettlementView* view,const Game& game){
  SettlementView empty;empty.id=port.id;const auto& s=view?*view:empty;const auto& style=factionStyle(s.faction);
  auto layout=layoutSettlement(s);PortAsset asset;asset.key=portGeometryKey(port,view,game);asset.at=port.position;asset.up=port.normal;asset.radius=port.planet<0?190:layout.radius;
@@ -438,7 +442,7 @@ Model Renderer::buildCraft(int faction,int kind,int pods,int good){
 void Renderer::drawFactionCraft(const Traffic& traffic,const Scene& sceneView){
  auto* shipment=sceneView.shipment(traffic.routeId);int pods=shipment?std::clamp(int(std::ceil(shipment->amount/5.)),1,8):0,good=shipment?shipment->good:0;
  int modelKind=craftModel(traffic);auto key=std::make_tuple(traffic.faction,modelKind,pods,good);auto it=craftAssets.find(key);if(it==craftAssets.end())it=craftAssets.emplace(key,buildCraft(traffic.faction,modelKind,pods,good)).first;
- auto f=unit(traffic.forward,{0,0,-1}),right=unit(cross(f,{0,1,0}),{1,0,0}),up=unit(cross(right,f));double size=traffic.kind==2?11:traffic.kind==1?enemyDef(traffic).radius:5;
+ auto f=unit(traffic.forward,{0,0,-1}),right=unit(cross(f,{0,1,0}),{1,0,0}),up=unit(cross(right,f));double size=(traffic.kind==2||traffic.kind==3)?11:traffic.kind==1?enemyDef(traffic).radius:5;
  Matrix rotation{float(right.x),float(up.x),float(-f.x),0,float(right.y),float(up.y),float(-f.y),0,float(right.z),float(up.z),float(-f.z),0,0,0,0,1};it->second.transform=rotation;
  structureState(structure,factionStyle(traffic.faction),{camera.position.x,camera.position.y,camera.position.z},sunDirection,sceneView.seconds,nullptr);uniform(structure,"condition",float(std::clamp(traffic.health/(traffic.kind==1?enemyDef(traffic).hull:100.),.08,1.)));
  uniform(structure,"craftScale",float(size));uniform(structure,"craftIdentity",float(traffic.genome.seed%65521)/65521.f);
