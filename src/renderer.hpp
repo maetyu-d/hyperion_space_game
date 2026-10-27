@@ -15,7 +15,7 @@ inline Vector2 uiMouse(){return uiPoint(GetMousePosition());}
 struct UI : StrategyWorkspace {
  WorkspaceMemory workspaceMemory;
  ModeHandoff handoff;
- bool enhancedHUD=false,lowGraphics=false;
+ bool enhancedHUD=false,lowGraphics=false,psychedelic=false;
  bool help=false,settings=false,paused=false,sound=false,reduced=false;
  bool menu=false,sections=false;int destinationFilter=0,divePage=0;
  bool auditInterface=false;std::map<std::string,Rectangle> auditButtons;

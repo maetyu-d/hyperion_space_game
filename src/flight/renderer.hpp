@@ -38,7 +38,7 @@ class Renderer {
  void drawSunShadows(const Game&,V3);
  void updateGround(const Game&,int);void drawGroundEffects(const Game&);
  std::string worldKey;int cockpitWidth=0,cockpitHeight=0,cockpitKind=-1;bool cockpitDocked=false,hdr=false;
- bool reduced=false,lowGraphics=false,showCockpit=true;double visualTime=0,speed=0,fixedVisualTime=-1;V3 sunDirection{.6,.7,-.4};
+ bool reduced=false,lowGraphics=false,psychedelic=false,showCockpit=true;double visualTime=0,speed=0,fixedVisualTime=-1;V3 sunDirection{.6,.7,-.4};
  void drawRings(const Planet&,double);
  void clearPortAssets();PortAsset buildPort(const Port&,const SettlementView*,const Game&);void drawSettlement(const Port&,const SettlementView*,const Game&);void drawPortActivity(const Port&,const Scene&);Model buildCraft(int,int,int,int);void drawFactionCraft(const Traffic&,const Scene&);
  void rebuild(const Game&);void rebuildCockpit(int,int,bool,int);void drawCockpit(const Game&);void drawMotion(const Game&);
@@ -48,8 +48,8 @@ public:
  struct StructuralStats {int objects=0,parts=0,cached=0,interiors=0,sourceTriangles=0,triangles=0,caps=0;double sourceArea=0,partArea=0;};
  StructuralStats structuralStats()const{StructuralStats s;s.objects=structuralDraws;s.parts=structuralParts;s.cached=int(brokenStructures.size());s.interiors=interiorDraws;for(const auto& [id,a]:brokenStructures){s.sourceTriangles+=a.sourceTriangles;s.triangles+=a.triangles;s.caps+=a.caps;s.sourceArea+=a.sourceArea;s.partArea+=a.partArea;}return s;}
  struct BreakupStats {int hulls,parts,cached;};BreakupStats breakupStats()const{return {debrisHulls,debrisParts,int(fracturedHulls.size())};}
- struct QualityStats {bool low;int renderWidth,renderHeight,cloudWidth,shadowWidth,detailWidth,surfaceWidth;};
- QualityStats qualityStats()const{return {lowGraphics,scene.texture.width,scene.texture.height,cloudScene.texture.width,sunScene.texture.width,detailMap.texture.width,surfaceMaps.size()>2?surfaceMaps[2].texture.width:0};}
+ struct QualityStats {bool low;int renderWidth,renderHeight,cloudWidth,shadowWidth,detailWidth,surfaceWidth;bool psychedelic;};
+ QualityStats qualityStats()const{return {lowGraphics,scene.texture.width,scene.texture.height,cloudScene.texture.width,sunScene.texture.width,detailMap.texture.width,surfaceMaps.size()>2?surfaceMaps[2].texture.width:0,psychedelic};}
  int visibleMinorBodies()const{return minorDrawn;}
  int minorDetailFields()const;int minorMaterialWidth(const Game&,int body)const;
  bool exportMinorMaterial(const Game&,int body,const std::string&)const;
@@ -64,7 +64,7 @@ public:
  bool exportMaterial(int body,const std::string& path)const;
  bool exportDetail(const std::string& path)const;
  bool exportShadow(const std::string& path)const;
- bool init();void shutdown();void prepare(const Game&,const Scene&,bool reducedEffects=false,bool cockpitVisible=true,bool lowGraphicsMode=false);void present(float width,float height);
+ bool init();void shutdown();void prepare(const Game&,const Scene&,bool reducedEffects=false,bool cockpitVisible=true,bool lowGraphicsMode=false,bool psychedelicLook=false);void present(float width,float height);
  Vector2 project(V3 p,float width,float height)const;
 };
 }

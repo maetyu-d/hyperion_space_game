@@ -213,6 +213,12 @@ void main(){
  if(group==7){float louvers=thread((localPosition+fracturePivot).y*17.+(localPosition+fracturePivot).z*.2,.22);base*=.32+louvers*.50;base*=.90+field.r*.20;occlusion=.67;}
  float variance=min(.20,max(dot(dFdx(N),dFdx(N)),dot(dFdy(N),dFdy(N)))*.5);
  rough=max(pow(min(1.,pow(rough,4.)+variance),.25),mix(.18,.55,smoothstep(.12,2.,footprint)));
+ vec3 ecPaint=vec3(0.);
+ if(psychedelic>.5){
+ // Prismatic ceramic/paint follows the intact material coordinates even on debris.
+ ecPaint=pigment(materialP.y*.013+materialP.x*.009+sin(materialP.z*.021)*.21+materialStyle*.11);
+ base=mix(base,base*(.25+ecPaint*2.2),.70);
+ }
  float sunlight=nearSunVisibility(worldPosition-shadowCentre,geometryN,L),sunHeight=dot(skyRadial,L);
  vec3 c=structureLight(base,N,V,L,rough,metal)*sunlight*occlusion;
  float skyFacing=clamp(dot(N,skyRadial)*.5+.5,0.,1.);
@@ -229,6 +235,12 @@ void main(){
  if(inlay)c+=mix(accent,pigment((localPosition+fracturePivot).y*.035+(localPosition+fracturePivot).x*.012+time*.004),.62)*(.11+.31*working);
  if(group==5)c+=pigment((localPosition+fracturePivot).y*.05)*fresnel*ecology*.012;
  if(code==16){float strata=.5+.5*sin(materialP.y*5.0+sin(materialP.x*1.7)*.4);c*=.74+strata*.26;c+=pigment(materialP.y*.08+materialP.x*.04)*(.004+fresnel*.006);c+=mix(accent,pigment(materialP.y*.08+materialP.x*.04+time*.025),.65)*fractureHeat*(.18+fresnel*.65);}
+ if(psychedelic>.5){
+ vec3 ecstaticPaint=ecstatic(normalize(materialP*.013+vec3(.6,.3,.9)),materialStyle*.13+craftIdentity*.23,time);
+ float ecTrace=thread(materialP.y*.31+sin(materialP.x*.19+materialP.z*.17)*2.,.035);
+ c+=ecstaticPaint*(.028+.14*fresnel)+ecPaint*ecTrace*.16;
+ if(inlay)c+=pigment(materialP.y*.021+materialP.x*.013+time*.001)*(.45+.7*working);
+ }
  float haze=clamp(1.-exp(-length(eye-worldPosition)*.00055*structureAir),0.,.45);
  vec3 air=mix(vec3(.010,.018,.032),vec3(.13,.21,.28),smoothstep(-.15,.18,sunHeight));
  finalColor=vec4(mix(c,air,haze),1.);

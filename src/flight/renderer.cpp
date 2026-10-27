@@ -380,10 +380,12 @@ void Renderer::drawMotion(const Game& g){
  }
  rlEnableDepthMask();EndBlendMode();
 }
-void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,bool lowGraphicsMode){
+void Renderer::prepare(const Game&g,const Scene& sceneView,bool reducedEffects,bool cockpitVisible,bool lowGraphicsMode,bool psychedelicLook){
  if(g.planets.empty()||g.ports.empty())return;
  if(lowGraphics!=lowGraphicsMode){shutdown();lowGraphics=lowGraphicsMode;worldKey.clear();bodiesKey.clear();cockpitWidth=cockpitHeight=0;groundBody=shadowBody=-1;if(!init())throw std::runtime_error("Graphics quality initialization failed");}
  for(auto shader:{sky,world,groundShader,cloud,post})set(shader,"lowGraphics",lowGraphics?1.f:0.f);
+ psychedelic=psychedelicLook;
+ for(auto shader:{sky,world,groundShader,cloud,atmo,ringShader,aurora,structure,cockpitShader,post})set(shader,"psychedelic",psychedelic?1.f:0.f);
  presentation=&sceneView;reduced=reducedEffects;showCockpit=cockpitVisible;speed=g.speed();visualTime=fixedVisualTime>=0?fixedVisualTime:GetTime();
  if(worldKey!=g.worldKey){std::string key=g.star;for(const auto& p:g.planets)key+='|'+p.name+std::to_string(p.seed)+std::to_string(p.radius);
   if(key!=bodiesKey){rebuild(g);bodiesKey=key;}else{worldKey=g.worldKey;groundBody=-1;}

@@ -8,7 +8,8 @@
 // The same bounded, direction-anchored silk field colours space and materials.
 // It has no longitude seam and never moves geography or flight instruments.
 #define PRISM_PIGMENT_GLSL R"GLSL(
-vec3 pigment(float h){return pow(.5+.5*cos(6.283185*(h+vec3(0.,.68,.34))),vec3(1.35));}
+uniform float psychedelic;
+vec3 pigment(float h){return pow(.5+.5*cos(6.283185*(h+vec3(0.,.68,.34))),vec3(psychedelic>.5?1.85:1.35));}
 float thread(float p,float width){float span=fwidth(p),aa=clamp(span*.8,.002,.75),resolved=1.-smoothstep(.65,1.75,span);float line=1.-smoothstep(width,width+aa,abs(sin(p)));float coverage=2.*asin(clamp(width,0.,1.))/3.14159265;return mix(coverage,line,resolved);}
 vec3 silk(vec3 direction,float phase,float seconds){
  float t=seconds*.045;vec3 p=direction*3.2;
@@ -24,6 +25,23 @@ vec3 silk(vec3 direction,float phase,float seconds){
  // Lift the broad pigment sheets before the fine fibres: colour stays rich
  // at distance without making subpixel threads brighter or less stable.
  return front*(.07+sheet*shade*.66+fine*.28+lace*.09)+back*rear*.26+mix(front,vec3(.35,1.,.82),.2)*crest*.42;
+}
+// Optional maximum psychedelic interference tapestry. Coordinates belong to the universe or object,
+// so flight motion reveals the pattern without moving the ground or the HUD.
+vec3 ecstatic(vec3 direction,float phase,float seconds){
+ vec3 p=direction*4.8;float t=seconds*.018;
+ p+=.62*sin(p.yzx*1.7+vec3(t*.33,-t*.27,t*.19)+phase*3.);
+ p+=.25*sin(p.zxy*3.1+vec3(2.,.7,4.)-t*.14);
+ float a=p.y*3.1+sin(p.x*1.8+p.z*.65)*2.7;
+ float b=p.z*2.7+sin(p.y*1.6-p.x*.8)*2.4;
+ float f=.5+.5*sin(a),g=.5+.5*sin(b);
+ float mainThread=thread(a*3.8+.55*sin(b),.065);
+ float fineThread=thread(a*13.+sin(b*2.),.025);
+ float crossThread=thread(b*5.2+.4*sin(a),.030);
+ vec3 front=pigment(a*.085+phase+t*.018),rear=pigment(b*.09+phase+.32-t*.012);
+ float resolved=1.-smoothstep(.7,2.5,max(fwidth(a),fwidth(b)));
+ float sheet=mix(.35,pow(f,1.7),resolved),back=mix(.31,pow(g,2.2),resolved);
+ return front*(.025+sheet*.82+mainThread*.65+fineThread*.24)+rear*(back*.48+crossThread*.26);
 }
 )GLSL"
 namespace hyperion::flight {
@@ -85,6 +103,13 @@ void main(){
  float rim=smoothstep(.38,.57,nearDust)*(1.-smoothstep(.57,.72,nearDust))*emission;
  c+=pigment(seed*.031+farMist*.36+.12)*rim*.095;
  }
+ if(psychedelic>.5){
+ // The maximum look fills the celestial sphere with luminous folded silk,
+ // keeping dark gaps between layers rather than washing everything to white.
+ vec3 tapestry=ecstatic(d,fract(seed*.0371),time);
+ c=c*.58+tapestry*(.88+cloud*1.9)+silk(d.zxy,fract(seed*.0371)+.31,time)*.48;
+ c+=pigment(d.y*.8+d.x*.3+seed*.031)*thread((d.y+sin(d.x*4.+d.z)*.19)*48.,.025)*.17;
+ }
  c+=vec3(.09,.12,.20)*pow(band,2.)*wisps*.035;
  c+=(stars(d,115.,1.)+stars(d,245.,11.)*.40)*exp(-air*10.*smoothstep(-.12,.18,dot(radial,lightDirection)));
  float horizon=dot(d,radial),sun=max(0.,dot(d,lightDirection));
@@ -94,7 +119,12 @@ void main(){
  vec3 horizonColour=mix(vec3(.29,.46,.55),vec3(.66,.19,.095),dusk);
  vec3 aerial=mix(horizonColour,zenith,smoothstep(-.12,.72,horizon));
  aerial+=vec3(.85,.38,.14)*pow(sun,14.)*(.14+dusk*.24);
- aerial+=pigment(seed*.031+horizon*.16)*exp(-abs(horizon)*11.)*.024;
+ if(psychedelic>.5){
+ aerial=mix(aerial,aerial*(.22+pigment(seed*.031+horizon*.42+d.x*.13)*1.6),.72);
+ aerial+=ecstatic(d,fract(seed*.0371)+.12,time)*(.14+.32*exp(-abs(horizon)*2.8));
+ aerial+=pigment(seed*.031+horizon*.45)*exp(-abs(horizon)*7.)*.32;
+ }else{aerial+=pigment(seed*.031+horizon*.16)*exp(-abs(horizon)*11.)*.024;}
+
  if(lowGraphics>.5){
  aerial=mix(vec3(.11,.22,.34),vec3(.018,.06,.13),smoothstep(-.1,.8,horizon));
  aerial+=vec3(.65,.26,.10)*pow(sun,8.)*.35;
@@ -102,14 +132,14 @@ void main(){
  }
  aerial*=mix(.035,1.,smoothstep(-.12,.18,dot(radial,lightDirection)));
  aerial*=1.-storm*.38;
- c=mix(c,aerial+c*.012,air);
+ c=mix(c,aerial+c*(psychedelic>.5?.075:.012),air);
  c+=vec3(.45,.32,.72)*lightning*air*.16;
  // Below the weather shell, local magnetic curtains live in the sky field.
  float night=1.-smoothstep(-.24,.12,dot(radial,lightDirection));
  float polar=smoothstep(.36,.77,abs(radial.y));
  float arc=horizon-(.30+.11*sin(d.x*6.+d.z*4.+sin(time*.017)));
  float curtain=exp(-arc*arc*160.)*(.35+.65*pow(.5+.5*sin(d.x*41.+d.z*37.+sin(time*.031)*2.),2.));
- c+=pigment(d.x*.42+d.z*.35+seed*.031+arc*1.6)*curtain*night*polar*air*(1.-smoothstep(50.,140.,altitude))*.48;
+ c+=pigment(d.x*.42+d.z*.35+seed*.031+arc*1.6)*curtain*night*polar*air*(1.-smoothstep(50.,140.,altitude))*(psychedelic>.5?1.8:.48);
  c+=vec3(1.,.82,.57)*(pow(sun,5400.)*3.2+pow(sun,140.)*.24+pow(sun,14.)*.028)*(1.-air*.35);
  finalColor=vec4(c,1.);
 })GLSL";
@@ -224,8 +254,15 @@ void main(){
  // Illumination, roughness, relief and biome masks still give them volume.
  vec3 flowColour=silk(n,fract(seed*.0371),time);
  vec3 mineral=pigment(elevation*3.7+seed*.031+sin(n.x*13.+sin(n.z*6.))*.13);
+ vec3 ecstaticMineral=vec3(0.);
+ if(psychedelic>.5){
+ ecstaticMineral=ecstatic(n,fract(seed*.0371)+.15,time);
+ ground=mix(ground,ground*.30+mineral*.52+ecstaticMineral*.52,.90);
+ ocean=ocean*.35+flowColour*.48+ecstaticMineral*.17+pigment(elevation*3.4+seed*.031)*.10;
+ }else{
  ground=mix(ground,ground*.42+mineral*.27+flowColour*.28,.56);
  ocean=ocean*.72+flowColour*.215+pigment(elevation*2.3+seed*.031)*.012;
+ }
  vec3 iceColour=vec3(.62,.76,.80);if(kind>1.5&&kind<2.5&&useGeology>.5)iceColour=mix(iceColour,geo.rgb*1.18,.55);
  vec3 albedo=mix(ocean,ground,land);albedo=mix(albedo,iceColour,ice);
  LiquidSurface liquid=liquidSurface(n,dFdx(n*radius),dFdy(n*radius),elevation,sea,land,ice,fwidth(elevation));
@@ -273,6 +310,7 @@ void main(){
   albedo=mix(a,b,smoothstep(-.8,.8,bands)*.72+turbulence*.28)+flowColour*.12;land=1.;ice=0.;N=normalize(normal);
   vec2 st=vec2(atan(n.z,n.x)-(.65+sin(seed)*.5),(n.y+.23)*3.4);float r=length(st),mask=exp(-r*r*38.);
   albedo=mix(albedo,pigment(r*3.7+seed*.031+.5)*(.20+.24*(.5+.5*sin(r*120.+atan(st.y,st.x+.00001)*2.))),mask*.7);
+  if(psychedelic>.5)albedo+=ecstatic(n,fract(seed*.0371),time)*.30;
   if(useGeology>.5)albedo=mix(albedo,geo.rgb+flowColour*.10,.62);roughness=.82;
  }
  float shadow=1.;if(kind<4.5&&atmosphere>.12)shadow=1.-clouds(normalize(n+L*(30./radius)))*.48*day;
@@ -319,6 +357,17 @@ void main(){
  float currents=thread(elevation*165.+detail*2.+sin(time*.035)*.6,.035);
  c+=mix(vec3(.015,.28,.23),pigment(elevation*4.+seed*.031),.6)*life*(1.-day)*(shore*.35+currents*(1.-land)*.042);
  if(kind>2.5&&kind<3.5){float lavaFootprint=max(length(dFdx(q*12.)),length(dFdy(q*12.)));float lava=mix(.028,pow(max(0.,1.-abs(noise(q*12.)-.5)*18.),5.),1.-smoothstep(.35,1.4,lavaFootprint))*smoothstep(.48,.64,elevation);float rift=(1.-smoothstep(.31,.41,geo.a))*smoothstep(.43,.61,elevation);c+=mix(vec3(2.3,.16,.009),pigment(seed*.031+.1)*1.3,.18)*(lava+rift*.16);}
+ if(psychedelic>.5){
+ // Filtered terrain-anchored interference veins and luminous shores. Relief,
+ // cloud shadows and physical geometry still supply the surface's shape.
+ float ecPhase=elevation*176.+detail*2.+sin(n.x*29.+n.z*17.)*.24;
+ float ecVeins=thread(ecPhase,.065),ecLace=thread(ecPhase*2.7+geo.a*5.,.025);
+ vec3 ecColour=pigment(elevation*6.3+seed*.031+n.z*.18+time*.0008);
+ c+=ecColour*(ecVeins*.42+ecLace*.14)*land*(.26+.74*day);
+ c+=ecstaticMineral*(.045+.13*fresnel)*land;
+ c+=pigment(elevation*8.+seed*.031+time*.001)*shore*(.14+.20*life);
+ c+=pigment(n.z*.9+seed*.031+fresnel*.35)*fresnel*.32;
+ }
  float eyeHeight=length(eye-centre)-radius;
  if(lowGraphics>.5){
  float haze=(1.-exp(-length(eye-worldPosition)*.0024*clamp(atmosphere,0.,1.4)))*(1.-smoothstep(60.,200.,eyeHeight));
@@ -414,7 +463,8 @@ void main(){
  float dischargePulse=pow(smoothstep(.996,1.,sin(weatherHours*55.*.14+weatherSeed)),2.)*pow(storm,4.);
  // Palette endpoints are constant along the ray; interpolate their sheen
  // rather than evaluating three cosines and powers at every volume step.
- vec3 opalLow=pigment(seed*.031+mu*.15),opalMid=pigment(seed*.031+mu*.15+.18),opalHigh=pigment(seed*.031+mu*.15+.36);
+ float cloudPalette=psychedelic>.5?dot(normalize(o+d*weatherDistance),vec3(.53,.71,.46))*.96:0.;
+ vec3 opalLow=pigment(seed*.031+mu*.15+cloudPalette),opalMid=pigment(seed*.031+mu*.15+cloudPalette+.18),opalHigh=pigment(seed*.031+mu*.15+cloudPalette+.36);
  for(int i=0;i<24;i++){
   if(float(i)>=count||transmission<.012)break;
   float along=(float(i)+.45+jitter*.10)*stepSize,t=along<first?start+along:bStart+along-first;
@@ -462,7 +512,12 @@ void main(){
   float discharge=dischargePulse;
   colour+=opalHigh*discharge*.28;
   float rim=pow(1.-clamp(density,0.,1.),3.);float phase=clamp(h*.17+billow*.13,0.,.36);vec3 opal=phase<.18?mix(opalLow,opalMid,phase/.18):mix(opalMid,opalHigh,(phase-.18)/.18);
+  if(psychedelic>.5){
+  colour*=mix(vec3(1.),.10+opal*1.65,.92);
+  colour+=opal*(.12+day*(rim*forward*.50+pow(max(0.,1.-abs(sun)*3.),3.)*.24));
+  }else{
   colour*=mix(vec3(1.),.68+opal*.70,.33);colour+=opal*day*(rim*forward*.30+pow(max(0.,1.-abs(sun)*3.),3.)*.06);
+  }
   if(kind>3.5)colour=mix(colour,colour*vec3(.80,1.,.48),.35);
   float opacity=1.-exp(-density*stepSize*.14);sum+=transmission*colour*opacity;transmission*=1.-opacity;
  }
@@ -529,7 +584,7 @@ void main(){
   vec3 transmission=exp(-beta*(optical+sunOptical));sum+=transmission*density*stepSize*sunlight;
  }
  vec3 scattering=sum*(beta*rayleigh+vec3(.0016)*mie)*7.;
- scattering*=mix(vec3(1.),.28+pigment(dot(normalize(worldPosition-centre),vec3(.3,.8,.4))*.7+seed*.031+mu*.12)*1.35,.34);
+ scattering*=mix(vec3(1.),.28+pigment(dot(normalize(worldPosition-centre),vec3(.3,.8,.4))*.7+seed*.031+mu*.12)*(psychedelic>.5?1.7:1.35),psychedelic>.5?.88:.34);
  float opacity=clamp(1.-exp(-dot(beta,vec3(.333))*optical),0.,.92);
  finalColor=vec4(scattering*(opacity/max(opacity,.001)),opacity);
 })GLSL";
@@ -546,7 +601,10 @@ void main(){
  vec3 base=mix(vec3(.105,.16,.17),vec3(.30,.265,.20),smoothstep(.34,.75,field.y));
  base=mix(base,.025+pigment(x*.88+seed*.031+sin(time*.012)*.018+grazing*.045)*.36,.78);
  vec3 c=base*(.23+abs(dot(N,L))*.86+forward*.45)*sunlight+base*grazing*.10;
- c+=pigment(seed*.031+x*.24)*forward*field.x*.035*sunlight;
+ if(psychedelic>.5){
+ c+=pigment(seed*.031+x*1.7+time*.001)*(forward*.25+.20)*field.x*sunlight;
+ c+=ecstatic(normalize(localPosition),seed*.031,time)*field.x*.18;
+ }else{c+=pigment(seed*.031+x*.24)*forward*field.x*.035*sunlight;}
  finalColor=vec4(c,field.x);
 })GLSL";
 inline constexpr const char* auroraFragment=R"GLSL(#version 330
@@ -578,7 +636,7 @@ void main(){
   vec3 colour=pigment(height*.30+seed*.031+n.z*.18+.07*drift+oval*1.2);
   sum+=colour*(curtain*rays+veil)*night*envelope*stepSize*.020;
  }
- sum*=1.45/(1.+max(sum.r,max(sum.g,sum.b))*.5);
+ sum*=(psychedelic>.5?3.8:1.45)/(1.+max(sum.r,max(sum.g,sum.b))*(psychedelic>.5?.35:.5));
  finalColor=vec4(sum*clamp(atmosphere,.0,1.)*strength,1.);
 })GLSL";
 inline constexpr const char* blurFragment=R"GLSL(#version 330
@@ -595,7 +653,7 @@ in vec2 fragTexCoord;
 out vec4 finalColor;
 uniform sampler2D texture0,bloomTexture;
 uniform vec2 texel;
-uniform float hit,effects,sunVisibility,lowGraphics;uniform vec2 sunPosition;
+uniform float hit,effects,sunVisibility,lowGraphics,psychedelic;uniform vec2 sunPosition;
 uniform vec3 impactColour;uniform vec2 impactDirection;uniform float shieldBreak;
 float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
 void main(){
@@ -618,7 +676,14 @@ void main(){
  float clarity=(1.-smoothstep(.12,.32,(hi-lo)/max(hi,.02)))*smoothstep(.015,.08,luma(c));
  c=max(vec3(0.),c+(c-neighbourhood)*clarity*.24);
  }
- c+=texture(bloomTexture,uv).rgb*mix(.14,.38,effects);
+ if(psychedelic>.5){
+ c+=texture(bloomTexture,uv).rgb*mix(.20,.82,effects);
+ // Tiny spectral fringes are peripheral; geometry and the sight stay stable.
+ vec2 fringe=(uv-.5)*texel*1.6*smoothstep(.15,.65,length(uv-.5));
+ vec3 split=vec3(texture(texture0,uv+fringe).r,texture(texture0,uv).g,texture(texture0,uv-fringe).b);
+ c+=max(vec3(0.),split-texture(texture0,uv).rgb)*.24*effects;
+ float saturationLuma=luma(c);c=max(vec3(0.),mix(vec3(saturationLuma),c,1.19));
+ }else{c+=texture(bloomTexture,uv).rgb*mix(.14,.38,effects);}
  vec2 v=(uv-.5)*2.;vec2 sun=uv-sunPosition;
  float streak=exp(-abs(sun.y)*950.)*exp(-abs(sun.x)*3.5);
  vec2 ghost=uv-(.5-(sunPosition-.5)*.38);float halo=exp(-abs(length(ghost)-.13)*190.);
@@ -636,7 +701,7 @@ void main(){
  vec3 film=(c*(2.51*c+.03))/(c*(2.43*c+.59)+.14);
  // Keep rich pigment hues through the highlight rolloff instead of whitening
  // every bright colour independently. The HUD is composed after this pass.
- c=clamp(mix(film,c/max(peak,.0001)*mappedPeak,.48),0.,1.);
+ c=clamp(mix(film,c/max(peak,.0001)*mappedPeak,psychedelic>.5?.86:.48),0.,1.);
  c=pow(c,vec3(1./2.2));
  finalColor=vec4(c,1.);
 })GLSL";
@@ -662,7 +727,10 @@ void main(){
  vec3 c=base*(vec3(.15,.24,.34)+vec3(1.,.87,.68)*nl*1.3);
  c+=vec3(.48,.66,.73)*sheen*.65+vec3(.055,.14,.18)*fresnel;
  c+=base*vec3(.10,.25,.23)*max(0.,-N.y);
- c+=pigment(nv*.65+localPosition.y*.13+.04*sin(time*.017))*fresnel*.055;
+ if(psychedelic>.5){
+ c+=pigment(nv*.65+localPosition.y*.13+.04*sin(time*.017))*fresnel*.30;
+ c+=pigment(localPosition.y*1.4+localPosition.x*.6+time*.0008)*fresnel*.045;
+ }else{c+=pigment(nv*.65+localPosition.y*.13+.04*sin(time*.017))*fresnel*.055;}
  c+=combatLight*(.024+fresnel*.09+max(0.,N.y)*.018);
  finalColor=vec4(c,1.);
 })GLSL";

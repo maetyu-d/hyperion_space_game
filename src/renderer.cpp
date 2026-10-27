@@ -83,7 +83,7 @@ bool Renderer::button(const std::string& label,Rectangle r,const std::string& ac
  if(panelContent&&(r.y+r.height<UILayout::contentTop||r.y>UILayout::contentBottom(h)))return false;
  if(ui->panel&&!panelDrawing&&!modalDrawing&&r.x+r.width>UILayout::panelLeft(w)&&r.y>UILayout::header)return false;
  bool hover=CheckCollisionPointRec(uiMouse(),r),pressed=ui->pointerPressed&&CheckCollisionPointRec(ui->pressPosition,r),modalBlock=!modalDrawing&&((ui->help||ui->settings)||((ui->menu||ui->sections)&&action!="menu"&&action!="sections"&&action!="panel"));
- static const std::set<std::string> presentation={"menu","sections","disclosure","selectGood","selectBuilding","selectFaction","filterDestinations","researchPage","clean","pause","flightHUD","orders","divePage","oceanClose","planHours","reportOlder","reportNewer","missionBoard"};
+ static const std::set<std::string> presentation={"look","graphics","menu","sections","disclosure","selectGood","selectBuilding","selectFaction","filterDestinations","researchPage","clean","pause","flightHUD","orders","divePage","oceanClose","planHours","reportOlder","reportNewer","missionBoard"};
  enabled=enabled&&ui->handoff.ready()&&(!ui->paused||Game::planningAction(action)||presentation.count(action));
  bool visible=r.y>=0&&r.y+r.height<=h;
  if(panelContent&&(r.y<UILayout::contentTop||r.y+r.height>UILayout::contentBottom(h)))visible=false;
@@ -388,8 +388,8 @@ void Renderer::panel(){panelDrawing=true;float left=UILayout::panelLeft(w),x=lef
 }
 void Renderer::modal(){modalDrawing=true;DrawRectangle(0,0,int(w),int(h),alpha(ink,.72f));float mw=std::min(820.f,w-60),mh=ui->settings?574.f:std::min(h-40,690.f);float x=(w-mw)/2,y=(h-mh)/2;
  DrawRectangleRounded({x,y,mw,mh},.025f,6,panelInk);DrawRectangleRoundedLinesEx({x,y,mw,mh},.025f,6,1,alpha(mint,.4f));float tx=x+34,ty=y+31;
- text(ui->settings?"UNIVERSE / STORAGE":"NOMA / FIELD MANUAL",tx,ty,11,mint,true);ty+=36;text(ui->settings?"Your expedition":"Flight and survey",tx,ty,26,pearl);ty+=44;
- if(ui->settings){button("GRAPHICS: HIGH",{tx,ty,(mw-80)/2,32},"graphics","high",true,!ui->lowGraphics);button("GRAPHICS: LOW",{tx+(mw-68)/2+6,ty,(mw-80)/2,32},"graphics","low",true,ui->lowGraphics);ty+=44;wrapped("A seed defines a repeatable universe. Creating another universe first exports a backup of this expedition.",tx,ty,mw-68,16,muted);ty+=18;
+ text(ui->settings?"DISPLAY / EXPEDITION":"NOMA / FIELD MANUAL",tx,ty,11,mint,true);ty+=36;text(ui->settings?"Your expedition":"Flight and survey",tx,ty,26,pearl);ty+=44;
+ if(ui->settings){button("GRAPHICS: HIGH",{tx,ty,(mw-80)/2,32},"graphics","high",true,!ui->lowGraphics);button("GRAPHICS: LOW",{tx+(mw-68)/2+6,ty,(mw-80)/2,32},"graphics","low",true,ui->lowGraphics);ty+=44;button("LOOK: STANDARD",{tx,ty,(mw-80)/2,32},"look","standard",true,!ui->psychedelic);button("LOOK: PSYCHEDELIC",{tx+(mw-68)/2+6,ty,(mw-80)/2,32},"look","psychedelic",true,ui->psychedelic);ty+=44;wrapped("A seed defines a repeatable universe. Creating another universe first exports a backup of this expedition.",tx,ty,mw-68,16,muted);ty+=18;
   DrawRectangleRounded({tx,ty,mw-68,45},.05f,4,Color{16,30,39,255});text(ui->seedInput+((int(clock*2)%2)?"|":""),tx+12,ty+13,16,pearl,true);ty+=61;
   button("CREATE NEW UNIVERSE",{tx,ty,mw-68,40},"new","",!ui->seedInput.empty(),true);ty+=61;
   wrapped("Drop a native JSON save onto this window to import it. Export creates a portable file beside the automatic save.",tx,ty,mw-68,15,muted);ty+=15;
@@ -425,7 +425,7 @@ void Renderer::draw(Game& g,UI& state,double dt){g.ensureEconomy();game=&g;ui=&s
   BeginTextureMode(handoffFrame);ClearBackground(ink);DrawTexturePro(composite.texture,{0,0,float(width),-float(height)},{0,0,float(width),float(height)},{0,0},0,WHITE);EndTextureMode();
  }
  presentedMode=int(g.s.mode);
- if(g.s.mode==Mode::Flight){g.ensureFlight();flightPresentation=flightScene(g);if(auditHideWildlife)flightPresentation.organisms.clear();flightGraphics.prepare(g.s.flight,flightPresentation,state.reduced,!state.clean,state.lowGraphics);}else background(dt);BeginTextureMode(composite);ClearBackground(ink);rlPushMatrix();rlScalef(width/w,height/h,1);
+ if(g.s.mode==Mode::Flight){g.ensureFlight();flightPresentation=flightScene(g);if(auditHideWildlife)flightPresentation.organisms.clear();flightGraphics.prepare(g.s.flight,flightPresentation,state.reduced,!state.clean,state.lowGraphics,state.psychedelic);}else background(dt);BeginTextureMode(composite);ClearBackground(ink);rlPushMatrix();rlScalef(width/w,height/h,1);
  if(g.s.mode==Mode::Flight)flightGraphics.present(w,h);else{BeginShaderMode(post);texture(post,"bloomTexture",bloom[1].texture);DrawTexturePro(history[current].texture,{0,0,float(width),-float(height)},{0,0,w,h},{0,0},0,WHITE);EndShaderMode();}
  switch(g.s.mode){case Mode::Galaxy:galaxy();break;case Mode::System:system();break;case Mode::Surface:surface();break;case Mode::Ocean:ocean();break;case Mode::Flight:break;}
  if(g.s.mode!=Mode::Flight)colonyMarkers();

@@ -1,4 +1,4 @@
-# HYPERION 3.62
+# HYPERION 3.63
 
 A native C++17 space exploration and strategy game with Elite-style cockpit
 flight, a procedural universe, living ecosystems, outposts, factions and a
@@ -7,6 +7,26 @@ run in the native renderer.
 
 There is one ship, one cargo hold, one account, one simulation clock and one save.
 Cockpit flight runs in real time; every other gameplay mode is turn based.
+
+## Optional psychedelic flight look in 3.63
+
+Open **Menu → Settings → Look: Psychedelic** to use the maximum psychedelic
+look from the graphics lab during normal play: layered luminous nebulae,
+iridescent clouds and rings, glowing mineral contours, prismatic ship and
+settlement materials, and stronger spectral bloom. **Look: Standard** restores
+the previous appearance immediately and remains the default.
+
+The look is remembered independently of High/Low graphics and flight guidance.
+Switching it does not advance time, move the ship or alter campaign saves.
+It is available while paused and in strategy, and applies when flying.
+
+![The optional maximum psychedelic look during normal cockpit flight](docs/screenshots/psychedelic-flight.jpg)
+
+[Settings with independent graphics quality and look choices](docs/screenshots/psychedelic-settings.jpg).
+
+For command-line launches use `--flight-look standard|psychedelic`.
+`--look-check` tests live switching through the actual settings controls,
+High/Low graphics, paused play, strategy and small windows without saving.
 
 ## Living recovery, boarding and captured hulls in 3.62
 

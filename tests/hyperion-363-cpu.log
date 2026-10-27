@@ -1,0 +1,85 @@
+Test project /Users/user/Documents/SC tutorial/Hyperion/build
+      Start  1: recovery_society
+ 1/40 Test  #1: recovery_society .................   Passed    2.83 sec
+      Start  2: tactical_recovery
+ 2/40 Test  #2: tactical_recovery ................   Passed    2.72 sec
+      Start  3: structural_fracture
+ 3/40 Test  #3: structural_fracture ..............   Passed    0.92 sec
+      Start  4: persistent_world_destruction
+ 4/40 Test  #4: persistent_world_destruction .....   Passed    0.89 sec
+      Start  5: ship_destruction
+ 5/40 Test  #5: ship_destruction .................   Passed    0.01 sec
+      Start  6: combat_audio_signals
+ 6/40 Test  #6: combat_audio_signals .............   Passed    0.10 sec
+      Start  7: persistent_wreck_expeditions
+ 7/40 Test  #7: persistent_wreck_expeditions .....   Passed    0.62 sec
+      Start  8: submersible_survey_expeditions
+ 8/40 Test  #8: submersible_survey_expeditions ...   Passed    2.04 sec
+      Start  9: strategy_continuity
+ 9/40 Test  #9: strategy_continuity ..............   Passed    0.18 sec
+      Start 10: fieldwork_play_loop
+10/40 Test #10: fieldwork_play_loop ..............   Passed    0.35 sec
+      Start 11: event_aware_turn_planner
+11/40 Test #11: event_aware_turn_planner .........   Passed    0.40 sec
+      Start 12: optional_flight_hud
+12/40 Test #12: optional_flight_hud ..............   Passed    0.33 sec
+      Start 13: minor_material_layout
+13/40 Test #13: minor_material_layout ............   Passed    0.00 sec
+      Start 14: minor_bodies
+14/40 Test #14: minor_bodies .....................   Passed    0.22 sec
+      Start 15: screen_layout
+15/40 Test #15: screen_layout ....................   Passed    0.00 sec
+      Start 16: procedural_operations
+16/40 Test #16: procedural_operations ............   Passed    0.27 sec
+      Start 17: life_graphics
+17/40 Test #17: life_graphics ....................   Passed    0.02 sec
+      Start 18: visible_wildlife
+18/40 Test #18: visible_wildlife .................   Passed    0.39 sec
+      Start 19: persistent_ecosystems
+19/40 Test #19: persistent_ecosystems ............   Passed    0.63 sec
+      Start 20: procedural_life
+20/40 Test #20: procedural_life ..................   Passed    0.14 sec
+      Start 21: procedural_generation
+21/40 Test #21: procedural_generation ............   Passed    0.52 sec
+      Start 22: shipyards
+22/40 Test #22: shipyards ........................   Passed    0.63 sec
+      Start 23: faction_security
+23/40 Test #23: faction_security .................   Passed    0.54 sec
+      Start 24: combat_tactics
+24/40 Test #24: combat_tactics ...................   Passed    0.35 sec
+      Start 25: combat
+25/40 Test #25: combat ...........................   Passed    0.33 sec
+      Start 26: building_material
+26/40 Test #26: building_material ................   Passed    0.02 sec
+      Start 27: architecture_geometry
+27/40 Test #27: architecture_geometry ............   Passed    0.01 sec
+      Start 28: pointer_input
+28/40 Test #28: pointer_input ....................   Passed    0.00 sec
+      Start 29: simulation
+29/40 Test #29: simulation .......................   Passed    0.91 sec
+      Start 30: economy
+30/40 Test #30: economy ..........................   Passed    0.77 sec
+      Start 31: frontier_integration
+31/40 Test #31: frontier_integration .............   Passed    9.22 sec
+      Start 32: planning_briefing
+32/40 Test #32: planning_briefing ................   Passed    0.15 sec
+      Start 33: strategy_handoff
+33/40 Test #33: strategy_handoff .................   Passed    1.77 sec
+      Start 34: turn_based
+34/40 Test #34: turn_based .......................   Passed    0.87 sec
+      Start 35: review_regressions
+35/40 Test #35: review_regressions ...............   Passed    1.34 sec
+      Start 36: living_world
+36/40 Test #36: living_world .....................   Passed    0.02 sec
+      Start 37: precision_helm
+37/40 Test #37: precision_helm ...................   Passed    0.04 sec
+      Start 38: ship_handling
+38/40 Test #38: ship_handling ....................   Passed    0.14 sec
+      Start 39: branding_and_save_continuity
+39/40 Test #39: branding_and_save_continuity .....   Passed    0.03 sec
+      Start 40: landing_and_departure
+40/40 Test #40: landing_and_departure ............   Passed    0.03 sec
+
+100% tests passed, 0 tests failed out of 40
+
+Total Test time (real) =  30.83 sec
